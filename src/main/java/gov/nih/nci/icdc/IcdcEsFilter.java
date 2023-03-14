@@ -1,5 +1,6 @@
 package gov.nih.nci.icdc;
 
+import gov.nih.nci.bento.model.AbstractESDataFetcher;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
