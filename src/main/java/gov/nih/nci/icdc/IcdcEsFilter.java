@@ -1,18 +1,19 @@
 package gov.nih.nci.icdc;
 
-import gov.nih.nci.bento.model.AbstractESDataFetcher;
+import com.google.gson.*;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.*;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-public class IcdcEsFilter extends AbstractESDataFetcher {
+public class IcdcEsFilter implements DataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
 
     // parameters used in queries
@@ -53,48 +54,315 @@ public class IcdcEsFilter extends AbstractESDataFetcher {
     final String GS_ABOUT = "about";
     final String GS_HIGHLIGHT_FIELDS = "highlight_fields";
     final String GS_HIGHLIGHT_DELIMITER = "$";
-    final Set<String> RANGE_PARAMS = Set.of("age_at_index");
+    final Set<String> RANGE_PARAMS = Set.of();
 
-    public IcdcEsFilter(ESService esService) {
-        super(esService);
-    }
+
+    @Autowired
+    ESService esService;
+
+    private Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
-                        .dataFetcher("caseOverviewPaged", env -> {
+                        .dataFetcher("searchCases", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return caseOverview(args, "asc");
+                            return searchCases(args);
                         })
-                        .dataFetcher("caseOverviewPagedDesc", env -> {
+                        .dataFetcher("caseOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return caseOverview(args, "desc");
+                            return caseOverview(args);
                         })
                         .dataFetcher("sampleOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return sampleOverview(args, "asc");
-                        })
-                        .dataFetcher("sampleOverviewDesc", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return sampleOverview(args, "desc");
+                            return sampleOverview(args);
                         })
                         .dataFetcher("fileOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return fileOverview(args, "asc");
-                        })
-                        .dataFetcher("fileOverviewDesc", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return fileOverview(args, "desc");
+                            return fileOverview(args);
                         })
                 )
                 .build();
     }
 
-    private List<Map<String, Object>> caseOverview(Map<String, Object> params, String sortDirection) throws IOException {
+    private Map<String, Object> searchCases(Map<String, Object> params) throws IOException {
+        final String AGG_NAME = "agg_name";
+        final String AGG_ENDPOINT = "agg_endpoint";
+        final String WIDGET_QUERY = "widgetQueryName";
+        final String FILTER_COUNT_QUERY = "filterCountQueryName";
+
+        // Query related values
+        final List<Map<String, String>> TERM_AGGS = new ArrayList<>();
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "program",
+                WIDGET_QUERY, "caseCountByProgram",
+                FILTER_COUNT_QUERY, "filterCaseCountByProgram",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "study",
+                WIDGET_QUERY, "caseCountByStudyCode",
+                FILTER_COUNT_QUERY, "filterCaseCountByStudyCode",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "study_type",
+                WIDGET_QUERY, "caseCountByStudyType",
+                FILTER_COUNT_QUERY, "filterCaseCountByStudyType",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "biobank",
+                WIDGET_QUERY, "caseCountByBiobank",
+                FILTER_COUNT_QUERY, "filterCaseCountByBiobank",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "study_participation",
+                WIDGET_QUERY, "caseCountByStudyParticipation",
+                FILTER_COUNT_QUERY, "filterCaseCountByStudyParticipation",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "breed",
+                WIDGET_QUERY, "caseCountByBreed",
+                FILTER_COUNT_QUERY, "filterCaseCountByBreed",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "diagnosis",
+                WIDGET_QUERY, "caseCountByDiagnosis",
+                FILTER_COUNT_QUERY, "filterCaseCountByDiagnosis",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "disease_site",
+                WIDGET_QUERY, "caseCountByDiseaseSite",
+                FILTER_COUNT_QUERY, "filterCaseCountByDiseaseSite",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "stage_of_disease",
+                WIDGET_QUERY,"caseCountByStageOfDisease",
+                FILTER_COUNT_QUERY, "filterCaseCountByStageOfDisease",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "response_to_treatment",
+                WIDGET_QUERY,"caseCountByResponseToTreatment",
+                FILTER_COUNT_QUERY, "filterCaseCountByResponseToTreatment",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "sex",
+                WIDGET_QUERY, "caseCountByGender",
+                FILTER_COUNT_QUERY, "filterCaseCountBySex",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "neutered_status",
+                WIDGET_QUERY, "caseCountByNeuteredStatus",
+                FILTER_COUNT_QUERY, "filterCaseCountByNeuteredStatus",
+                AGG_ENDPOINT, CASES_END_POINT
+        ));
+
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "sample_site",
+                WIDGET_QUERY, "caseCountBySampleSite",
+                FILTER_COUNT_QUERY, "filterCaseCountBySampleSite",
+                AGG_ENDPOINT, SAMPLES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "sample_type",
+                WIDGET_QUERY, "caseCountBySampleType",
+                FILTER_COUNT_QUERY, "filterCaseCountBySampleType",
+                AGG_ENDPOINT, SAMPLES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "sample_pathology",
+                WIDGET_QUERY, "caseCountBySamplePathology",
+                FILTER_COUNT_QUERY, "filterCaseCountBySamplePathology",
+                AGG_ENDPOINT, SAMPLES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "file_association",
+                WIDGET_QUERY, "caseCountByFileAssociation",
+                FILTER_COUNT_QUERY, "filterCaseCountByFileAssociation",
+                AGG_ENDPOINT, FILES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "file_type",
+                WIDGET_QUERY, "caseCountByFileType",
+                FILTER_COUNT_QUERY, "filterCaseCountByFileType",
+                AGG_ENDPOINT, FILES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "file_format",
+                WIDGET_QUERY, "caseCountByFileFormat",
+                FILTER_COUNT_QUERY, "filterCaseCountByFileFormat",
+                AGG_ENDPOINT, FILES_END_POINT
+        ));
+
+        List<String> agg_names = new ArrayList<>();
+        for (var agg: TERM_AGGS) {
+            agg_names.add(agg.get(AGG_NAME));
+        }
+        final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
+
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of("first"));
+        Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
+        sampleCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject sampleCountResult = esService.send(sampleCountRequest);
+        int numberOfSamples = sampleCountResult.get("count").getAsInt();
+
+        Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
+        fileCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject fileCountResult = esService.send(fileCountRequest);
+        int numberOfFiles = fileCountResult.get("count").getAsInt();
+
+        Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
+        Map<String, Object> studyFileParam = new HashMap<>(params);
+        studyFileParam.put("file_level", List.of("study"));
+        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first"));
+        studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
+        JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
+        int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
+
+        Request caseCountRequest = new Request("GET", CASES_COUNT_END_POINT);
+        caseCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject caseCountResult = esService.send(caseCountRequest);
+        int numberOfCases = caseCountResult.get("count").getAsInt();
+
+
+        // Get aggregations
+        Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES);
+        Request caseRequest = new Request("GET", CASES_END_POINT);
+        caseRequest.setJsonEntity(gson.toJson(aggQuery));
+        JsonObject caseResult = esService.send(caseRequest);
+        Map<String, JsonArray> aggs = esService.collectTermAggs(caseResult, TERM_AGG_NAMES);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("numberOfPrograms", aggs.get("program").size());
+        data.put("numberOfStudies", aggs.get("study").size());
+        data.put("numberOfCases", numberOfCases);
+        data.put("numberOfSamples", numberOfSamples);
+        data.put("numberOfFiles", numberOfFiles);
+        data.put("numberOfStudyFiles", numberOfStudyFiles);
+        data.put("numberOfAliquots", 0);
+        data.put("volumeOfData", getVolumeOfData(params, "file_size", FILES_END_POINT));
+
+
+        data.put("programsAndStudies", programsAndStudies(params));
+
+        // widgets data and facet filter counts
+        for (var agg: TERM_AGGS) {
+            String field = agg.get(AGG_NAME);
+            String widgetQueryName = agg.get(WIDGET_QUERY);
+            String filterCountQueryName = agg.get(FILTER_COUNT_QUERY);
+            String endpoint = agg.get(AGG_ENDPOINT);
+            // subjectCountByXXXX
+            List<Map<String, Object>> widgetData;
+            if (endpoint.equals(CASES_END_POINT)) {
+                widgetData = getGroupCountHelper(aggs.get(field));
+                data.put(widgetQueryName, widgetData);
+            } else {
+                widgetData = subjectCountBy(field, params, endpoint);;
+                data.put(widgetQueryName, widgetData);
+            }
+            // filterSubjectCountByXXXX
+            if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
+                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;
+                data.put(filterCountQueryName, filterCount);
+            } else {
+                data.put(filterCountQueryName, widgetData);
+            }
+        }
+
+        return data;
+    }
+
+    private double getVolumeOfData(Map<String, Object> params, String fieldName, String indexName) throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        query = esService.addSumAggregation(query, fieldName);
+        Request request = new Request("GET", indexName);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+        return esService.retrieveSumAgg(jsonObject, fieldName);
+    }
+
+    private List<Map<String, Object>> programsAndStudies(Map<String, Object> params) throws IOException {
+        final String category = "program";
+        final String subCategory = "study_code";
+
+        String[] subCategories = new String[] { subCategory };
+        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        String[] AGG_NAMES = new String[] {category};
+        query = esService.addAggregations(query, AGG_NAMES);
+        esService.addSubAggregations(query, category, subCategories);
+        Request request = new Request("GET", CASES_END_POINT);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+        Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, AGG_NAMES);
+        JsonArray buckets = aggs.get(category);
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (JsonElement group: buckets) {
+            List<Map<String, Object>> studies = new ArrayList<>();
+
+            for (JsonElement studyElement: group.getAsJsonObject().get(subCategory).getAsJsonObject().get("buckets").getAsJsonArray()) {
+                JsonObject study = studyElement.getAsJsonObject();
+                int size = study.get("doc_count").getAsInt();
+                studies.add(Map.of(
+                        "study", study.get("key").getAsString(),
+                        "caseSize", size
+                ));
+            }
+            data.add(Map.of("program", group.getAsJsonObject().get("key").getAsString(),
+                    "caseSize", group.getAsJsonObject().get("doc_count").getAsInt(),
+                    "studies", studies
+            ));
+        }
+        return data;
+    }
+
+    private List<Map<String, Object>> subjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
+        return getGroupCount(category, query, endpoint);
+    }
+
+    private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category));
+        return getGroupCount(category, query, endpoint);
+    }
+
+    private List<Map<String, Object>> getGroupCount(String category, Map<String, Object> query, String endpoint) throws IOException {
+        String[] AGG_NAMES = new String[] {category};
+        query = esService.addAggregations(query, AGG_NAMES);
+        Request request = new Request("GET", endpoint);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+        Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, AGG_NAMES);
+        JsonArray buckets = aggs.get(category);
+
+        return getGroupCountHelper(buckets);
+    }
+
+    private List<Map<String, Object>> getGroupCountHelper(JsonArray buckets) throws IOException {
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (JsonElement group: buckets) {
+            data.add(Map.of("group", group.getAsJsonObject().get("key").getAsString(),
+                    "count", group.getAsJsonObject().get("doc_count").getAsInt()
+            ));
+
+        }
+        return data;
+    }
+
+    private List<Map<String, Object>> caseOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"case_id", "case_ids"},
-                new String[]{"study_code", "study"},
+                new String[]{"study_code", "study_code"},
                 new String[]{"study_type", "study_type"},
                 new String[]{"cohort", "cohort"},
                 new String[]{"breed", "breed"},
@@ -124,7 +392,7 @@ public class IcdcEsFilter extends AbstractESDataFetcher {
         String defaultSort = "case_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("study_code", "study"),
+                Map.entry("study_code", "study_code"),
                 Map.entry("study_type", "study_type"),
                 Map.entry("cohort", "cohort"),
                 Map.entry("breed", "breed"),
@@ -140,13 +408,10 @@ public class IcdcEsFilter extends AbstractESDataFetcher {
                 Map.entry("case_id", "case_ids")
         );
 
-        Map<String, Object> newParams = new HashMap<>(params);
-        newParams.put(SORT_DIRECTION, sortDirection);
-
-        return overview(CASES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
+        return overview(CASES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
-    private List<Map<String, Object>> sampleOverview(Map<String, Object> params, String sortDirection) throws IOException {
+    private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"sample_id", "sample_ids"},
                 new String[]{"case_id", "case_ids"},
@@ -190,7 +455,7 @@ public class IcdcEsFilter extends AbstractESDataFetcher {
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("sample_id", "sample_ids"),
-                Map.entry("case_id", "case_id"),
+                Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("sample_site", "sample_site"),
@@ -203,18 +468,15 @@ public class IcdcEsFilter extends AbstractESDataFetcher {
                 Map.entry("sample_preservation", "sample_preservation")
         );
 
-        Map<String, Object> newParams = new HashMap<>(params);
-        newParams.put(SORT_DIRECTION, sortDirection);
-
-        return overview(SAMPLES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
+        return overview(SAMPLES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
-    private List<Map<String, Object>> fileOverview(Map<String, Object> params, String sortDirection) throws IOException {
+    private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"file_name", "file_name"},
                 new String[]{"file_type", "file_type"},
-                new String[]{"association", "parent_type"},
+                new String[]{"association", "file_association"},
                 new String[]{"file_description", "file_description"},
                 new String[]{"file_format", "file_format"},
                 new String[]{"file_size", "file_size"},
@@ -263,28 +525,25 @@ public class IcdcEsFilter extends AbstractESDataFetcher {
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("file_name", "file_name"),
                 Map.entry("file_type", "file_type"),
-                Map.entry("association", "parent_type"),
+                Map.entry("association", "file_association"),
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
-                Map.entry("case_id", "case_id"),
+                Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("study_code", "study_code"),
-                Map.entry("file_uuid", "file_uuid"),
+                Map.entry("file_uuid", "file_uuids"),
                 Map.entry("access_file", "file_size")
         );
 
-        Map<String, Object> newParams = new HashMap<>(params);
-        newParams.put(SORT_DIRECTION, sortDirection);
-
-        return overview(FILES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
+        return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
 
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
