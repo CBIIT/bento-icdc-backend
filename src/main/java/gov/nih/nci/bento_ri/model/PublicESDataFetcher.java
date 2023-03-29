@@ -17,25 +17,16 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 @Component
 public class PublicESDataFetcher extends AbstractPublicESDataFetcher {
     private static final Logger logger = LogManager.getLogger(PublicESDataFetcher.class);
-    private final YamlQueryFactory yamlQueryFactory;
 
     public PublicESDataFetcher(ESService esService) {
         super(esService);
-        yamlQueryFactory = new YamlQueryFactory(esService);
     }
 
     @Override
     public RuntimeWiring buildRuntimeWiring() throws IOException {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
-                        .dataFetcher("esVersion", env -> esVersion())
-                        .dataFetchers(yamlQueryFactory.createYamlQueries(Const.ES_ACCESS_TYPE.PUBLIC))
-                        .dataFetcher("numberOfPrograms", env -> getNodeCount(PROGRAMS_COUNT_END_POINT))
-                        .dataFetcher("numberOfStudies", env -> getNodeCount(STUDIES_COUNT_END_POINT))
-                        .dataFetcher("numberOfSubjects", env -> getNodeCount(SUBJECTS_COUNT_END_POINT))
-                        .dataFetcher("numberOfSamples", env -> getNodeCount(SAMPLES_COUNT_END_POINT))
-                        .dataFetcher("numberOfLabProcedures", env -> getNodeCount(LAB_PROCEDURE_COUNT_END_POINT))
-                        .dataFetcher("numberOfFiles", env -> getNodeCount(FILES_COUNT_END_POINT))
+
                 )
                 .build();
     }
