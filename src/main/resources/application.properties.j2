@@ -3,7 +3,7 @@ bento.api.version={{bento_api_version}}
 
 #Authentication
 auth.enabled={{auth_enabled}}
-auth.endpoint=
+#auth.endpoint=
 
 #Spring
 spring.mvc.throw-exception-if-no-handler-found=true
@@ -40,8 +40,8 @@ redis.ttl=-1
 
 # Elasticsearch Filtering
 # es.host = {{es_host}} # This will be reading from env_var ES_HOST
-es.port = 443
-es.scheme = https
+es.port=443
+es.scheme=https
 es.filter.enabled=true
 # use es.sign.requests = true if running AWS OpenSearch
 es.sign.requests=true
