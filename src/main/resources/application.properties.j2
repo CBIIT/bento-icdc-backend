@@ -1,8 +1,8 @@
 #API Version
-bento.api.version=4.7.0
+bento.api.version={{bento_api_version}}
 
 #Authentication
-auth.enabled=false
+auth.enabled={{auth_enabled}}
 auth.endpoint=
 
 #Spring
@@ -12,9 +12,10 @@ spring.mvc.view.suffix=.jsp
 error.redirect_url=http://localhost/error.html
 
 #Neo4j
-neo4j.url=bolt://localhost:7687
-neo4j.user=neo4j
-neo4j.password=
+# following properties will be read from environment variables
+#neo4j.url=bolt://localhost:7687
+#neo4j.user=neo4j
+#neo4j.password=
 
 #GraphQL
 graphql.schema=graphql/icdc.graphql
@@ -30,19 +31,20 @@ allow_graphql_query=true
 allow_graphql_mutation=false
 
 #Redis Caching
-redis.enable=false
-redis.use_cluster=false
-redis.host=localhost
-redis.port=6379
+# following properties will be read from environment variables
+# redis.enable =
+# redis.use_cluster =
+# redis.host =
+# redis.port =
 redis.ttl=-1
 
 # Elasticsearch Filtering
-es.host=localhost
-es.port=9200
-es.scheme=http
+# es.host = {{es_host}} # This will be reading from env_var ES_HOST
+es.port = 443
+es.scheme = https
 es.filter.enabled=true
 # use es.sign.requests = true if running AWS OpenSearch
-es.sign.requests=false
+es.sign.requests=true
 es.service_name=es
 es.region=us-east-1
 
