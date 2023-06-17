@@ -375,20 +375,240 @@ type UnifiedCounts{
 }
 
 type ClinicalDataNodeCounts {
-    agent: Int,
-    cycle: Int,
-    visit: Int,
-    follow_up: Int,
-    adverse_event: Int,
-    off_treatment: Int,
-    off_study: Int,
-    prior_therapy: Int,
-    prior_surgery: Int,
-    agent_administration: Int,
-    physical_exam: Int,
-    vital_signs: Int,
-    disease_extent: Int,
+    agent: Int
+    cycle: Int
+    visit: Int
+    follow_up: Int
+    adverse_event: Int
+    off_treatment: Int
+    off_study: Int
+    prior_therapy: Int
+    prior_surgery: Int
+    agent_administration: Int
+    physical_exam: Int
+    vital_signs: Int
+    disease_extent: Int
     lab_exam: Int
+}
+
+type CycleNodeProps {
+    cycle_number: Int
+    date_of_cycle_end: String
+    crf_id: String
+    created: String
+    case_id: String
+    date_of_cycle_start: String
+    uuid: String
+}
+
+type VisitNodeProps {
+    created: String
+    inferred: Boolean
+    visit_id: String
+    uuid: String
+    visit_date: String
+}
+
+type FollowUpNodeProps {
+    document_number: String
+    date_of_last_contact: String
+    patient_status: String
+    explain_unknown_status: String
+    contact_type: String
+    treatment_since_last_contact: Boolean
+    physical_exam_performed: Boolean
+    physical_exam_changes: Boolean
+}
+
+type AdverseEventNodeProps {
+    dose_limiting_toxicity: String
+    unexpected_adverse_event: String
+    date_of_onset: String,
+    created: String,
+    adverse_event_grade_description: String
+    existing_adverse_event: String
+    ongoing_adverse_event: String
+    date_of_resolution: String
+    attribution_to_ind: String
+    uuid: String
+    attribution_to_research: String
+    adverse_event_term: String
+    attribution_to_commercial: String
+    adverse_event_agent_dose: String
+    attribution_to_other: String
+    adverse_event_agent_name: String
+    attribution_to_disease: String
+    adverse_event_description: String
+    adverse_event_grade: String
+    updated: String
+    other_attribution_description: String
+}
+
+type OffTreatmentNodeProps {
+    document_number: String
+    date_off_treatment: String
+    reason_off_treatment: String
+    date_of_disease_progression: String
+    best_resp_vet_tx_tp_secondary_response: String
+    date_last_medication_administration: String
+    best_resp_vet_tx_tp_best_response: String
+    date_of_best_response: String
+}
+
+type OffStudyNodeProps {
+    document_number: String
+    date_off_study: String
+    reason_off_study: String
+    date_of_disease_progression: String
+    date_off_treatment: String
+    best_resp_vet_tx_tp_secondary_response: String
+    date_last_medication_administration: String
+    best_resp_vet_tx_tp_best_response: String
+    date_of_best_response: String
+}
+
+type PriorTherapyNodeProps {
+    date_of_first_dose: String
+    date_of_last_dose: String
+    agent_name: String
+    dose_schedule: String
+    total_dose: Float
+    agent_units_of_measure: String
+    best_response_to_prior_therapy: String
+    nonresponse_therapy_type: String
+    prior_therapy_type: String
+    prior_steroid_exposure: Boolean
+    number_of_prior_regimens_steroid: Int
+    total_number_of_doses_steroid: Int
+    date_of_last_dose_steroid: String
+    prior_nsaid_exposure: Boolean
+    number_of_prior_regimens_nsaid: Int
+    total_number_of_doses_nsaid: Int
+    date_of_last_dose_nsaid: String
+    tx_loc_geo_loc_ind_nsaid: String
+    min_rsdl_dz_tx_ind_nsaids_treatment_pe: String
+    therapy_type: String
+    any_therapy: Boolean
+    number_of_prior_regimens_any_therapy: Int
+    total_number_of_doses_any_therapy: Int
+    date_of_last_dose_any_therapy: String
+    treatment_performed_at_site: Boolean
+    treatment_performed_in_minimal_residual: Boolean
+}
+
+type PriorSurgeryNodeProps {
+    date_of_surgery: String
+    procedure: String
+    anatomical_site_of_surgery: String
+    surgical_finding: String
+    residual_disease: String
+    therapeutic_indicator: String
+}
+
+type PhysicalExamNodeProps {
+    date_of_examination: String
+    pe_comment: String
+    created: String
+    body_system: String
+    case_id: String
+    pe_finding: String
+    uuid: String
+}
+
+type AgentNodeProps {
+    medication: String
+    document_number: String
+}
+
+type DiseaseExtentNodeProps {
+    lesion_number: String
+    lesion_site: String
+    lesion_description: String
+    previously_irradiated: String
+    previously_treated: String
+    measurable_lesion: String
+    target_lesion: String
+    date_of_evaluation: String
+    measured_how: String
+    longest_measurement: String
+    evaluation_number: String
+    evaluation_code: String
+}
+
+type AgentAdministrationNodeProps {
+    document_number: String
+    medication: String
+    route_of_administration: String
+    medication_lot_number: String
+    medication_vial_id: String
+    medication_actual_units_of_measure: String
+    medication_duration: Float
+    medication_units_of_measure: String
+    medication_actual_dose: Float
+    phase: String
+    start_time: String
+    stop_time: String
+    dose_level: Float
+    dose_units_of_measure: String
+    date_of_missed_dose: String
+    medication_missed_dose: String
+    missed_dose_amount: Float
+    missed_dose_units_of_measure: String
+    medication_course_number: String
+    comment: String
+}
+
+type VitalSignsNodeProps {
+    body_temperature_unit: String
+    systolic_bp_unit: String
+    respiration_pattern: String
+    pulse_ox_original_unit: String
+    body_surface_area: Float
+    uuid: String
+    patient_weight_original_unit: String
+    body_surface_area_unit: String
+    systolic_bp_original_unit: String
+    body_surface_area_original_unit: String
+    patient_weight: Float
+    patient_weight_unit: String
+    case_id: String
+    time_of_observation: String
+    pulse_original_unit: String
+    respiration_rate_original_unit: String
+    body_temperature_original_unit: String
+    body_surface_area_original: Float
+    pulse_original: Int
+    date_of_vital_signs: String
+    pulse_ox_unit: String
+    modified_ecog: String
+    created: String
+    respiration_rate_unit: String,
+    patient_weight_original: Float
+    pulse_unit: String
+    body_temperature: Float
+    pulse: Int
+    body_temperature_original: Float
+}
+
+type LabExamNodeProps {
+
+}
+
+type ClinicalDataNodeData {
+    cycle: CycleNodeProps
+    visit: VisitNodeProps
+    follow_up: FollowUpNodeProps
+    adverse_event: AdverseEventNodeProps
+    off_treatment: OffTreatmentNodeProps
+    off_study: OffStudyNodeProps
+    prior_therapy: PriorTherapyNodeProps
+    prior_surgery: PriorSurgeryNodeProps
+    physical_exam: PhysicalExamNodeProps
+    agent: AgentNodeProps
+    disease_extent: DiseaseExtentNodeProps
+    agent_administration: AgentAdministrationNodeProps
+    vital_signs: VitalSignsNodeProps
+    lab_exam: LabExamNodeProps
 }
 
 type QueryType {
@@ -1288,5 +1508,215 @@ type QueryType {
     ] AS clinical_data_node_names
     RETURN clinical_data_node_names
     """)
-}
 
+    clinicalDataNodeRawData(study_code: String!): [ClinicalDataNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (sa:study_arm)<-[:of_study_arm]-(a:agent)
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (c)<-[:of_case]-(fu:follow_up)
+    OPTIONAL MATCH (c)<-[:of_case]-(ae:adverse_event)
+    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
+    OPTIONAL MATCH (c)-[:went_off_treatment]->(ot:off_treatment)
+    OPTIONAL MATCH (c)-[:went_off_study]->(os:off_study)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(pt:prior_therapy)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
+    OPTIONAL MATCH (v)<-[:on_visit]-(aa:agent_administration)
+    OPTIONAL MATCH (v)<-[:on_visit]-(pe:physical_exam)
+    OPTIONAL MATCH (v)<-[:on_visit]-(vs:vital_signs)
+    OPTIONAL MATCH (v)<-[:on_visit]-(de:disease_extent)
+    OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
+    WITH DISTINCT a, cy, v, fu, ae, ot, os, pt, ps, aa, pe, vs, de, le
+    RETURN {
+    cycle: {
+    cycle_number: cy.cycle_number,
+    date_of_cycle_end: cy.date_of_cycle_end,
+    crf_id: cy.crf_id,
+    created: cy.created,
+    case_id: cy.case_id,
+    date_of_cycle_start: cy.date_of_cycle_start,
+    uuid: cy.uuid
+    },
+    visit: {
+    created: v.created,
+    inferred: v.inferred,
+    visit_id: v.visit_id,
+    uuid: v.uuid,
+    visit_date: v.visit_date
+    },
+    follow_up: {
+    document_number: fu.document_number,
+    date_of_last_contact: fu.date_of_last_contact,
+    patient_status: fu.patient_status,
+    explain_unknown_status: fu.explain_unknown_status,
+    contact_type: fu.contact_type,
+    treatment_since_last_contact: fu.treatment_since_last_contact,
+    physical_exam_performed: fu.physical_exam_performed,
+    physical_exam_changes: fu.physical_exam_changes
+    },
+    adverse_event: {
+    dose_limiting_toxicity: ae.dose_limiting_toxicity,
+    unexpected_adverse_event: ae.unexpected_adverse_event,
+    date_of_onset: ae.date_of_onset,
+    created: ae.created,
+    adverse_event_grade_description: ae.adverse_event_grade_description,
+    existing_adverse_event: ae.existing_adverse_event,
+    ongoing_adverse_event: ae.ongoing_adverse_event,
+    date_of_resolution: ae.date_of_resolution,
+    attribution_to_ind: ae.attribution_to_ind,
+    uuid: ae.uuid,
+    attribution_to_research: ae.attribution_to_research,
+    adverse_event_term: ae.adverse_event_term,
+    attribution_to_commercial: ae.attribution_to_commercial,
+    adverse_event_agent_dose: ae.adverse_event_agent_dose,
+    attribution_to_other: ae.attribution_to_other,
+    adverse_event_agent_name: ae.adverse_event_agent_name,
+    attribution_to_disease: ae.attribution_to_disease,
+    adverse_event_description: ae.adverse_event_description,
+    adverse_event_grade: ae.adverse_event_grade,
+    updated: ae.updated,
+    other_attribution_description: ae.other_attribution_description
+    },
+    off_treatment: {
+    document_number: ot.document_number,
+    date_off_treatment: ot.date_off_treatment,
+    reason_off_treatment: ot.reason_off_treatment,
+    date_of_disease_progression: ot.date_of_disease_progression,
+    best_resp_vet_tx_tp_secondary_response: ot.best_resp_vet_tx_tp_secondary_response,
+    date_last_medication_administration: ot.date_last_medication_administration,
+    best_resp_vet_tx_tp_best_response: ot.best_resp_vet_tx_tp_best_response,
+    date_of_best_response: ot.date_of_best_response
+    },
+    off_study: {
+    document_number: os.document_number,
+    date_off_study: os.date_off_study,
+    reason_off_study: os.reason_off_study,
+    date_of_disease_progression: os.date_of_disease_progression,
+    date_off_treatment: os.date_off_treatment,
+    best_resp_vet_tx_tp_secondary_response: os.best_resp_vet_tx_tp_secondary_response,
+    date_last_medication_administration: os.date_last_medication_administration,
+    best_resp_vet_tx_tp_best_response: os.best_resp_vet_tx_tp_best_response,
+    date_of_best_response: os.date_of_best_response
+    },
+    prior_therapy: {
+    date_of_first_dose: pt.date_of_first_dose,
+    date_of_last_dose: pt.date_of_last_dose,
+    agent_name: pt.agent_name,
+    dose_schedule: pt.dose_schedule,
+    total_dose: pt.total_dose,
+    agent_units_of_measure: pt.agent_units_of_measure,
+    best_response_to_prior_therapy: pt.best_response_to_prior_therapy,
+    nonresponse_therapy_type: pt.nonresponse_therapy_type,
+    prior_therapy_type: pt.prior_therapy_type,
+    prior_steroid_exposure: pt.prior_steroid_exposure,
+    number_of_prior_regimens_steroid: pt.number_of_prior_regimens_steroid,
+    total_number_of_doses_steroid: pt.total_number_of_doses_steroid,
+    date_of_last_dose_steroid: pt.date_of_last_dose_steroid,
+    prior_nsaid_exposure: pt.prior_nsaid_exposure,
+    number_of_prior_regimens_nsaid: pt.number_of_prior_regimens_nsaid,
+    total_number_of_doses_nsaid: pt.total_number_of_doses_nsaid,
+    date_of_last_dose_nsaid: pt.date_of_last_dose_nsaid,
+    tx_loc_geo_loc_ind_nsaid: pt.tx_loc_geo_loc_ind_nsaid,
+    min_rsdl_dz_tx_ind_nsaids_treatment_pe: pt.min_rsdl_dz_tx_ind_nsaids_treatment_pe,
+    therapy_type: pt.therapy_type,
+    any_therapy: pt.any_therapy,
+    number_of_prior_regimens_any_therapy: pt.number_of_prior_regimens_any_therapy,
+    total_number_of_doses_any_therapy: pt.total_number_of_doses_any_therapy,
+    date_of_last_dose_any_therapy: pt.date_of_last_dose_any_therapy,
+    treatment_performed_at_site: pt.treatment_performed_at_site,
+    treatment_performed_in_minimal_residual: pt.treatment_performed_in_minimal_residual
+    },
+    prior_surgery: {
+    date_of_surgery: ps.date_of_surgery,
+    procedure: ps.procedure,
+    anatomical_site_of_surgery: ps.anatomical_site_of_surgery,
+    surgical_finding: ps.surgical_finding,
+    residual_disease: ps.residual_disease,
+    therapeutic_indicator: ps.therapeutic_indicator
+    },
+    physical_exam: {
+    date_of_examination: pe.date_of_examination,
+    pe_comment: pe.pe_comment,
+    created: pe.created,
+    body_system: pe.body_system,
+    case_id: pe.case_id,
+    pe_finding: pe.pe_finding,
+    uuid: pe.uuid
+    },
+    agent: {
+    medication: a.medication,
+    document_number: a.document_number
+    },
+    disease_extent: {
+    lesion_number: de.lesion_number,
+    lesion_site: de.lesion_site,
+    lesion_description: de.lesion_description,
+    previously_irradiated: de.previously_irradiated,
+    previously_treated: de.previously_treated,
+    measurable_lesion: de.measurable_lesion,
+    target_lesion: de.target_lesion,
+    date_of_evaluation: de.date_of_evaluation,
+    measured_how: de.measured_how,
+    longest_measurement: de.longest_measurement,
+    evaluation_number: de.evaluation_number,
+    evaluation_code: de.evaluation_code
+    },
+    agent_administration: {
+    document_number: aa.document_number,
+    medication: aa.medication,
+    route_of_administration: aa.route_of_administration,
+    medication_lot_number: aa.medication_lot_number,
+    medication_vial_id: aa.medication_vial_id,
+    medication_actual_units_of_measure: aa.medication_actual_units_of_measure,
+    medication_duration: aa.medication_duration,
+    medication_units_of_measure: aa.medication_units_of_measure,
+    medication_actual_dose: aa.medication_actual_dose,
+    phase: aa.phase,
+    start_time: aa.start_time,
+    stop_time: aa.stop_time,
+    dose_level: aa.dose_level,
+    dose_units_of_measure: aa.dose_units_of_measure,
+    date_of_missed_dose: aa.date_of_missed_dose,
+    medication_missed_dose: aa.medication_missed_dose,
+    missed_dose_amount: aa.missed_dose_amount,
+    missed_dose_units_of_measure: aa.missed_dose_units_of_measure,
+    medication_course_number: aa.medication_course_number,
+    comment: aa.comment
+    },
+    vital_signs: {
+    body_temperature_unit: vs.body_temperature_unit,
+    systolic_bp_unit: vs.systolic_bp_unit,
+    respiration_pattern: vs.respiration_pattern,
+    pulse_ox_original_unit: vs.pulse_ox_original_unit,
+    body_surface_area: vs.body_surface_area,
+    uuid: vs.uuid,
+    patient_weight_original_unit: vs.patient_weight_original_unit,
+    body_surface_area_unit: vs.body_surface_area_unit,
+    systolic_bp_original_unit: vs.systolic_bp_original_unit,
+    body_surface_area_original_unit: vs.body_surface_area_original_unit,
+    patient_weight: vs.patient_weight,
+    patient_weight_unit: vs.patient_weight_unit,
+    case_id: vs.case_id,
+    time_of_observation: vs.time_of_observation,
+    pulse_original_unit: vs.pulse_original_unit,
+    respiration_rate_original_unit: vs.respiration_rate_original_unit,
+    body_temperature_original_unit: vs.body_temperature_original_unit,
+    body_surface_area_original: vs.body_surface_area_original,
+    pulse_original: vs.pulse_original,
+    date_of_vital_signs: vs.date_of_vital_signs,
+    pulse_ox_unit: vs.pulse_ox_unit,
+    modified_ecog: vs.modified_ecog,
+    created: vs.created,
+    respiration_rate_unit: vs.respiration_rate_unit,
+    patient_weight_original: vs.patient_weight_original,
+    pulse_unit: vs.pulse_unit,
+    body_temperature: vs.body_temperature,
+    pulse: vs.pulse,
+    body_temperature_original: vs.body_temperature_original
+    }
+    }
+    """, passThrough: true)
+
+}
