@@ -391,7 +391,7 @@ type ClinicalDataNodeCounts {
     lab_exam: Int
 }
 
-type CycleNodeProps {
+type CycleNodeData {
     cycle_number: Int
     date_of_cycle_end: String
     crf_id: String
@@ -401,7 +401,7 @@ type CycleNodeProps {
     uuid: String
 }
 
-type VisitNodeProps {
+type VisitNodeData {
     created: String
     inferred: Boolean
     visit_id: String
@@ -409,7 +409,7 @@ type VisitNodeProps {
     visit_date: String
 }
 
-type FollowUpNodeProps {
+type FollowUpNodeData {
     document_number: String
     date_of_last_contact: String
     patient_status: String
@@ -420,7 +420,7 @@ type FollowUpNodeProps {
     physical_exam_changes: Boolean
 }
 
-type AdverseEventNodeProps {
+type AdverseEventNodeData {
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
     date_of_onset: String,
@@ -444,7 +444,7 @@ type AdverseEventNodeProps {
     other_attribution_description: String
 }
 
-type OffTreatmentNodeProps {
+type OffTreatmentNodeData {
     document_number: String
     date_off_treatment: String
     reason_off_treatment: String
@@ -455,7 +455,7 @@ type OffTreatmentNodeProps {
     date_of_best_response: String
 }
 
-type OffStudyNodeProps {
+type OffStudyNodeData {
     document_number: String
     date_off_study: String
     reason_off_study: String
@@ -467,7 +467,7 @@ type OffStudyNodeProps {
     date_of_best_response: String
 }
 
-type PriorTherapyNodeProps {
+type PriorTherapyNodeData {
     date_of_first_dose: String
     date_of_last_dose: String
     agent_name: String
@@ -496,7 +496,7 @@ type PriorTherapyNodeProps {
     treatment_performed_in_minimal_residual: Boolean
 }
 
-type PriorSurgeryNodeProps {
+type PriorSurgeryNodeData {
     date_of_surgery: String
     procedure: String
     anatomical_site_of_surgery: String
@@ -505,7 +505,7 @@ type PriorSurgeryNodeProps {
     therapeutic_indicator: String
 }
 
-type PhysicalExamNodeProps {
+type PhysicalExamNodeData {
     date_of_examination: String
     pe_comment: String
     created: String
@@ -515,12 +515,12 @@ type PhysicalExamNodeProps {
     uuid: String
 }
 
-type AgentNodeProps {
+type AgentNodeData {
     medication: String
     document_number: String
 }
 
-type DiseaseExtentNodeProps {
+type DiseaseExtentNodeData {
     lesion_number: String
     lesion_site: String
     lesion_description: String
@@ -535,7 +535,7 @@ type DiseaseExtentNodeProps {
     evaluation_code: String
 }
 
-type AgentAdministrationNodeProps {
+type AgentAdministrationNodeData {
     document_number: String
     medication: String
     route_of_administration: String
@@ -558,7 +558,7 @@ type AgentAdministrationNodeProps {
     comment: String
 }
 
-type VitalSignsNodeProps {
+type VitalSignsNodeData {
     body_temperature_unit: String
     systolic_bp_unit: String
     respiration_pattern: String
@@ -590,25 +590,8 @@ type VitalSignsNodeProps {
     body_temperature_original: Float
 }
 
-type LabExamNodeProps {
+type LabExamNodeData {
 
-}
-
-type ClinicalDataNodeData {
-    cycle: CycleNodeProps
-    visit: VisitNodeProps
-    follow_up: FollowUpNodeProps
-    adverse_event: AdverseEventNodeProps
-    off_treatment: OffTreatmentNodeProps
-    off_study: OffStudyNodeProps
-    prior_therapy: PriorTherapyNodeProps
-    prior_surgery: PriorSurgeryNodeProps
-    physical_exam: PhysicalExamNodeProps
-    agent: AgentNodeProps
-    disease_extent: DiseaseExtentNodeProps
-    agent_administration: AgentAdministrationNodeProps
-    vital_signs: VitalSignsNodeProps
-    lab_exam: LabExamNodeProps
 }
 
 type QueryType {
@@ -1509,28 +1492,22 @@ type QueryType {
     RETURN clinical_data_node_names
     """)
 
-    clinicalDataNodeRawData(study_code: String!): [ClinicalDataNodeData] @cypher(statement: """
+    agentNodeData(study_code: String!): [AgentNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
     OPTIONAL MATCH (sa:study_arm)<-[:of_study_arm]-(a:agent)
+    RETURN DISTINCT {
+    medication: a.medication,
+    document_number: a.document_number
+    }
+    """, passThrough: true)
+
+    cycleNodeData(study_code: String!): [CycleNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
     OPTIONAL MATCH (s)<-[*1..2]-(c:case)
     OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
-    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
-    OPTIONAL MATCH (c)<-[:of_case]-(fu:follow_up)
-    OPTIONAL MATCH (c)<-[:of_case]-(ae:adverse_event)
-    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
-    OPTIONAL MATCH (c)-[:went_off_treatment]->(ot:off_treatment)
-    OPTIONAL MATCH (c)-[:went_off_study]->(os:off_study)
-    OPTIONAL MATCH (e)<-[:at_enrollment]-(pt:prior_therapy)
-    OPTIONAL MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
-    OPTIONAL MATCH (v)<-[:on_visit]-(aa:agent_administration)
-    OPTIONAL MATCH (v)<-[:on_visit]-(pe:physical_exam)
-    OPTIONAL MATCH (v)<-[:on_visit]-(vs:vital_signs)
-    OPTIONAL MATCH (v)<-[:on_visit]-(de:disease_extent)
-    OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
-    WITH DISTINCT a, cy, v, fu, ae, ot, os, pt, ps, aa, pe, vs, de, le
-    RETURN {
-    cycle: {
+    RETURN DISTINCT {
     cycle_number: cy.cycle_number,
     date_of_cycle_end: cy.date_of_cycle_end,
     crf_id: cy.crf_id,
@@ -1538,15 +1515,29 @@ type QueryType {
     case_id: cy.case_id,
     date_of_cycle_start: cy.date_of_cycle_start,
     uuid: cy.uuid
-    },
-    visit: {
+    }
+    """, passThrough: true)
+
+    visitNodeData(study_code: String!): [VisitNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    RETURN DISTINCT {
     created: v.created,
     inferred: v.inferred,
     visit_id: v.visit_id,
     uuid: v.uuid,
     visit_date: v.visit_date
-    },
-    follow_up: {
+    }
+    """, passThrough: true)
+
+    followUpNodeData(study_code: String!): [FollowUpNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[:of_case]-(fu:follow_up)
+    RETURN DISTINCT {
     document_number: fu.document_number,
     date_of_last_contact: fu.date_of_last_contact,
     patient_status: fu.patient_status,
@@ -1555,8 +1546,15 @@ type QueryType {
     treatment_since_last_contact: fu.treatment_since_last_contact,
     physical_exam_performed: fu.physical_exam_performed,
     physical_exam_changes: fu.physical_exam_changes
-    },
-    adverse_event: {
+    }
+    """, passThrough: true)
+
+    adverseEventNodeData(study_code: String!): [AdverseEventNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[:of_case]-(ae:adverse_event)
+    RETURN DISTINCT {
     dose_limiting_toxicity: ae.dose_limiting_toxicity,
     unexpected_adverse_event: ae.unexpected_adverse_event,
     date_of_onset: ae.date_of_onset,
@@ -1578,8 +1576,15 @@ type QueryType {
     adverse_event_grade: ae.adverse_event_grade,
     updated: ae.updated,
     other_attribution_description: ae.other_attribution_description
-    },
-    off_treatment: {
+    }
+    """, passThrough: true)
+
+    offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)-[:went_off_treatment]->(ot:off_treatment)
+    RETURN DISTINCT {
     document_number: ot.document_number,
     date_off_treatment: ot.date_off_treatment,
     reason_off_treatment: ot.reason_off_treatment,
@@ -1588,8 +1593,15 @@ type QueryType {
     date_last_medication_administration: ot.date_last_medication_administration,
     best_resp_vet_tx_tp_best_response: ot.best_resp_vet_tx_tp_best_response,
     date_of_best_response: ot.date_of_best_response
-    },
-    off_study: {
+    }
+    """, passThrough: true)
+
+    offStudyNodeData(study_code: String!): [OffStudyNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)-[:went_off_study]->(os:off_study)
+    RETURN DISTINCT {
     document_number: os.document_number,
     date_off_study: os.date_off_study,
     reason_off_study: os.reason_off_study,
@@ -1599,8 +1611,16 @@ type QueryType {
     date_last_medication_administration: os.date_last_medication_administration,
     best_resp_vet_tx_tp_best_response: os.best_resp_vet_tx_tp_best_response,
     date_of_best_response: os.date_of_best_response
-    },
-    prior_therapy: {
+    }
+    """, passThrough: true)
+
+    priorTherapyNodeData(study_code: String!): [PriorTherapyNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(pt:prior_therapy)
+    RETURN DISTINCT {
     date_of_first_dose: pt.date_of_first_dose,
     date_of_last_dose: pt.date_of_last_dose,
     agent_name: pt.agent_name,
@@ -1627,43 +1647,32 @@ type QueryType {
     date_of_last_dose_any_therapy: pt.date_of_last_dose_any_therapy,
     treatment_performed_at_site: pt.treatment_performed_at_site,
     treatment_performed_in_minimal_residual: pt.treatment_performed_in_minimal_residual
-    },
-    prior_surgery: {
+    }
+    """, passThrough: true)
+
+    priorSurgeryNodeData(study_code: String!): [PriorSurgeryNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
+    RETURN DISTINCT {
     date_of_surgery: ps.date_of_surgery,
     procedure: ps.procedure,
     anatomical_site_of_surgery: ps.anatomical_site_of_surgery,
     surgical_finding: ps.surgical_finding,
     residual_disease: ps.residual_disease,
     therapeutic_indicator: ps.therapeutic_indicator
-    },
-    physical_exam: {
-    date_of_examination: pe.date_of_examination,
-    pe_comment: pe.pe_comment,
-    created: pe.created,
-    body_system: pe.body_system,
-    case_id: pe.case_id,
-    pe_finding: pe.pe_finding,
-    uuid: pe.uuid
-    },
-    agent: {
-    medication: a.medication,
-    document_number: a.document_number
-    },
-    disease_extent: {
-    lesion_number: de.lesion_number,
-    lesion_site: de.lesion_site,
-    lesion_description: de.lesion_description,
-    previously_irradiated: de.previously_irradiated,
-    previously_treated: de.previously_treated,
-    measurable_lesion: de.measurable_lesion,
-    target_lesion: de.target_lesion,
-    date_of_evaluation: de.date_of_evaluation,
-    measured_how: de.measured_how,
-    longest_measurement: de.longest_measurement,
-    evaluation_number: de.evaluation_number,
-    evaluation_code: de.evaluation_code
-    },
-    agent_administration: {
+    }
+    """, passThrough: true)
+
+    agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (v)<-[:on_visit]-(aa:agent_administration)
+    RETURN DISTINCT {
     document_number: aa.document_number,
     medication: aa.medication,
     route_of_administration: aa.route_of_administration,
@@ -1684,8 +1693,33 @@ type QueryType {
     missed_dose_units_of_measure: aa.missed_dose_units_of_measure,
     medication_course_number: aa.medication_course_number,
     comment: aa.comment
-    },
-    vital_signs: {
+    }
+    """, passThrough: true)
+
+    physicalExamNodeData(study_code: String!): [PhysicalExamNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (v)<-[:on_visit]-(pe:physical_exam)
+    RETURN DISTINCT {
+    date_of_examination: pe.date_of_examination,
+    pe_comment: pe.pe_comment,
+    created: pe.created,
+    body_system: pe.body_system,
+    case_id: pe.case_id,
+    pe_finding: pe.pe_finding,
+    uuid: pe.uuid
+    }
+    """, passThrough: true)
+
+    vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (v)<-[:on_visit]-(vs:vital_signs)
+    RETURN DISTINCT {
     body_temperature_unit: vs.body_temperature_unit,
     systolic_bp_unit: vs.systolic_bp_unit,
     respiration_pattern: vs.respiration_pattern,
@@ -1716,7 +1750,36 @@ type QueryType {
     pulse: vs.pulse,
     body_temperature_original: vs.body_temperature_original
     }
+    """, passThrough: true)
+
+    diseaseExtentNodeData(study_code: String!): [DiseaseExtentNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (v)<-[:on_visit]-(de:disease_extent)
+    RETURN DISTINCT {
+    lesion_number: de.lesion_number,
+    lesion_site: de.lesion_site,
+    lesion_description: de.lesion_description,
+    previously_irradiated: de.previously_irradiated,
+    previously_treated: de.previously_treated,
+    measurable_lesion: de.measurable_lesion,
+    target_lesion: de.target_lesion,
+    date_of_evaluation: de.date_of_evaluation,
+    measured_how: de.measured_how,
+    longest_measurement: de.longest_measurement,
+    evaluation_number: de.evaluation_number,
+    evaluation_code: de.evaluation_code
     }
     """, passThrough: true)
 
+    labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
+    RETURN DISTINCT le
+    """, passThrough: true)
 }

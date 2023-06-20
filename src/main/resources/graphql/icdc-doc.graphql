@@ -882,7 +882,7 @@ type ClinicalDataNodeCounts {
     lab_exam: Int
 }
 
-type CycleNodeProps {
+type CycleNodeData {
     cycle_number: Int
     date_of_cycle_end: String
     crf_id: String
@@ -892,7 +892,7 @@ type CycleNodeProps {
     uuid: String
 }
 
-type VisitNodeProps {
+type VisitNodeData {
     created: String
     inferred: Boolean
     visit_id: String
@@ -900,7 +900,7 @@ type VisitNodeProps {
     visit_date: String
 }
 
-type FollowUpNodeProps {
+type FollowUpNodeData {
     document_number: String
     date_of_last_contact: String
     patient_status: String
@@ -911,7 +911,7 @@ type FollowUpNodeProps {
     physical_exam_changes: Boolean
 }
 
-type AdverseEventNodeProps {
+type AdverseEventNodeData {
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
     date_of_onset: String,
@@ -935,7 +935,7 @@ type AdverseEventNodeProps {
     other_attribution_description: String
 }
 
-type OffTreatmentNodeProps {
+type OffTreatmentNodeData {
     document_number: String
     date_off_treatment: String
     reason_off_treatment: String
@@ -946,7 +946,7 @@ type OffTreatmentNodeProps {
     date_of_best_response: String
 }
 
-type OffStudyNodeProps {
+type OffStudyNodeData {
     document_number: String
     date_off_study: String
     reason_off_study: String
@@ -958,7 +958,7 @@ type OffStudyNodeProps {
     date_of_best_response: String
 }
 
-type PriorTherapyNodeProps {
+type PriorTherapyNodeData {
     date_of_first_dose: String
     date_of_last_dose: String
     agent_name: String
@@ -987,7 +987,7 @@ type PriorTherapyNodeProps {
     treatment_performed_in_minimal_residual: Boolean
 }
 
-type PriorSurgeryNodeProps {
+type PriorSurgeryNodeData {
     date_of_surgery: String
     procedure: String
     anatomical_site_of_surgery: String
@@ -996,7 +996,7 @@ type PriorSurgeryNodeProps {
     therapeutic_indicator: String
 }
 
-type PhysicalExamNodeProps {
+type PhysicalExamNodeData {
     date_of_examination: String
     pe_comment: String
     created: String
@@ -1006,12 +1006,12 @@ type PhysicalExamNodeProps {
     uuid: String
 }
 
-type AgentNodeProps {
+type AgentNodeData {
     medication: String
     document_number: String
 }
 
-type DiseaseExtentNodeProps {
+type DiseaseExtentNodeData {
     lesion_number: String
     lesion_site: String
     lesion_description: String
@@ -1026,7 +1026,7 @@ type DiseaseExtentNodeProps {
     evaluation_code: String
 }
 
-type AgentAdministrationNodeProps {
+type AgentAdministrationNodeData {
     document_number: String
     medication: String
     route_of_administration: String
@@ -1049,7 +1049,7 @@ type AgentAdministrationNodeProps {
     comment: String
 }
 
-type VitalSignsNodeProps {
+type VitalSignsNodeData {
     body_temperature_unit: String
     systolic_bp_unit: String
     respiration_pattern: String
@@ -1081,25 +1081,8 @@ type VitalSignsNodeProps {
     body_temperature_original: Float
 }
 
-type LabExamNodeProps {
+type LabExamNodeData {
 
-}
-
-type ClinicalDataNodeData {
-    cycle: CycleNodeProps
-    visit: VisitNodeProps
-    follow_up: FollowUpNodeProps
-    adverse_event: AdverseEventNodeProps
-    off_treatment: OffTreatmentNodeProps
-    off_study: OffStudyNodeProps
-    prior_therapy: PriorTherapyNodeProps
-    prior_surgery: PriorSurgeryNodeProps
-    physical_exam: PhysicalExamNodeProps
-    agent: AgentNodeProps
-    disease_extent: DiseaseExtentNodeProps
-    agent_administration: AgentAdministrationNodeProps
-    vital_signs: VitalSignsNodeProps
-    lab_exam: LabExamNodeProps
 }
 
 type QueryType {
@@ -1200,6 +1183,31 @@ type QueryType {
 
     clinicalDataNodeNames: [String] 
 
-    clinicalDataNodeRawData(study_code: String!): [ClinicalDataNodeData] 
+    agentNodeData(study_code: String!): [AgentNodeData] 
 
+    cycleNodeData(study_code: String!): [CycleNodeData] 
+
+    visitNodeData(study_code: String!): [VisitNodeData] 
+
+    followUpNodeData(study_code: String!): [FollowUpNodeData] 
+
+    adverseEventNodeData(study_code: String!): [AdverseEventNodeData] 
+
+    offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] 
+
+    offStudyNodeData(study_code: String!): [OffStudyNodeData] 
+
+    priorTherapyNodeData(study_code: String!): [PriorTherapyNodeData] 
+
+    priorSurgeryNodeData(study_code: String!): [PriorSurgeryNodeData] 
+
+    agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] 
+
+    physicalExamNodeData(study_code: String!): [PhysicalExamNodeData] 
+
+    vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] 
+
+    diseaseExtentNodeData(study_code: String!): [DiseaseExtentNodeData] 
+
+    labExamNodeData(study_code: String!): [LabExamNodeData] 
 }
