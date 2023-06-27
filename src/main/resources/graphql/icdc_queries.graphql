@@ -395,17 +395,13 @@ type CycleNodeData {
     cycle_number: Int
     date_of_cycle_end: String
     crf_id: String
-    created: String
     case_id: String
     date_of_cycle_start: String
-    uuid: String
 }
 
 type VisitNodeData {
-    created: String
     inferred: Boolean
     visit_id: String
-    uuid: String
     visit_date: String
 }
 
@@ -423,14 +419,12 @@ type FollowUpNodeData {
 type AdverseEventNodeData {
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
-    date_of_onset: String,
-    created: String,
+    date_of_onset: String
     adverse_event_grade_description: String
     existing_adverse_event: String
     ongoing_adverse_event: String
     date_of_resolution: String
     attribution_to_ind: String
-    uuid: String
     attribution_to_research: String
     adverse_event_term: String
     attribution_to_commercial: String
@@ -440,7 +434,6 @@ type AdverseEventNodeData {
     attribution_to_disease: String
     adverse_event_description: String
     adverse_event_grade: String
-    updated: String
     other_attribution_description: String
 }
 
@@ -508,11 +501,9 @@ type PriorSurgeryNodeData {
 type PhysicalExamNodeData {
     date_of_examination: String
     pe_comment: String
-    created: String
     body_system: String
     case_id: String
     pe_finding: String
-    uuid: String
 }
 
 type AgentNodeData {
@@ -564,7 +555,6 @@ type VitalSignsNodeData {
     respiration_pattern: String
     pulse_ox_original_unit: String
     body_surface_area: Float
-    uuid: String
     patient_weight_original_unit: String
     body_surface_area_unit: String
     systolic_bp_original_unit: String
@@ -581,7 +571,6 @@ type VitalSignsNodeData {
     date_of_vital_signs: String
     pulse_ox_unit: String
     modified_ecog: String
-    created: String
     respiration_rate_unit: String,
     patient_weight_original: Float
     pulse_unit: String
