@@ -1484,119 +1484,119 @@ type QueryType {
     agentNodeData(study_code: String!): [AgentNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[:member_of]-(sa:study_arm)
-    OPTIONAL MATCH (sa)<-[:of_study_arm]-(a:agent)
+    MATCH (s)<-[:member_of]-(sa:study_arm)
+    MATCH (sa)<-[:of_study_arm]-(a:agent)
     RETURN DISTINCT a {.*}
     """, passThrough: true)
 
     cycleNodeData(study_code: String!): [CycleNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[:of_case]-(cy:cycle)
     RETURN DISTINCT cy {.*}
     """, passThrough: true)
 
     visitNodeData(study_code: String!): [VisitNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[*1..2]-(v:visit)
     RETURN DISTINCT v {.*}
     """, passThrough: true)
 
     followUpNodeData(study_code: String!): [FollowUpNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[:of_case]-(fu:follow_up)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[:of_case]-(fu:follow_up)
     RETURN DISTINCT fu {.*}
     """, passThrough: true)
 
     adverseEventNodeData(study_code: String!): [AdverseEventNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[:of_case]-(ae:adverse_event)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[:of_case]-(ae:adverse_event)
     RETURN DISTINCT ae {.*}
     """, passThrough: true)
 
     offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)-[:went_off_treatment]->(ot:off_treatment)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)-[:went_off_treatment]->(ot:off_treatment)
     RETURN DISTINCT ot {.*}
     """, passThrough: true)
 
     offStudyNodeData(study_code: String!): [OffStudyNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)-[:went_off_study]->(os:off_study)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)-[:went_off_study]->(os:off_study)
     RETURN DISTINCT os {.*}
     """, passThrough: true)
 
     priorTherapyNodeData(study_code: String!): [PriorTherapyNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
-    OPTIONAL MATCH (e)<-[:at_enrollment]-(pt:prior_therapy)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[:of_case]-(e:enrollment)
+    MATCH (e)<-[:at_enrollment]-(pt:prior_therapy)
     RETURN DISTINCT pt {.*}
     """, passThrough: true)
 
     priorSurgeryNodeData(study_code: String!): [PriorSurgeryNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
-    OPTIONAL MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[:of_case]-(e:enrollment)
+    MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
     RETURN DISTINCT ps {.*}
     """, passThrough: true)
 
     agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
-    OPTIONAL MATCH (v)<-[:on_visit]-(aa:agent_administration)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[*1..2]-(v:visit)
+    MATCH (v)<-[:on_visit]-(aa:agent_administration)
     RETURN DISTINCT aa {.*}
     """, passThrough: true)
 
     physicalExamNodeData(study_code: String!): [PhysicalExamNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
-    OPTIONAL MATCH (v)<-[:on_visit]-(pe:physical_exam)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[*1..2]-(v:visit)
+    MATCH (v)<-[:on_visit]-(pe:physical_exam)
     RETURN DISTINCT pe {.*}
     """, passThrough: true)
 
     vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
-    OPTIONAL MATCH (v)<-[:on_visit]-(vs:vital_signs)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[*1..2]-(v:visit)
+    MATCH (v)<-[:on_visit]-(vs:vital_signs)
     RETURN DISTINCT vs {.*}
     """, passThrough: true)
 
     diseaseExtentNodeData(study_code: String!): [DiseaseExtentNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
-    OPTIONAL MATCH (v)<-[:on_visit]-(de:disease_extent)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[*1..2]-(v:visit)
+    MATCH (v)<-[:on_visit]-(de:disease_extent)
     RETURN DISTINCT de {.*}
     """, passThrough: true)
 
     labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
     MATCH (s:study)
     WHERE s.clinical_study_designation = $study_code
-    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
-    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
-    OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[*1..2]-(v:visit)
+    MATCH (v)<-[:on_visit]-(le:lab_exam)
     RETURN DISTINCT le {.*}
     """, passThrough: true)
 }
