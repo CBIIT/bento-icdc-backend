@@ -866,20 +866,212 @@ type UnifiedCounts{
 }
 
 type ClinicalDataNodeCounts {
-    agent: Int,
-    cycle: Int,
-    visit: Int,
-    follow_up: Int,
-    adverse_event: Int,
-    off_treatment: Int,
-    off_study: Int,
-    prior_therapy: Int,
-    prior_surgery: Int,
-    agent_administration: Int,
-    physical_exam: Int,
-    vital_signs: Int,
-    disease_extent: Int,
+    agent: Int
+    cycle: Int
+    visit: Int
+    follow_up: Int
+    adverse_event: Int
+    off_treatment: Int
+    off_study: Int
+    prior_therapy: Int
+    prior_surgery: Int
+    agent_administration: Int
+    physical_exam: Int
+    vital_signs: Int
+    disease_extent: Int
     lab_exam: Int
+}
+
+type CycleNodeData {
+    cycle_number: Int
+    date_of_cycle_end: String
+    crf_id: String
+    case_id: String
+    date_of_cycle_start: String
+}
+
+type VisitNodeData {
+    inferred: Boolean
+    visit_id: String
+    visit_date: String
+}
+
+type FollowUpNodeData {
+    document_number: String
+    date_of_last_contact: String
+    patient_status: String
+    explain_unknown_status: String
+    contact_type: String
+    treatment_since_last_contact: Boolean
+    physical_exam_performed: Boolean
+    physical_exam_changes: Boolean
+}
+
+type AdverseEventNodeData {
+    dose_limiting_toxicity: String
+    unexpected_adverse_event: String
+    date_of_onset: String
+    adverse_event_grade_description: String
+    existing_adverse_event: String
+    ongoing_adverse_event: String
+    date_of_resolution: String
+    attribution_to_ind: String
+    attribution_to_research: String
+    adverse_event_term: String
+    attribution_to_commercial: String
+    adverse_event_agent_dose: String
+    attribution_to_other: String
+    adverse_event_agent_name: String
+    attribution_to_disease: String
+    adverse_event_description: String
+    adverse_event_grade: String
+    other_attribution_description: String
+}
+
+type OffTreatmentNodeData {
+    document_number: String
+    date_off_treatment: String
+    reason_off_treatment: String
+    date_of_disease_progression: String
+    best_resp_vet_tx_tp_secondary_response: String
+    date_last_medication_administration: String
+    best_resp_vet_tx_tp_best_response: String
+    date_of_best_response: String
+}
+
+type OffStudyNodeData {
+    document_number: String
+    date_off_study: String
+    reason_off_study: String
+    date_of_disease_progression: String
+    date_off_treatment: String
+    best_resp_vet_tx_tp_secondary_response: String
+    date_last_medication_administration: String
+    best_resp_vet_tx_tp_best_response: String
+    date_of_best_response: String
+}
+
+type PriorTherapyNodeData {
+    date_of_first_dose: String
+    date_of_last_dose: String
+    agent_name: String
+    dose_schedule: String
+    total_dose: Float
+    agent_units_of_measure: String
+    best_response_to_prior_therapy: String
+    nonresponse_therapy_type: String
+    prior_therapy_type: String
+    prior_steroid_exposure: Boolean
+    number_of_prior_regimens_steroid: Int
+    total_number_of_doses_steroid: Int
+    date_of_last_dose_steroid: String
+    prior_nsaid_exposure: Boolean
+    number_of_prior_regimens_nsaid: Int
+    total_number_of_doses_nsaid: Int
+    date_of_last_dose_nsaid: String
+    tx_loc_geo_loc_ind_nsaid: String
+    min_rsdl_dz_tx_ind_nsaids_treatment_pe: String
+    therapy_type: String
+    any_therapy: Boolean
+    number_of_prior_regimens_any_therapy: Int
+    total_number_of_doses_any_therapy: Int
+    date_of_last_dose_any_therapy: String
+    treatment_performed_at_site: Boolean
+    treatment_performed_in_minimal_residual: Boolean
+}
+
+type PriorSurgeryNodeData {
+    date_of_surgery: String
+    procedure: String
+    anatomical_site_of_surgery: String
+    surgical_finding: String
+    residual_disease: String
+    therapeutic_indicator: String
+}
+
+type PhysicalExamNodeData {
+    date_of_examination: String
+    pe_comment: String
+    body_system: String
+    case_id: String
+    pe_finding: String
+}
+
+type AgentNodeData {
+    medication: String
+    document_number: String
+}
+
+type DiseaseExtentNodeData {
+    lesion_number: String
+    lesion_site: String
+    lesion_description: String
+    previously_irradiated: String
+    previously_treated: String
+    measurable_lesion: String
+    target_lesion: String
+    date_of_evaluation: String
+    measured_how: String
+    longest_measurement: String
+    evaluation_number: String
+    evaluation_code: String
+}
+
+type AgentAdministrationNodeData {
+    document_number: String
+    medication: String
+    route_of_administration: String
+    medication_lot_number: String
+    medication_vial_id: String
+    medication_actual_units_of_measure: String
+    medication_duration: Float
+    medication_units_of_measure: String
+    medication_actual_dose: Float
+    phase: String
+    start_time: String
+    stop_time: String
+    dose_level: Float
+    dose_units_of_measure: String
+    date_of_missed_dose: String
+    medication_missed_dose: String
+    missed_dose_amount: Float
+    missed_dose_units_of_measure: String
+    medication_course_number: String
+    comment: String
+}
+
+type VitalSignsNodeData {
+    body_temperature_unit: String
+    systolic_bp_unit: String
+    respiration_pattern: String
+    pulse_ox_original_unit: String
+    body_surface_area: Float
+    patient_weight_original_unit: String
+    body_surface_area_unit: String
+    systolic_bp_original_unit: String
+    body_surface_area_original_unit: String
+    patient_weight: Float
+    patient_weight_unit: String
+    case_id: String
+    time_of_observation: String
+    pulse_original_unit: String
+    respiration_rate_original_unit: String
+    body_temperature_original_unit: String
+    body_surface_area_original: Float
+    pulse_original: Int
+    date_of_vital_signs: String
+    pulse_ox_unit: String
+    modified_ecog: String
+    respiration_rate_unit: String,
+    patient_weight_original: Float
+    pulse_unit: String
+    body_temperature: Float
+    pulse: Int
+    body_temperature_original: Float
+}
+
+type LabExamNodeData {
+
 }
 
 type QueryType {
@@ -979,5 +1171,32 @@ type QueryType {
     clinicalDataNodeCaseCounts(study_code: String!): ClinicalDataNodeCounts 
 
     clinicalDataNodeNames: [String] 
-}
 
+    agentNodeData(study_code: String!): [AgentNodeData] 
+
+    cycleNodeData(study_code: String!): [CycleNodeData] 
+
+    visitNodeData(study_code: String!): [VisitNodeData] 
+
+    followUpNodeData(study_code: String!): [FollowUpNodeData] 
+
+    adverseEventNodeData(study_code: String!): [AdverseEventNodeData] 
+
+    offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] 
+
+    offStudyNodeData(study_code: String!): [OffStudyNodeData] 
+
+    priorTherapyNodeData(study_code: String!): [PriorTherapyNodeData] 
+
+    priorSurgeryNodeData(study_code: String!): [PriorSurgeryNodeData] 
+
+    agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] 
+
+    physicalExamNodeData(study_code: String!): [PhysicalExamNodeData] 
+
+    vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] 
+
+    diseaseExtentNodeData(study_code: String!): [DiseaseExtentNodeData] 
+
+    labExamNodeData(study_code: String!): [LabExamNodeData] 
+}
