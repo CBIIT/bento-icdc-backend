@@ -685,7 +685,7 @@ type QueryType {
     co.cohort_description as cohort_description,
     a.arm as arm,
     collect(DISTINCT o.case_id) AS other_cases,
-    'https://nci-crdc.datacommons.io/ga4gh/drs/v1/objects/dg.4DFC/' AS drs_prefix
+    'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix
     RETURN{
     file_name: file_name,
     file_type: file_type,
@@ -820,7 +820,7 @@ type QueryType {
     co.cohort_description as cohort_description,
     a.arm as arm,
     collect(DISTINCT o.case_id) AS other_cases,
-    'https://nci-crdc.datacommons.io/ga4gh/drs/v1/objects/dg.4DFC/' AS drs_prefix
+    'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix
     RETURN{
     file_name: file_name,
     file_type: file_type,
