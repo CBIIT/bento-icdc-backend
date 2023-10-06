@@ -1,6 +1,6 @@
 # Stage 1: Build
 ARG ECR_REPO
-FROM maven:3.5.2-openjdk-11 as build
+FROM maven:latest-openjdk-11 as build
 WORKDIR /usr/src/app
 COPY . .
 RUN mvn package -DskipTests
