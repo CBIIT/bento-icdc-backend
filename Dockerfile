@@ -4,7 +4,6 @@ FROM maven:3.8.5-openjdk-11 as build
 WORKDIR /usr/src/app
 COPY . .
 RUN mvn package -DskipTests
-
 # Stage 2: Production
 FROM tomcat:9.0.80-jdk11-temurin-jammy
 LABEL MAINTAINER="icdc devops team"
