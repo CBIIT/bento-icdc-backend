@@ -9,5 +9,6 @@ FROM tomcat:9.0.80-jdk11-temurin-jammy
 LABEL MAINTAINER="icdc devops team"
 ENV JAVA_OPTS="-Xmx4096m"
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
+RUN apt-get update && apt-get install -y unzip  
 COPY --from=build /usr/src/app/target/Bento-0.0.1.war /usr/local/tomcat/webapps/ROOT.war
-RUN apt-get update && apt-get install -y unzip  # Install unzip package
+
