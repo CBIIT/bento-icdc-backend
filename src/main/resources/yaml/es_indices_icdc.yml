@@ -47,10 +47,11 @@ Indices:
       file_format:
         type: keyword
 
-      # properties used in list search, could also used in return data
+      # properties used in list search - could also be used in return data
       case_ids:
         type: keyword
-      # properties used in return data, name can be different from GraphQL property name
+      
+      # properties used in return data - name can be different from GraphQL property name
       study_code:
         type: keyword
       cohort:
@@ -86,9 +87,7 @@ Indices:
       arm:
         type: keyword
 
-
-
-    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    # Cypher query will be used to retrieve data from Neo4j and index into Elasticsearch
     cypher_query: "
       MATCH (c:case)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
@@ -148,14 +147,12 @@ Indices:
         diag.concurrent_disease as concurrent_disease,
         diag.concurrent_disease_type as concurrent_disease_type,
         a.arm as arm
-      "
+    "
 
   - index_name: samples
     type: neo4j
-    # type mapping for each property of the index
 
     mapping:
-      # properties used as facet filters (can be also used to return data), name matches GraphQL parameter names
       program:
         type: keyword
       study:
@@ -195,13 +192,10 @@ Indices:
       file_format:
         type: keyword
 
-      # properties used in list search, could also used in return data
       case_ids:
         type: keyword
       sample_ids:
         type: keyword
-
-      # properties used in return data, name can be different from GraphQL property name
 
       tumor_grade:
         type: keyword
@@ -258,7 +252,6 @@ Indices:
       files:
         type: keyword
 
-    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (samp:sample)-->(c:case)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
@@ -337,10 +330,8 @@ Indices:
 
   - index_name: files
     type: neo4j
-    # type mapping for each property of the index
 
     mapping:
-      # properties used as facet filters (can be also used to return data), name matches GraphQL parameter names
       program:
         type: keyword
       study:
@@ -382,7 +373,6 @@ Indices:
       file_level:
         type: keyword
 
-      # properties used in list search, could also used in return data
       case_ids:
         type: keyword
       sample_ids:
@@ -390,7 +380,6 @@ Indices:
       file_uuids:
         type: keyword
 
-      # properties used in return data, name can be different from GraphQL property name
       file_name:
         type: keyword
       file_description:
@@ -458,8 +447,6 @@ Indices:
       other_cases:
         type: keyword
 
-
-    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (f:file)-->(s:study)
       MATCH (s)<-[*]-(c:case)
@@ -609,3 +596,123 @@ Indices:
         a.arm as arm,
         COLLECT(DISTINCT o.case_id) AS other_cases
     "
+
+  - index_name: programs
+    type: neo4j
+
+    mapping:
+      program_code:
+        type: search_as_you_type
+      program_id:
+        type: search_as_you_type
+      program_id_kw:
+        type: keyword
+      program_file_names:
+        type: search_as_you_type
+      program_name:
+        type: search_as_you_type
+
+    cypher_query: "
+      MATCH (p:program)
+      OPTIONAL MATCH (p)<--(pf:file)
+      RETURN DISTINCT
+        p.program_acronym AS program_code,
+        p.program_id AS program_id,
+        p.program_id AS program_id_kw,
+        p.program_name AS program_name,
+        COLLECT(DISTINCT pf.file_name) AS program_file_names
+    "
+  
+  - index_name: studies
+    type: neo4j
+
+    mapping:
+      program_id:
+        type: search_as_you_type
+      study_code:
+        type: search_as_you_type
+      study_id:
+        type: search_as_you_type
+      study_id_kw:
+        type: keyword
+      study_name:
+        type: search_as_you_type
+      study_type:
+        type: search_as_you_type
+      study_file_names:
+        type: search_as_you_type
+
+    cypher_query: "
+      MATCH (s:study)
+      OPTIONAL MATCH (s)<--(sf:file)
+      OPTIONAL MATCH (s)-->(p:program)
+      RETURN DISTINCT
+        p.program_id AS program_id,
+        s.study_id AS study_id,
+        s.study_id AS study_id_kw,
+        s.study_acronym AS study_code,
+        s.study_name AS study_name,
+        s.study_type AS study_type,
+        COLLECT(DISTINCT sf.file_name) AS study_file_names
+    "
+
+  - index_name: about_page
+    type: about_file
+
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+
+  - index_name: model_nodes
+    type: model
+    subtype: node
+
+    mapping:
+      node:
+        type: search_as_you_type
+      node_kw:
+        type: keyword
+
+  - index_name: model_properties
+    type: model
+    subtype: property
+
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_kw:
+        type: keyword
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+
+  - index_name: model_values
+    type: model
+    subtype: value
+
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+      value:
+        type: search_as_you_type
+      value_kw:
+        type: keyword
