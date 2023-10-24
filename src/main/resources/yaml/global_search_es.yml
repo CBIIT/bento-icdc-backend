@@ -1,45 +1,6 @@
 queries:
   - name: globalSearch
     returnFields:
-      - name: subjects
-        index:
-          - subjects
-        filter:
-          type: global
-          defaultSortField: subject_id_num
-          searches:
-            - field: subject_id
-              type: wildcard
-              caseInsensitive: true
-            - field: diagnosis_gs
-              type: wildcard
-              caseInsensitive: true
-          typedSearch:
-            - field: age_at_index
-              type: term
-              option: integer
-        result:
-          type: global
-      - name: subject_count
-        index:
-          - subjects
-        filter:
-          type: global
-          defaultSortField: subject_id_num
-          searches:
-            - field: subject_id
-              type: wildcard
-              caseInsensitive: true
-            - field: diagnosis_gs
-              type: wildcard
-              caseInsensitive: true
-          typedSearch:
-            - field: age_at_index
-              type: term
-              option: integer
-        result:
-          type: int_total_count
-
       - name: samples
         index:
           - samples
@@ -133,6 +94,29 @@ queries:
         result:
           type: int_total_count
 
+      - name: cases
+        index:
+          - cases
+        filter:
+          type: global
+          defaultSortField: case_id
+          searches:
+            - field: case_id
+              type: wildcard
+        result:
+          type: global
+      - name: case_count
+        index:
+          - cases
+        filter:
+          type: global
+          defaultSortField: case_id
+          searches:
+            - field: case_id
+              type: wildcard
+        result:
+          type: int_total_count
+
       - name: files
         index:
           - files
@@ -166,8 +150,8 @@ queries:
         result:
           type: int_total_count
 
-      # About Page
-      # Always Set offset= 0 and default-size=10000
+      # about page
+      # always set offset=0 and default-size=10000
       - name: about_page
         index:
           - about_page
@@ -176,7 +160,7 @@ queries:
           selectedField: content.paragraph
           searches:
             - field: content.paragraph
-              type: wildcard
+              type: match
         highlight:
           fields:
             - content.paragraph
@@ -201,8 +185,8 @@ queries:
         result:
           type: int_total_count
 
-      # Multiple ES Index Search
-      # Always Set offset= 0 and default-size=10000
+      # multiple ES index search
+      # always set offset=0 and default-size=10000
       - name: model
         index:
           - model_properties
@@ -236,7 +220,6 @@ queries:
           fragmentSize: 1
         result:
           type: global_multi_models
-
       - name: model_count
         index:
           - model_properties
