@@ -37,8 +37,9 @@ allow_graphql_mutation=false
 # redis.host =
 # redis.port =
 redis.ttl=-1
-redis.authentication.enabled=false
-redis.password=
+# redis.authentication.enabled=false
+# read from environment variable REDIS_PASSWORD
+# redis.password=
 
 # Elasticsearch Filtering
 # es.host = {{es_host}} # This will be reading from env_var ES_HOST
