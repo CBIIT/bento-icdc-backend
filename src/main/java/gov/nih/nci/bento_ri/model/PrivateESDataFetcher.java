@@ -635,24 +635,24 @@ public class PrivateESDataFetcher extends AbstractPrivateESDataFetcher {
                 },
                 GS_CATEGORY_TYPE, "file"
         ));
-        searchCategories.add(Map.of(
-                GS_END_POINT, PROGRAMS_END_POINT,
-                GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
-                GS_COUNT_RESULT_FIELD, "program_count",
-                GS_RESULT_FIELD, "programs",
-                GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_full_description",
-                        "program_external_url", "program_sort_order"),
-                GS_SORT_FIELD, "program_sort_order_kw",
-                GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"program_name", "program_name"},
-                        new String[]{"program_short_description", "program_short_description"},
-                        new String[]{"program_full_description", "program_full_description"},
-                        new String[]{"program_external_url", "program_external_url"},
-                        new String[]{"program_sort_order", "program_sort_order"},
-                        new String[]{"type", "type"}
-                },
-                GS_CATEGORY_TYPE, "program"
-        ));
+        // searchCategories.add(Map.of(
+        //         GS_END_POINT, PROGRAMS_END_POINT,
+        //         GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
+        //         GS_COUNT_RESULT_FIELD, "program_count",
+        //         GS_RESULT_FIELD, "programs",
+        //         GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_full_description",
+        //                 "program_external_url", "program_sort_order"),
+        //         GS_SORT_FIELD, "program_sort_order_kw",
+        //         GS_COLLECT_FIELDS, new String[][]{
+        //                 new String[]{"program_name", "program_name"},
+        //                 new String[]{"program_short_description", "program_short_description"},
+        //                 new String[]{"program_full_description", "program_full_description"},
+        //                 new String[]{"program_external_url", "program_external_url"},
+        //                 new String[]{"program_sort_order", "program_sort_order"},
+        //                 new String[]{"type", "type"}
+        //         },
+        //         GS_CATEGORY_TYPE, "program"
+        // ));
         searchCategories.add(Map.of(
                 GS_END_POINT, NODES_END_POINT,
                 GS_COUNT_ENDPOINT, NODES_COUNT_END_POINT,
