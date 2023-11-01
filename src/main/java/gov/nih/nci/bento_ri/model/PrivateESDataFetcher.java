@@ -38,7 +38,8 @@ public class PrivateESDataFetcher extends AbstractPrivateESDataFetcher {
 
     final String STUDIES_END_POINT = "/studies/_search";
     final String STUDIES_COUNT_END_POINT = "/studies/_count";
-
+    final String CASES_END_POINT = "/cases/_search";
+    final String CASES_COUNT_END_POINT = "/cases/_count";
     final String SUBJECTS_END_POINT = "/subjects/_search";
     final String SUBJECTS_COUNT_END_POINT = "/subjects/_count";
     final String SUBJECT_IDS_END_POINT = "/subject_ids/_search";
@@ -565,94 +566,104 @@ public class PrivateESDataFetcher extends AbstractPrivateESDataFetcher {
                 GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "study_count",
                 GS_RESULT_FIELD, "studies",
-                GS_SEARCH_FIELD, List.of("phs_accession_gs", "study_name_gs", "study_code_gs", "study_data_types_gs"),
-                GS_SORT_FIELD, "phs_accession",
+                GS_SEARCH_FIELD, List.of("program_id", "accession_id", 
+                        "clinical_study_name", "clinical_study_type", "clinical_study_designation"),
+                GS_SORT_FIELD, "study_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"phs_accession", "phs_accession_gs"},
-                        new String[]{"study_code", "study_code_gs"},
-                        new String[]{"study_name", "study_name_gs"},
-                        new String[]{"study_data_types", "study_data_types_gs"}
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"accession_id", "accession_id"},
+                        new String[]{"clinical_study_name", "clinical_study_name"},
+                        new String[]{"clinical_study_type", "clinical_study_type"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"}
                 },
                 GS_CATEGORY_TYPE, "study"
-
         ));
-        searchCategories.add(Map.of(
-                GS_END_POINT, SUBJECTS_END_POINT,
-                GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
-                GS_COUNT_RESULT_FIELD, "subject_count",
-                GS_RESULT_FIELD, "subjects",
-                GS_SEARCH_FIELD, List.of("study_gs", "subject_id_gs", "site_gs", "gender_gs"),
-                GS_SORT_FIELD, "subject_ids",
-                GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"study", "study_gs"},
-                        new String[]{"subject_id", "subject_id_gs"},
-                        new String[]{"site", "site_gs"},
-                        new String[]{"gender", "gender_gs"}
-                },
-                GS_CATEGORY_TYPE, "subject"
-        ));
+        // searchCategories.add(Map.of(
+        //         GS_END_POINT, SUBJECTS_END_POINT,
+        //         GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
+        //         GS_COUNT_RESULT_FIELD, "subject_count",
+        //         GS_RESULT_FIELD, "subjects",
+        //         GS_SEARCH_FIELD, List.of("study_gs", "subject_id_gs", "site_gs", "gender_gs"),
+        //         GS_SORT_FIELD, "subject_ids",
+        //         GS_COLLECT_FIELDS, new String[][]{
+        //                 new String[]{"study", "study_gs"},
+        //                 new String[]{"subject_id", "subject_id_gs"},
+        //                 new String[]{"site", "site_gs"},
+        //                 new String[]{"gender", "gender_gs"}
+        //         },
+        //         GS_CATEGORY_TYPE, "subject"
+        // ));
         searchCategories.add(Map.of(
                 GS_END_POINT, SAMPLES_END_POINT,
                 GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
-                GS_SEARCH_FIELD, List.of("sample_id_gs", "is_tumor_gs", "analyte_type_gs"),
-                GS_SORT_FIELD, "sample_id",
+                GS_SEARCH_FIELD, List.of("sample_id", "program_name", "clinical_study_designation", 
+                    "case_id", "sample_site", "physical_sample_type", "general_sample_pathology"),
+                GS_SORT_FIELD, "sample_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"sample_id", "sample_id_gs"},
-                        new String[]{"is_tumor", "is_tumor_gs"},
-                        new String[]{"analyte_type", "analyte_type_gs"}
+                        new String[]{"sample_id", "sample_id"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"},
+                        new String[]{"case_id", "case_id"},
+                        new String[]{"sample_site", "sample_site"},
+                        new String[]{"physical_sample_type", "physical_sample_type"},
+                        new String[]{"general_sample_pathology", "general_sample_pathology"}
                 },
                 GS_CATEGORY_TYPE, "sample"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, CASES_END_POINT,
+                GS_COUNT_ENDPOINT, CASES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "case_count",
+                GS_RESULT_FIELD, "cases",
+                GS_SEARCH_FIELD, List.of("case_id", "program_name", "clinical_study_designation", 
+                    "disease_term", "breed"),
+                GS_SORT_FIELD, "case_id_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"case_id", "case_id"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"},
+                        new String[]{"disease_term", "disease_term"},
+                        new String[]{"breed", "breed"}
+                },
+                GS_CATEGORY_TYPE, "case"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, FILES_END_POINT,
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
-                GS_SEARCH_FIELD, List.of("subject_id_gs","sample_id_gs","file_id_gs","file_name_gs",
-                        "file_type_gs","accesses_gs","acl_gs","experimental_strategies_gs","instrument_models_gs",
-                        "library_layouts_gs","library_selections_gs","library_sources_gs","library_strategies_gs",
-                        "platforms_gs","reference_genome_assemblies_gs","sites_gs"),
-                GS_SORT_FIELD, "file_id",
+                GS_SEARCH_FIELD, List.of( "sample_id", "file_name",
+                        "file_type", "case_id", "program_name", "clinical_study_designation"),
+                GS_SORT_FIELD, "file_name_kw",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"subject_id", "subject_id_gs"},
-                        new String[]{"sample_id", "sample_id_gs"},
-                        new String[]{"file_id", "file_id_gs"},
-                        new String[]{"file_name", "file_name_gs"},
-                        new String[]{"file_type", "file_type_gs"},
-                        new String[]{"accesses", "accesses_gs"},
-                        new String[]{"acl","acl_gs"},
-                        new String[]{"experimental_strategies","experimental_strategies_gs"},
-                        new String[]{"instrument_models","instrument_models_gs"},
-                        new String[]{"library_layouts","library_layouts_gs"},
-                        new String[]{"library_selections","library_selections_gs"},
-                        new String[]{"library_sources","library_sources_gs"},
-                        new String[]{"library_strategies","library_strategies_gs"},
-                        new String[]{"platforms","platforms_gs"},
-                        new String[]{"reference_genome_assemblies","reference_genome_assemblies_gs"},
-                        new String[]{"sites","sites_gs"}
+                        new String[]{"sample_id", "sample_id"},
+                        new String[]{"file_name", "file_name"},
+                        new String[]{"file_type", "file_type"},
+                        new String[]{"case_id", "case_id"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"}
                 },
                 GS_CATEGORY_TYPE, "file"
         ));
-        // searchCategories.add(Map.of(
-        //         GS_END_POINT, PROGRAMS_END_POINT,
-        //         GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
-        //         GS_COUNT_RESULT_FIELD, "program_count",
-        //         GS_RESULT_FIELD, "programs",
-        //         GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_full_description",
-        //                 "program_external_url", "program_sort_order"),
-        //         GS_SORT_FIELD, "program_sort_order_kw",
-        //         GS_COLLECT_FIELDS, new String[][]{
-        //                 new String[]{"program_name", "program_name"},
-        //                 new String[]{"program_short_description", "program_short_description"},
-        //                 new String[]{"program_full_description", "program_full_description"},
-        //                 new String[]{"program_external_url", "program_external_url"},
-        //                 new String[]{"program_sort_order", "program_sort_order"},
-        //                 new String[]{"type", "type"}
-        //         },
-        //         GS_CATEGORY_TYPE, "program"
-        // ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, PROGRAMS_END_POINT,
+                GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "program_count",
+                GS_RESULT_FIELD, "programs",
+                GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_acronym",
+                        "program_external_url", "program_id"),
+                GS_SORT_FIELD, "program_id_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"program_short_description", "program_short_description"},
+                        new String[]{"program_acronym", "program_acronym"},
+                        new String[]{"program_external_url", "program_external_url"},
+                },
+                GS_CATEGORY_TYPE, "program"
+        ));
         searchCategories.add(Map.of(
                 GS_END_POINT, NODES_END_POINT,
                 GS_COUNT_ENDPOINT, NODES_COUNT_END_POINT,
