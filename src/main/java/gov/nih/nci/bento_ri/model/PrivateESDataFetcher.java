@@ -578,21 +578,6 @@ public class PrivateESDataFetcher extends AbstractPrivateESDataFetcher {
                 },
                 GS_CATEGORY_TYPE, "study"
         ));
-        // searchCategories.add(Map.of(
-        //         GS_END_POINT, SUBJECTS_END_POINT,
-        //         GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
-        //         GS_COUNT_RESULT_FIELD, "subject_count",
-        //         GS_RESULT_FIELD, "subjects",
-        //         GS_SEARCH_FIELD, List.of("study_gs", "subject_id_gs", "site_gs", "gender_gs"),
-        //         GS_SORT_FIELD, "subject_ids",
-        //         GS_COLLECT_FIELDS, new String[][]{
-        //                 new String[]{"study", "study_gs"},
-        //                 new String[]{"subject_id", "subject_id_gs"},
-        //                 new String[]{"site", "site_gs"},
-        //                 new String[]{"gender", "gender_gs"}
-        //         },
-        //         GS_CATEGORY_TYPE, "subject"
-        // ));
         searchCategories.add(Map.of(
                 GS_END_POINT, SAMPLES_END_POINT,
                 GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
