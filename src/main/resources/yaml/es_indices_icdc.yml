@@ -50,11 +50,11 @@ Indices:
         type: keyword
 
       program_name:
-        type: search_as_you_type
+        type: keyword
       disease_term:
-        type: search_as_you_type
+        type: keyword
       clinical_study_designation:
-        type: search_as_you_type
+        type: keyword
       study_code:
         type: keyword
       cohort:
@@ -202,20 +202,20 @@ Indices:
       case_ids:
         type: keyword
       sample_ids:
-        type: search_as_you_type
+        type: keyword
       sample_id_kw:
         type: keyword
 
       program_name:
-        type: search_as_you_type
+        type: keyword
       clinical_study_designation:
-        type: search_as_you_type
+        type: keyword
       sample_site:
         type: keyword
       physical_sample_type:
-        type: search_as_you_type
+        type: keyword
       general_sample_pathology:
-        type: search_as_you_type
+        type: keyword
       tumor_grade:
         type: keyword
       sample_chronology:
@@ -397,16 +397,16 @@ Indices:
       case_ids:
         type: keyword
       sample_ids:
-        type: search_as_you_type
+        type: keyword
       file_uuids:
         type: keyword
 
       program_name:
-        type: search_as_you_type
+        type: keyword
       clinical_study_designation:
-        type: search_as_you_type
+        type: keyword
       file_name:
-        type: search_as_you_type
+        type: keyword
       file_name_kw:
         type: keyword
       file_description:
@@ -639,17 +639,17 @@ Indices:
       type:
         type: keyword
       program_id:
-        type: search_as_you_type
+        type: keyword
       program_id_kw:
         type: keyword
       program_name:
-        type: search_as_you_type
+        type: keyword
       program_acronym:
-        type: search_as_you_type
+        type: keyword
       program_external_url:
-        type: search_as_you_type
+        type: keyword
       program_short_description:
-        type: search_as_you_type
+        type: keyword
 
     cypher_query: "
       MATCH (p:program)
@@ -672,17 +672,17 @@ Indices:
       type:
         type: keyword
       program_id:
-        type: search_as_you_type
+        type: keyword
       accession_id:
-        type: search_as_you_type
+        type: keyword
       study_id_kw:
         type: keyword
       clinical_study_name:
-        type: search_as_you_type
+        type: keyword
       clinical_study_type:
-        type: search_as_you_type
+        type: keyword
       clinical_study_designation:
-        type: search_as_you_type
+        type: keyword
 
     cypher_query: "
       MATCH (s:study)
