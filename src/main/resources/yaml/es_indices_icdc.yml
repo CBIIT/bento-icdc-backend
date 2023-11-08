@@ -16,7 +16,7 @@ Indices:
       study_participation:
         type: keyword
       breed:
-        type: search_as_you_type
+        type: keyword
       diagnosis:
         type: keyword
       disease_site:
@@ -44,8 +44,8 @@ Indices:
       file_format:
         type: keyword
 
-      case_id:
-        type: search_as_you_type
+      case_ids:
+        type: keyword
       case_id_kw:
         type: keyword
 
@@ -113,7 +113,7 @@ Indices:
       'case' AS type,
       p.program_acronym AS program,
       p.program_name AS program_name,
-      c.case_id AS case_id,
+      c.case_id AS case_ids,
       c.case_id AS case_id_kw,
       s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
       s.clinical_study_designation AS clinical_study_designation,
@@ -199,9 +199,9 @@ Indices:
       file_format:
         type: keyword
 
-      case_id:
-        type: search_as_you_type
-      sample_id:
+      case_ids:
+        type: keyword
+      sample_ids:
         type: search_as_you_type
       sample_id_kw:
         type: keyword
@@ -211,7 +211,7 @@ Indices:
       clinical_study_designation:
         type: search_as_you_type
       sample_site:
-        type: search_as_you_type
+        type: keyword
       physical_sample_type:
         type: search_as_you_type
       general_sample_pathology:
@@ -313,8 +313,8 @@ Indices:
       COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
       COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
 
-      c.case_id AS case_id,
-      samp.sample_id AS sample_id,
+      c.case_id AS case_ids,
+      samp.sample_id AS sample_ids,
       samp.sample_id AS sample_id_kw,
 
       samp.tumor_grade as tumor_grade,
@@ -388,17 +388,17 @@ Indices:
       file_association:
         type: keyword
       file_type:
-        type: search_as_you_type
+        type: keyword
       file_format:
         type: keyword
       file_level:
         type: keyword
 
-      case_id:
+      case_ids:
+        type: keyword
+      sample_ids:
         type: search_as_you_type
-      sample_id:
-        type: search_as_you_type
-      file_uuid:
+      file_uuids:
         type: keyword
 
       program_name:
@@ -512,9 +512,9 @@ Indices:
       f.file_type AS file_type,
       f.file_format AS file_format,
 
-      COLLECT(DISTINCT c.case_id) AS case_id,
-      null AS sample_id,
-      f.uuid as file_uuid,
+      COLLECT(DISTINCT c.case_id) AS case_ids,
+      null AS sample_ids,
+      f.uuid as file_uuids,
 
       'study' AS file_level,
       f.file_name as file_name,
@@ -591,9 +591,9 @@ Indices:
       f.file_type AS file_type,
       f.file_format AS file_format,
 
-      c.case_id AS case_id,
-      samp.sample_id AS sample_id,
-      f.uuid as file_uuid,
+      c.case_id AS case_ids,
+      samp.sample_id AS sample_ids,
+      f.uuid as file_uuids,
 
       'case' AS file_level,
       f.file_name as file_name,
