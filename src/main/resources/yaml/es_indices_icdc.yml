@@ -16,7 +16,7 @@ Indices:
       study_participation:
         type: keyword
       breed:
-        type: keyword
+        type: text
       diagnosis:
         type: keyword
       disease_site:
@@ -45,16 +45,16 @@ Indices:
         type: keyword
 
       case_ids:
-        type: keyword
+        type: text
       case_id_kw:
         type: keyword
 
       program_name:
-        type: keyword
+        type: text
       disease_term:
-        type: keyword
+        type: text
       clinical_study_designation:
-        type: keyword
+        type: text
       study_code:
         type: keyword
       cohort:
@@ -200,22 +200,22 @@ Indices:
         type: keyword
 
       case_ids:
-        type: keyword
+        type: text
       sample_ids:
-        type: keyword
+        type: text
       sample_id_kw:
         type: keyword
 
       program_name:
-        type: keyword
+        type: text
       clinical_study_designation:
-        type: keyword
+        type: text
       sample_site:
-        type: keyword
+        type: text
       physical_sample_type:
-        type: keyword
+        type: text
       general_sample_pathology:
-        type: keyword
+        type: text
       tumor_grade:
         type: keyword
       sample_chronology:
@@ -388,25 +388,25 @@ Indices:
       file_association:
         type: keyword
       file_type:
-        type: keyword
+        type: text
       file_format:
         type: keyword
       file_level:
         type: keyword
 
       case_ids:
-        type: keyword
+        type: text
       sample_ids:
-        type: keyword
+        type: text
       file_uuids:
         type: keyword
 
       program_name:
-        type: keyword
+        type: text
       clinical_study_designation:
-        type: keyword
+        type: text
       file_name:
-        type: keyword
+        type: text
       file_name_kw:
         type: keyword
       file_description:
@@ -639,17 +639,17 @@ Indices:
       type:
         type: keyword
       program_id:
-        type: keyword
+        type: text
       program_id_kw:
         type: keyword
       program_name:
-        type: keyword
+        type: text
       program_acronym:
-        type: keyword
+        type: text
       program_external_url:
-        type: keyword
+        type: text
       program_short_description:
-        type: keyword
+        type: text
 
     cypher_query: "
       MATCH (p:program)
@@ -672,17 +672,17 @@ Indices:
       type:
         type: keyword
       program_id:
-        type: keyword
+        type: text
       accession_id:
-        type: keyword
+        type: text
       study_id_kw:
         type: keyword
       clinical_study_name:
-        type: keyword
+        type: text
       clinical_study_type:
-        type: keyword
+        type: text
       clinical_study_designation:
-        type: keyword
+        type: text
 
     cypher_query: "
       MATCH (s:study)

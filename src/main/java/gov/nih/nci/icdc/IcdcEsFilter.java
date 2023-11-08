@@ -686,7 +686,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
-                GS_SEARCH_FIELD, List.of("sample_id", "program_name", "clinical_study_designation",
+                GS_SEARCH_FIELD, List.of("sample_ids", "program_name", "clinical_study_designation",
                     "case_id", "sample_site", "physical_sample_type", "general_sample_pathology"),
                 GS_SORT_FIELD, "sample_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -705,7 +705,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_ENDPOINT, CASES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "case_count",
                 GS_RESULT_FIELD, "cases",
-                GS_SEARCH_FIELD, List.of("case_id", "program_name", "clinical_study_designation",
+                GS_SEARCH_FIELD, List.of("case_ids", "program_name", "clinical_study_designation",
                     "disease_term", "breed"),
                 GS_SORT_FIELD, "case_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -722,8 +722,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
-                GS_SEARCH_FIELD, List.of( "sample_id", "file_name",
-                        "file_type", "case_id", "program_name", "clinical_study_designation"),
+                GS_SEARCH_FIELD, List.of( "sample_ids", "file_name",
+                        "file_type", "case_ids", "program_name", "clinical_study_designation"),
                 GS_SORT_FIELD, "file_name_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids"},
