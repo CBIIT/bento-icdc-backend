@@ -16,7 +16,7 @@ Indices:
       study_participation:
         type: keyword
       breed:
-        type: text
+        type: keyword
       diagnosis:
         type: keyword
       disease_site:
@@ -35,12 +35,12 @@ Indices:
       sample_pathology:
         type: keyword
       sample_site:
-        type: text
+        type: keyword
 
       file_association:
         type: keyword
       file_type:
-        type: text
+        type: keyword
       file_format:
         type: keyword
 
@@ -173,7 +173,7 @@ Indices:
       study_participation:
         type: keyword
       breed:
-        type: text
+        type: keyword
       diagnosis:
         type: keyword
       disease_site:
@@ -195,7 +195,7 @@ Indices:
       file_association:
         type: keyword
       file_type:
-        type: text
+        type: keyword
       file_format:
         type: keyword
 
@@ -211,7 +211,7 @@ Indices:
       clinical_study_designation:
         type: search_as_you_type
       sample_site:
-        type: text
+        type: keyword
       physical_sample_type:
         type: search_as_you_type
       general_sample_pathology:
@@ -364,7 +364,7 @@ Indices:
       study_participation:
         type: keyword
       breed:
-        type: text
+        type: keyword
       diagnosis:
         type: keyword
       disease_site:
@@ -383,12 +383,12 @@ Indices:
       sample_pathology:
         type: keyword
       sample_site:
-        type: text
+        type: keyword
 
       file_association:
         type: keyword
       file_type:
-        type: text
+        type: keyword
       file_format:
         type: keyword
       file_level:
