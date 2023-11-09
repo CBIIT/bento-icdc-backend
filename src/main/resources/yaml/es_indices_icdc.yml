@@ -35,7 +35,7 @@ Indices:
       sample_pathology:
         type: keyword
       sample_site:
-        type: keyword
+        type: text
 
       file_association:
         type: keyword
@@ -383,7 +383,7 @@ Indices:
       sample_pathology:
         type: keyword
       sample_site:
-        type: keyword
+        type: text
 
       file_association:
         type: keyword
