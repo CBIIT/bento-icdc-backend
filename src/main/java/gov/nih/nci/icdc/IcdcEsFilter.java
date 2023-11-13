@@ -428,7 +428,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"sample_id", "sample_ids"},
+                new String[]{"sample_id", "sample_id_kw"},
                 new String[]{"case_id", "case_ids"},
                 new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
@@ -469,7 +469,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         String defaultSort = "sample_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("sample_id", "sample_ids"),
+                Map.entry("sample_id", "sample_id_kw"),
                 Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
@@ -489,7 +489,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"file_name", "file_name"},
+                new String[]{"file_name", "file_name_kw"},
                 new String[]{"file_type", "file_type"},
                 new String[]{"association", "file_association"},
                 new String[]{"file_description", "file_description"},
@@ -535,10 +535,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"other_cases", "other_cases"}
         };
 
-        String defaultSort = "file_name"; // Default sort order
+        String defaultSort = "file_name_kw"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("file_name", "file_name"),
+                Map.entry("file_name", "file_name_kw"),
                 Map.entry("file_type", "file_type"),
                 Map.entry("association", "file_association"),
                 Map.entry("file_description", "file_description"),
@@ -556,7 +556,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
-
         Request request = new Request("GET", endpoint);
         Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
