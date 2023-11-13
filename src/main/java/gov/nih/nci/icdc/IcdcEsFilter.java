@@ -140,7 +140,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 AGG_ENDPOINT, CASES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "breed",
+                AGG_NAME, "breed_kw",
                 WIDGET_QUERY, "caseCountByBreed",
                 FILTER_COUNT_QUERY, "filterCaseCountByBreed",
                 AGG_ENDPOINT, CASES_END_POINT
@@ -183,7 +183,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         ));
 
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "sample_site",
+                AGG_NAME, "sample_site_kw",
                 WIDGET_QUERY, "caseCountBySampleSite",
                 FILTER_COUNT_QUERY, "filterCaseCountBySampleSite",
                 AGG_ENDPOINT, SAMPLES_END_POINT
@@ -207,7 +207,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "file_type",
+                AGG_NAME, "file_type_kw",
                 WIDGET_QUERY, "caseCountByFileType",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileType",
                 AGG_ENDPOINT, FILES_END_POINT
@@ -376,7 +376,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
     private List<Map<String, Object>> caseOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"case_id", "case_ids"},
+                new String[]{"case_id", "case_id_kw"},
                 new String[]{"study_code", "study_code"},
                 new String[]{"study_type", "study_type"},
                 new String[]{"cohort", "cohort"},
@@ -404,7 +404,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "case_ids"; // Default sort order
+        String defaultSort = "case_id_kw"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("study_code", "study_code"),
@@ -420,7 +420,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("weight", "weight"),
                 Map.entry("response_to_treatment", "response_to_treatment"),
                 Map.entry("other_cases", "other_cases"),
-                Map.entry("case_id", "case_ids")
+                Map.entry("case_id", "case_id_kw")
         );
 
         return overview(CASES_END_POINT, params, PROPERTIES, defaultSort, mapping);
