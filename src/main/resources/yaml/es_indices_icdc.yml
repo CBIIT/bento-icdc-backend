@@ -207,6 +207,8 @@ Indices:
 
       case_ids:
         type: text
+      case_id_kw:
+        type: keyword
       sample_ids:
         type: text
       sample_id_kw:
@@ -218,10 +220,16 @@ Indices:
         type: text
       sample_site:
         type: text
+      sample_site_kw:
+        type: keyword
       physical_sample_type:
         type: text
+      physical_sample_type_kw:
+        type: keyword
       general_sample_pathology:
         type: text
+      general_sample_pathology_kw:
+        type: keyword
       tumor_grade:
         type: keyword
       sample_chronology:
@@ -315,11 +323,13 @@ Indices:
       samp.summarized_sample_type AS sample_type,
       samp.specific_sample_pathology AS sample_pathology,
       samp.sample_site AS sample_site,
+      samp.sample_site AS sample_site_kw,
       COLLECT(DISTINCT head(labels(parent))) + study_file_association AS file_association,
       COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
       COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
 
       c.case_id AS case_ids,
+      c.case_id AS case_id_kw,
       samp.sample_id AS sample_ids,
       samp.sample_id AS sample_id_kw,
 
@@ -329,7 +339,9 @@ Indices:
       samp.necropsy_sample as necropsy_sample,
       samp.sample_preservation as sample_preservation,
       samp.physical_sample_type as physical_sample_type,
+      samp.physical_sample_type as physical_sample_type_kw,
       samp.general_sample_pathology as general_sample_pathology,
+      samp.general_sample_pathology as general_sample_pathology_kw,
       samp.tumor_sample_origin as tumor_sample_origin,
       samp.comment as comment,
 
@@ -390,6 +402,8 @@ Indices:
         type: keyword
       sample_site:
         type: text
+      sample_site_kw:
+        type: keyword
 
       file_association:
         type: keyword
@@ -404,8 +418,12 @@ Indices:
 
       case_ids:
         type: text
+      case_id_kw:
+        type: keyword
       sample_ids:
         type: text
+      sample_id_kw:
+        type: keyword
       file_uuids:
         type: keyword
 
@@ -516,13 +534,16 @@ Indices:
       COLLECT(DISTINCT samp.summarized_sample_type) AS sample_type,
       COLLECT(DISTINCT samp.specific_sample_pathology) AS sample_pathology,
       COLLECT(DISTINCT samp.sample_site) AS sample_site,
+      COLLECT(DISTINCT samp.sample_site) AS sample_site_kw,
       'study' AS file_association,
       f.file_type AS file_type,
       f.file_type AS file_type_kw,
       f.file_format AS file_format,
 
       COLLECT(DISTINCT c.case_id) AS case_ids,
+      COLLECT(DISTINCT c.case_id) AS case_id_kw,
       null AS sample_ids,
+      null AS sample_id_kw,
       f.uuid as file_uuids,
 
       'study' AS file_level,
@@ -596,13 +617,16 @@ Indices:
       samp.summarized_sample_type AS sample_type,
       samp.specific_sample_pathology AS sample_pathology,
       samp.sample_site AS sample_site,
+      samp.sample_site AS sample_site_kw,
       head(labels(parent)) AS file_association,
       f.file_type AS file_type,
       f.file_type AS file_type_kw,
       f.file_format AS file_format,
 
       c.case_id AS case_ids,
+      c.case_id AS case_id_kw,
       samp.sample_id AS sample_ids,
+      samp.sample_id AS sample_id_kw,
       f.uuid as file_uuids,
 
       'case' AS file_level,
