@@ -52,6 +52,8 @@ Indices:
         type: text
       case_id_kw:
         type: keyword
+      case_id_lc:
+        type: keyword
 
       program_name:
         type: text
@@ -119,6 +121,7 @@ Indices:
       p.program_name AS program_name,
       c.case_id AS case_ids,
       c.case_id AS case_id_kw,
+      toLower(c.case_id) AS case_id_lc,
       s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
       s.clinical_study_designation AS clinical_study_designation,
       s.clinical_study_designation AS study_code,
