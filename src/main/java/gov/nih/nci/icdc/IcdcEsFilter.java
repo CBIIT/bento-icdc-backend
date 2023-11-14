@@ -375,8 +375,33 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> caseOverview(Map<String, Object> params) throws IOException {
+        // cast case_ids param to lowercase to standardize user input
+        String TARGET_PARAM = "case_ids";
+        String LOWERCASE_PARAM = "case_id_lc";
+        Map<String, Object> formattedParams = new HashMap<>();
+        params.forEach((key, value) -> {
+            if (key.equals(TARGET_PARAM)){
+                try{
+                    ArrayList<String> valuesList = (ArrayList<String>) value;
+                    ArrayList<String> lowercase = new ArrayList<>();
+                    valuesList.forEach(x -> {
+                        lowercase.add(x.toLowerCase());
+                    });
+                    formattedParams.put(LOWERCASE_PARAM, lowercase);
+                }
+                catch (Exception e){
+                    logger.error(e);
+                    // no action required
+                }
+            }
+            else{
+                formattedParams.put(key, value);
+            }
+        });
+
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"case_id", "case_id_kw"},
+                new String[]{"case_id_lc", "case_id_lc"},
                 new String[]{"study_code", "study_code"},
                 new String[]{"study_type", "study_type"},
                 new String[]{"cohort", "cohort"},
@@ -404,7 +429,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "case_id_kw"; // Default sort order
+        String defaultSort = "case_id_lc"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("study_code", "study_code"),
@@ -420,10 +445,11 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("weight", "weight"),
                 Map.entry("response_to_treatment", "response_to_treatment"),
                 Map.entry("other_cases", "other_cases"),
-                Map.entry("case_id", "case_id_kw")
+                Map.entry("case_id", "case_id_kw"),
+                Map.entry("case_id_lc", "case_id_lc")
         );
 
-        return overview(CASES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(CASES_END_POINT, formattedParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
