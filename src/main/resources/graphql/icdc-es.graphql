@@ -1,5 +1,6 @@
 type CaseOverviewES {
   case_id: String
+  case_id_lc: String
   study_code: String
   study_type: String
   cohort: String
