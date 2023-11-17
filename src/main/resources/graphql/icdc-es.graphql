@@ -1,5 +1,6 @@
 type CaseOverviewES {
   case_id: String
+  case_id_lc: String
   study_code: String
   study_type: String
   cohort: String
@@ -202,6 +203,94 @@ type SearchResult {
   filterCaseCountByFileFormat: [GroupCountES]
 }
 
+type GS_Program {
+  type: String
+  program_id: String
+  program_name: String
+  program_acronym: String
+  program_external_url: String
+  program_short_description: String
+}
+
+type GS_Study {
+  type: String
+  clinical_study_designation: String
+  clinical_study_name: String
+  clinical_study_type: String
+  accession_id: String
+  program_id: String
+}
+
+type GS_Cases {
+  type: String
+  case_id: String
+  program_name: String
+  clinical_study_designation: String
+  disease_term: String
+  breed: String
+}
+
+type GS_Sample {
+  type: String
+  sample_id: String
+  program_name: String
+  clinical_study_designation: String
+  case_id: String
+  sample_site: String
+  physical_sample_type: String
+  general_sample_pathology: String
+}
+
+type GS_File {
+  type: String
+  file_name: String
+  file_type: String
+  program_name: String
+  clinical_study_designation: String
+  case_id: String
+  sample_id: String
+}
+
+type GS_About {
+  type: String
+  page: String
+  title: String
+  text: String
+}
+
+type GS_Model {
+  type: String
+  highlight: String
+  node_name: String
+  property_name: String
+  property_description: String
+  property_required: String
+  property_type: String
+}
+
+type GlobalSearchResult {
+  program_count: Int
+  programs: [GS_Program]
+
+  study_count: Int
+  studies: [GS_Study]
+
+  case_count: Int
+  cases: [GS_Cases]
+
+  sample_count: Int
+  samples: [GS_Sample]
+
+  file_count: Int
+  files: [GS_File]
+
+  about_count: Int
+  about_page: [GS_About]
+
+  model_count: Int
+  model: [GS_Model]
+}
+
 schema {
   query: QueryType
 }
@@ -318,4 +407,10 @@ type QueryType {
     first: Int = 10
     offset: Int = 0
   ): [FileOverviewES]
+
+  globalSearch(
+    input: String
+    first: Int = 10
+    offset: Int = 0
+  ): GlobalSearchResult
 }

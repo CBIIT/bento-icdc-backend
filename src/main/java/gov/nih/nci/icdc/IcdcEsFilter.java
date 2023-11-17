@@ -1,7 +1,9 @@
 package gov.nih.nci.icdc;
 
+// import gov.nih.nci.bento.constants.Const;
 import com.google.gson.*;
 import gov.nih.nci.bento.model.AbstractPrivateESDataFetcher;
+// import gov.nih.nci.bento.model.search.yaml.YamlQueryFactory;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +19,7 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 @Component
 public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
+    // private final YamlQueryFactory yamlQueryFactory;
 
     // parameters used in queries
     final String PAGE_SIZE = "first";
@@ -66,12 +69,14 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
     public IcdcEsFilter(ESService esService) {
         super(esService);
+        // yamlQueryFactory = new YamlQueryFactory(esService);
     }
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
+                        // .dataFetchers(yamlQueryFactory.createYamlQueries(Const.ES_ACCESS_TYPE.PRIVATE))
                         .dataFetcher("searchCases", env -> {
                             Map<String, Object> args = env.getArguments();
                             return searchCases(args);
@@ -87,6 +92,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                         .dataFetcher("fileOverview", env -> {
                             Map<String, Object> args = env.getArguments();
                             return fileOverview(args);
+                        })
+                        .dataFetcher("globalSearch", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return globalSearch(args);
                         })
                 )
                 .build();
@@ -131,7 +140,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 AGG_ENDPOINT, CASES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "breed",
+                AGG_NAME, "breed_kw",
                 WIDGET_QUERY, "caseCountByBreed",
                 FILTER_COUNT_QUERY, "filterCaseCountByBreed",
                 AGG_ENDPOINT, CASES_END_POINT
@@ -174,7 +183,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         ));
 
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "sample_site",
+                AGG_NAME, "sample_site_kw",
                 WIDGET_QUERY, "caseCountBySampleSite",
                 FILTER_COUNT_QUERY, "filterCaseCountBySampleSite",
                 AGG_ENDPOINT, SAMPLES_END_POINT
@@ -198,7 +207,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "file_type",
+                AGG_NAME, "file_type_kw",
                 WIDGET_QUERY, "caseCountByFileType",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileType",
                 AGG_ENDPOINT, FILES_END_POINT
@@ -366,12 +375,37 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> caseOverview(Map<String, Object> params) throws IOException {
+        // cast case_ids param to lowercase to standardize user input
+        String TARGET_PARAM = "case_ids";
+        String LOWERCASE_PARAM = "case_id_lc";
+        Map<String, Object> formattedParams = new HashMap<>();
+        params.forEach((key, value) -> {
+            if (key.equals(TARGET_PARAM)){
+                try{
+                    ArrayList<String> valuesList = (ArrayList<String>) value;
+                    ArrayList<String> lowercase = new ArrayList<>();
+                    valuesList.forEach(x -> {
+                        lowercase.add(x.toLowerCase());
+                    });
+                    formattedParams.put(LOWERCASE_PARAM, lowercase);
+                }
+                catch (Exception e){
+                    logger.error(e);
+                    // no action required
+                }
+            }
+            else{
+                formattedParams.put(key, value);
+            }
+        });
+
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"case_id", "case_ids"},
+                new String[]{"case_id", "case_id_kw"},
+                new String[]{"case_id_lc", "case_id_lc"},
                 new String[]{"study_code", "study_code"},
                 new String[]{"study_type", "study_type"},
                 new String[]{"cohort", "cohort"},
-                new String[]{"breed", "breed"},
+                new String[]{"breed", "breed_kw"},
                 new String[]{"diagnosis", "diagnosis"},
                 new String[]{"stage_of_disease", "stage_of_disease"},
                 new String[]{"age", "age"},
@@ -395,13 +429,13 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "case_ids"; // Default sort order
+        String defaultSort = "case_id_lc"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("study_code", "study_code"),
                 Map.entry("study_type", "study_type"),
                 Map.entry("cohort", "cohort"),
-                Map.entry("breed", "breed"),
+                Map.entry("breed", "breed_kw"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("stage_of_disease", "stage_of_disease"),
                 Map.entry("disease_site", "disease_site"),
@@ -411,19 +445,20 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("weight", "weight"),
                 Map.entry("response_to_treatment", "response_to_treatment"),
                 Map.entry("other_cases", "other_cases"),
-                Map.entry("case_id", "case_ids")
+                Map.entry("case_id", "case_id_kw"),
+                Map.entry("case_id_lc", "case_id_lc")
         );
 
-        return overview(CASES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(CASES_END_POINT, formattedParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"sample_id", "sample_ids"},
-                new String[]{"case_id", "case_ids"},
+                new String[]{"sample_id", "sample_id_kw"},
+                new String[]{"case_id", "case_id_kw"},
                 new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
-                new String[]{"sample_site", "sample_site"},
+                new String[]{"sample_site", "sample_site_kw"},
                 new String[]{"sample_type", "sample_type"},
                 new String[]{"sample_pathology", "sample_pathology"},
                 new String[]{"tumor_grade", "tumor_grade"},
@@ -432,8 +467,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"necropsy_sample", "necropsy_sample"},
                 new String[]{"sample_preservation", "sample_preservation"},
                 new String[]{"files", "files"},
-                new String[]{"physical_sample_type", "physical_sample_type"},
-                new String[]{"general_sample_pathology", "general_sample_pathology"},
+                new String[]{"physical_sample_type", "physical_sample_type_kw"},
+                new String[]{"general_sample_pathology", "general_sample_pathology_kw"},
                 new String[]{"tumor_sample_origin", "tumor_sample_origin"},
                 new String[]{"comment", "comment"},
                 new String[]{"individual_id", "individual_id"},
@@ -457,14 +492,14 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "sample_ids"; // Default sort order
+        String defaultSort = "sample_id_kw"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("sample_id", "sample_ids"),
-                Map.entry("case_id", "case_ids"),
+                Map.entry("sample_id", "sample_id_kw"),
+                Map.entry("case_id", "case_id_kw"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
-                Map.entry("sample_site", "sample_site"),
+                Map.entry("sample_site", "sample_site_kw"),
                 Map.entry("sample_type", "sample_type"),
                 Map.entry("sample_pathology", "sample_pathology"),
                 Map.entry("tumor_grade", "tumor_grade"),
@@ -480,19 +515,19 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"file_name", "file_name"},
-                new String[]{"file_type", "file_type"},
+                new String[]{"file_name", "file_name_kw"},
+                new String[]{"file_type", "file_type_kw"},
                 new String[]{"association", "file_association"},
                 new String[]{"file_description", "file_description"},
                 new String[]{"file_format", "file_format"},
                 new String[]{"file_size", "file_size"},
-                new String[]{"case_id", "case_ids"},
+                new String[]{"case_id", "case_id_kw"},
                 new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
                 new String[]{"study_code", "study_code"},
                 new String[]{"file_uuid", "file_uuids"},
-                new String[]{"sample_id", "sample_ids"},
-                new String[]{"sample_site", "sample_site"},
+                new String[]{"sample_id", "sample_id_kw"},
+                new String[]{"sample_site", "sample_site_kw"},
                 new String[]{"physical_sample_type", "physical_sample_type"},
                 new String[]{"general_sample_pathology", "general_sample_pathology"},
                 new String[]{"tumor_sample_origin", "tumor_sample_origin"},
@@ -526,16 +561,16 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"other_cases", "other_cases"}
         };
 
-        String defaultSort = "file_name"; // Default sort order
+        String defaultSort = "file_name_kw"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("file_name", "file_name"),
-                Map.entry("file_type", "file_type"),
+                Map.entry("file_name", "file_name_kw"),
+                Map.entry("file_type", "file_type_kw"),
                 Map.entry("association", "file_association"),
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
-                Map.entry("case_id", "case_ids"),
+                Map.entry("case_id", "case_id_kw"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("study_code", "study_code"),
@@ -547,7 +582,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
-
         Request request = new Request("GET", endpoint);
         Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
@@ -572,5 +606,292 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
             logger.info("Order: \"" + order_by + "\" not recognized, use default order");
         }
         return Map.of(sortOrder, sortDirection);
+    }
+
+    private Map<String, Object> addHighlight(Map<String, Object> query, Map<String, Object> category) {
+        Map<String, Object> result = new HashMap<>(query);
+        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
+        Map<String, Object> highlightClauses = new HashMap<>();
+        for (String searchFieldName: searchFields) {
+            highlightClauses.put(searchFieldName, Map.of());
+        }
+
+        result.put("highlight", Map.of(
+                        "fields", highlightClauses,
+                        "pre_tags", "",
+                        "post_tags", "",
+                        "fragment_size", 1
+                )
+        );
+        return result;
+    }
+
+    private List paginate(List org, int pageSize, int offset) {
+        List<Object> result = new ArrayList<>();
+        int size = org.size();
+        if (offset <= size -1) {
+            int end_index = offset + pageSize;
+            if (end_index > size) {
+                end_index = size;
+            }
+            result = org.subList(offset, end_index);
+        }
+        return result;
+    }
+
+    private Map<String, Object> getGlobalSearchQuery(String input, Map<String, Object> category) {
+        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
+        List<Object> searchClauses = new ArrayList<>();
+        for (String searchFieldName: searchFields) {
+            searchClauses.add(Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
+        }
+        Map<String, Object> query = new HashMap<>();
+        query.put("query", Map.of("bool", Map.of("should", searchClauses)));
+        return query;
+    }
+
+    private List<Map<String, String>> searchAboutPage(String input) throws IOException {
+        final String ABOUT_CONTENT = "content.paragraph";
+        Map<String, Object> query = Map.of(
+                "query", Map.of("match", Map.of(ABOUT_CONTENT, input)),
+                "highlight", Map.of(
+                        "fields", Map.of(ABOUT_CONTENT, Map.of()),
+                        "pre_tags", GS_HIGHLIGHT_DELIMITER,
+                        "post_tags", GS_HIGHLIGHT_DELIMITER
+                ),
+                "size", ESService.MAX_ES_SIZE
+        );
+        Request request = new Request("GET", GS_ABOUT_END_POINT);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+
+        List<Map<String, String>> result = new ArrayList<>();
+
+        for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
+            for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
+                String page = hit.getAsJsonObject().get("_source").getAsJsonObject().get("page").getAsString();
+                String title = hit.getAsJsonObject().get("_source").getAsJsonObject().get("title").getAsString();
+                result.add(Map.of(
+                        GS_CATEGORY_TYPE, GS_ABOUT,
+                        "page", page,
+                        "title", title,
+                        "text", highlight.getAsString()
+                ));
+            }
+        }
+
+        return result;
+    }
+
+    private Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
+        Map<String, Object> result = new HashMap<>();
+        String input = (String) params.get("input");
+        int size = (int) params.get("first");
+        int offset = (int) params.get("offset");
+        List<Map<String, Object>> searchCategories = new ArrayList<>();
+        searchCategories.add(Map.of(
+                GS_END_POINT, STUDIES_END_POINT,
+                GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "study_count",
+                GS_RESULT_FIELD, "studies",
+                GS_SEARCH_FIELD, List.of("program_id", "accession_id",
+                        "clinical_study_name", "clinical_study_type", "clinical_study_designation"),
+                GS_SORT_FIELD, "study_id_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"accession_id", "accession_id"},
+                        new String[]{"clinical_study_name", "clinical_study_name"},
+                        new String[]{"clinical_study_type", "clinical_study_type"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"}
+                },
+                GS_CATEGORY_TYPE, "study"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, SAMPLES_END_POINT,
+                GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "sample_count",
+                GS_RESULT_FIELD, "samples",
+                GS_SEARCH_FIELD, List.of("sample_ids", "program_name", "clinical_study_designation",
+                    "case_id", "sample_site", "physical_sample_type", "general_sample_pathology"),
+                GS_SORT_FIELD, "sample_id_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"sample_id", "sample_ids"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"},
+                        new String[]{"case_id", "case_ids"},
+                        new String[]{"sample_site", "sample_site"},
+                        new String[]{"physical_sample_type", "physical_sample_type"},
+                        new String[]{"general_sample_pathology", "general_sample_pathology"}
+                },
+                GS_CATEGORY_TYPE, "sample"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, CASES_END_POINT,
+                GS_COUNT_ENDPOINT, CASES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "case_count",
+                GS_RESULT_FIELD, "cases",
+                GS_SEARCH_FIELD, List.of("case_ids", "program_name", "clinical_study_designation",
+                    "disease_term", "breed"),
+                GS_SORT_FIELD, "case_id_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"case_id", "case_ids"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"},
+                        new String[]{"disease_term", "disease_term"},
+                        new String[]{"breed", "breed"}
+                },
+                GS_CATEGORY_TYPE, "case"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, FILES_END_POINT,
+                GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "file_count",
+                GS_RESULT_FIELD, "files",
+                GS_SEARCH_FIELD, List.of( "sample_ids", "file_name",
+                        "file_type", "case_ids", "program_name", "clinical_study_designation"),
+                GS_SORT_FIELD, "file_name_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"sample_id", "sample_ids"},
+                        new String[]{"file_name", "file_name"},
+                        new String[]{"file_type", "file_type"},
+                        new String[]{"case_id", "case_ids"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"clinical_study_designation", "clinical_study_designation"}
+                },
+                GS_CATEGORY_TYPE, "file"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, PROGRAMS_END_POINT,
+                GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "program_count",
+                GS_RESULT_FIELD, "programs",
+                GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_acronym",
+                        "program_external_url", "program_id"),
+                GS_SORT_FIELD, "program_id_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"program_short_description", "program_short_description"},
+                        new String[]{"program_acronym", "program_acronym"},
+                        new String[]{"program_external_url", "program_external_url"},
+                },
+                GS_CATEGORY_TYPE, "program"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, NODES_END_POINT,
+                GS_COUNT_ENDPOINT, NODES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "model_count",
+                GS_RESULT_FIELD, "model",
+                GS_SEARCH_FIELD, List.of("node"),
+                GS_SORT_FIELD, "node_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"node_name", "node"}
+                },
+                GS_HIGHLIGHT_FIELDS, new String[][] {
+                        new String[]{"highlight", "node"}
+                },
+                GS_CATEGORY_TYPE, "node"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, PROPERTIES_END_POINT,
+                GS_COUNT_ENDPOINT, PROPERTIES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "model_count",
+                GS_RESULT_FIELD, "model",
+                GS_SEARCH_FIELD, List.of("property", "property_description", "property_type", "property_required"),
+                GS_SORT_FIELD, "property_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"node_name", "node"},
+                        new String[]{"property_name", "property"},
+                        new String[]{"property_type", "property_type"},
+                        new String[]{"property_required", "property_required"},
+                        new String[]{"property_description", "property_description"}
+                },
+                GS_HIGHLIGHT_FIELDS, new String[][] {
+                        new String[]{"highlight", "property"},
+                        new String[]{"highlight", "property_description"},
+                        new String[]{"highlight", "property_type"},
+                        new String[]{"highlight", "property_required"}
+                },
+                GS_CATEGORY_TYPE, "property"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, VALUES_END_POINT,
+                GS_COUNT_ENDPOINT, VALUES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "model_count",
+                GS_RESULT_FIELD, "model",
+                GS_SEARCH_FIELD, List.of("value"),
+                GS_SORT_FIELD, "value_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"node_name", "node"},
+                        new String[]{"property_name", "property"},
+                        new String[]{"property_type", "property_type"},
+                        new String[]{"property_required", "property_required"},
+                        new String[]{"property_description", "property_description"},
+                        new String[]{"value", "value"}
+                },
+                GS_HIGHLIGHT_FIELDS, new String[][] {
+                        new String[]{"highlight", "value"}
+                },
+                GS_CATEGORY_TYPE, "value"
+        ));
+
+        Set<String> combinedCategories = Set.of("model") ;
+
+        for (Map<String, Object> category: searchCategories) {
+            String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
+            String resultFieldName = (String) category.get(GS_RESULT_FIELD);
+            String[][] properties = (String[][]) category.get(GS_COLLECT_FIELDS);
+            String[][] highlights = (String[][]) category.get(GS_HIGHLIGHT_FIELDS);
+            Map<String, Object> query = getGlobalSearchQuery(input, category);
+
+            // Get count
+            Request countRequest = new Request("GET", (String) category.get(GS_COUNT_ENDPOINT));
+            countRequest.setJsonEntity(gson.toJson(query));
+            JsonObject countResult = esService.send(countRequest);
+            int oldCount = (int)result.getOrDefault(countResultFieldName, 0);
+            result.put(countResultFieldName, countResult.get("count").getAsInt() + oldCount);
+
+            // Get results
+            Request request = new Request("GET", (String)category.get(GS_END_POINT));
+            String sortFieldName = (String)category.get(GS_SORT_FIELD);
+            query.put("sort", Map.of(sortFieldName, "asc"));
+            query = addHighlight(query, category);
+
+            if (combinedCategories.contains(resultFieldName)) {
+                query.put("size", ESService.MAX_ES_SIZE);
+                query.put("from", 0);
+            } else {
+                query.put("size", size);
+                query.put("from", offset);
+            }
+            request.setJsonEntity(gson.toJson(query));
+            JsonObject jsonObject = esService.send(request);
+            List<Map<String, Object>> objects = esService.collectPage(jsonObject, properties, highlights, (int)query.get("size"), 0);
+
+            for (var object: objects) {
+                object.put(GS_CATEGORY_TYPE, category.get(GS_CATEGORY_TYPE));
+            }
+
+            List<Map<String, Object>> existingObjects = (List<Map<String, Object>>)result.getOrDefault(resultFieldName, null);
+            if (existingObjects != null) {
+                existingObjects.addAll(objects);
+                result.put(resultFieldName, existingObjects);
+            } else {
+                result.put(resultFieldName, objects);
+            }
+
+        }
+
+        List<Map<String, String>> about_results = searchAboutPage(input);
+        int about_count = about_results.size();
+        result.put("about_count", about_count);
+        result.put("about_page", paginate(about_results, size, offset));
+
+        for (String category: combinedCategories) {
+            List<Object> pagedCategory = paginate((List)result.get(category), size, offset);
+            result.put(category, pagedCategory);
+        }
+
+        return result;
     }
 }
