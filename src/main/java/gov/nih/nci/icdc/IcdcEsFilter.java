@@ -359,7 +359,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         JsonObject jsonObject = esService.send(request);
         Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, AGG_NAMES);
         JsonArray buckets = aggs.get(category);
-
         return getGroupCountHelper(buckets);
     }
 
@@ -686,7 +685,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
                 GS_SEARCH_FIELD, List.of("sample_ids", "program_name", "clinical_study_designation",
-                    "case_id", "sample_site", "physical_sample_type", "general_sample_pathology"),
+                    "case_id", "sample_site_txt", "physical_sample_type", "general_sample_pathology"),
                 GS_SORT_FIELD, "sample_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids"},
