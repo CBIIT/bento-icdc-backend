@@ -16,9 +16,9 @@ Indices:
       study_participation:
         type: keyword
       breed:
-        type: text
-      breed_kw:
         type: keyword
+      breed_txt:
+        type: text
       diagnosis:
         type: keyword
       disease_site:
@@ -36,10 +36,10 @@ Indices:
         type: keyword
       sample_pathology:
         type: keyword
-      sample_site_kw:
-        type: keyword
-      sample_site:
+      sample_site_txt:
         type: text
+      sample_site:
+        type: keyword
 
       file_association:
         type: keyword
@@ -133,7 +133,7 @@ Indices:
       CASE ci WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
       co.cohort_description AS cohort,
       demo.breed AS breed,
-      demo.breed AS breed_kw,
+      demo.breed AS breed_txt,
       diag.disease_term AS diagnosis,
       diag.disease_term AS disease_term,
       diag.stage_of_disease AS stage_of_disease,
@@ -146,7 +146,7 @@ Indices:
       COLLECT(DISTINCT samp.summarized_sample_type) AS sample_type,
       COLLECT(DISTINCT samp.specific_sample_pathology) AS sample_pathology,
       COLLECT(DISTINCT samp.sample_site) AS sample_site,
-      COLLECT(DISTINCT samp.sample_site) AS sample_site_kw,
+      COLLECT(DISTINCT samp.sample_site) AS sample_site_txt,
       COLLECT(DISTINCT f.uuid) AS files,
       COLLECT(DISTINCT head(labels(parent))) + study_file_association AS file_association,
       COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
@@ -222,9 +222,9 @@ Indices:
       clinical_study_designation:
         type: text
       sample_site:
-        type: text
-      sample_site_kw:
         type: keyword
+      sample_site_txt:
+        type: text
       physical_sample_type:
         type: text
       physical_sample_type_kw:
@@ -326,7 +326,7 @@ Indices:
       samp.summarized_sample_type AS sample_type,
       samp.specific_sample_pathology AS sample_pathology,
       samp.sample_site AS sample_site,
-      samp.sample_site AS sample_site_kw,
+      samp.sample_site AS sample_site_txt,
       COLLECT(DISTINCT head(labels(parent))) + study_file_association AS file_association,
       COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
       COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
@@ -411,9 +411,9 @@ Indices:
       file_association:
         type: keyword
       file_type:
-        type: text
-      file_type_kw:
         type: keyword
+      file_type_txt:
+        type: text
       file_format:
         type: keyword
       file_level:
@@ -540,7 +540,7 @@ Indices:
       COLLECT(DISTINCT samp.sample_site) AS sample_site_kw,
       'study' AS file_association,
       f.file_type AS file_type,
-      f.file_type AS file_type_kw,
+      f.file_type AS file_type_txt,
       f.file_format AS file_format,
 
       COLLECT(DISTINCT c.case_id) AS case_ids,
@@ -623,7 +623,7 @@ Indices:
       samp.sample_site AS sample_site_kw,
       head(labels(parent)) AS file_association,
       f.file_type AS file_type,
-      f.file_type AS file_type_kw,
+      f.file_type AS file_type_txt,
       f.file_format AS file_format,
 
       c.case_id AS case_ids,

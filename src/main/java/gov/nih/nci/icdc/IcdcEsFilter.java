@@ -140,7 +140,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 AGG_ENDPOINT, CASES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "breed_kw",
+                AGG_NAME, "breed",
                 WIDGET_QUERY, "caseCountByBreed",
                 FILTER_COUNT_QUERY, "filterCaseCountByBreed",
                 AGG_ENDPOINT, CASES_END_POINT
@@ -183,7 +183,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         ));
 
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "sample_site_kw",
+                AGG_NAME, "sample_site",
                 WIDGET_QUERY, "caseCountBySampleSite",
                 FILTER_COUNT_QUERY, "filterCaseCountBySampleSite",
                 AGG_ENDPOINT, SAMPLES_END_POINT
@@ -207,7 +207,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
-                AGG_NAME, "file_type_kw",
+                AGG_NAME, "file_type",
                 WIDGET_QUERY, "caseCountByFileType",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileType",
                 AGG_ENDPOINT, FILES_END_POINT
@@ -359,7 +359,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         JsonObject jsonObject = esService.send(request);
         Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, AGG_NAMES);
         JsonArray buckets = aggs.get(category);
-
         return getGroupCountHelper(buckets);
     }
 
@@ -405,7 +404,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"study_code", "study_code"},
                 new String[]{"study_type", "study_type"},
                 new String[]{"cohort", "cohort"},
-                new String[]{"breed", "breed_kw"},
+                new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
                 new String[]{"stage_of_disease", "stage_of_disease"},
                 new String[]{"age", "age"},
@@ -435,7 +434,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("study_code", "study_code"),
                 Map.entry("study_type", "study_type"),
                 Map.entry("cohort", "cohort"),
-                Map.entry("breed", "breed_kw"),
+                Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("stage_of_disease", "stage_of_disease"),
                 Map.entry("disease_site", "disease_site"),
@@ -458,7 +457,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"case_id", "case_id_kw"},
                 new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
-                new String[]{"sample_site", "sample_site_kw"},
+                new String[]{"sample_site", "sample_site"},
                 new String[]{"sample_type", "sample_type"},
                 new String[]{"sample_pathology", "sample_pathology"},
                 new String[]{"tumor_grade", "tumor_grade"},
@@ -499,7 +498,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("case_id", "case_id_kw"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
-                Map.entry("sample_site", "sample_site_kw"),
+                Map.entry("sample_site", "sample_site"),
                 Map.entry("sample_type", "sample_type"),
                 Map.entry("sample_pathology", "sample_pathology"),
                 Map.entry("tumor_grade", "tumor_grade"),
@@ -516,7 +515,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"file_name", "file_name_kw"},
-                new String[]{"file_type", "file_type_kw"},
+                new String[]{"file_type", "file_type"},
                 new String[]{"association", "file_association"},
                 new String[]{"file_description", "file_description"},
                 new String[]{"file_format", "file_format"},
@@ -565,7 +564,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("file_name", "file_name_kw"),
-                Map.entry("file_type", "file_type_kw"),
+                Map.entry("file_type", "file_type"),
                 Map.entry("association", "file_association"),
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
@@ -712,14 +711,14 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
                 GS_SEARCH_FIELD, List.of("sample_ids", "program_name", "clinical_study_designation",
-                    "case_id", "sample_site", "physical_sample_type", "general_sample_pathology"),
+                    "case_id", "sample_site_txt", "physical_sample_type", "general_sample_pathology"),
                 GS_SORT_FIELD, "sample_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation"},
                         new String[]{"case_id", "case_ids"},
-                        new String[]{"sample_site", "sample_site"},
+                        new String[]{"sample_site", "sample_site_txt"},
                         new String[]{"physical_sample_type", "physical_sample_type"},
                         new String[]{"general_sample_pathology", "general_sample_pathology"}
                 },
@@ -731,14 +730,14 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "case_count",
                 GS_RESULT_FIELD, "cases",
                 GS_SEARCH_FIELD, List.of("case_ids", "program_name", "clinical_study_designation",
-                    "disease_term", "breed"),
+                    "disease_term", "breed_txt"),
                 GS_SORT_FIELD, "case_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"case_id", "case_ids"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation"},
                         new String[]{"disease_term", "disease_term"},
-                        new String[]{"breed", "breed"}
+                        new String[]{"breed", "breed_txt"}
                 },
                 GS_CATEGORY_TYPE, "case"
         ));
@@ -748,12 +747,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD, List.of( "sample_ids", "file_name",
-                        "file_type", "case_ids", "program_name", "clinical_study_designation"),
+                        "file_type_txt", "case_ids", "program_name", "clinical_study_designation"),
                 GS_SORT_FIELD, "file_name_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids"},
                         new String[]{"file_name", "file_name"},
-                        new String[]{"file_type", "file_type"},
+                        new String[]{"file_type", "file_type_txt"},
                         new String[]{"case_id", "case_ids"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation"}
