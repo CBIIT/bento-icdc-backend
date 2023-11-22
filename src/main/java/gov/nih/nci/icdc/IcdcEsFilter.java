@@ -102,6 +102,30 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private Map<String, Object> searchCases(Map<String, Object> params) throws IOException {
+        // cast case_ids param to lowercase to standardize user input
+        String TARGET_PARAM = "case_ids";
+        String LOWERCASE_PARAM = "case_id_lc";
+        Map<String, Object> formattedParams = new HashMap<>();
+        params.forEach((key, value) -> {
+            if (key.equals(TARGET_PARAM)){
+                try{
+                    ArrayList<String> valuesList = (ArrayList<String>) value;
+                    ArrayList<String> lowercase = new ArrayList<>();
+                    valuesList.forEach(x -> {
+                        lowercase.add(x.toLowerCase());
+                    });
+                    formattedParams.put(LOWERCASE_PARAM, lowercase);
+                }
+                catch (Exception e){
+                    logger.error(e);
+                    // no action required
+                }
+            }
+            else{
+                formattedParams.put(key, value);
+            }
+        });
+        
         final String AGG_NAME = "agg_name";
         final String AGG_ENDPOINT = "agg_endpoint";
         final String WIDGET_QUERY = "widgetQueryName";
@@ -225,7 +249,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         }
         final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of("first"));
+        Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first"));
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
@@ -237,7 +261,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         int numberOfFiles = fileCountResult.get("count").getAsInt();
 
         Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
-        Map<String, Object> studyFileParam = new HashMap<>(params);
+        Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
         studyFileParam.put("file_level", List.of("study"));
         Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first"));
         studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
@@ -248,7 +272,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         caseCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject caseCountResult = esService.send(caseCountRequest);
         int numberOfCases = caseCountResult.get("count").getAsInt();
-
 
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES);
@@ -265,10 +288,9 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         data.put("numberOfFiles", numberOfFiles);
         data.put("numberOfStudyFiles", numberOfStudyFiles);
         data.put("numberOfAliquots", 0);
-        data.put("volumeOfData", getVolumeOfData(params, "file_size", FILES_END_POINT));
+        data.put("volumeOfData", getVolumeOfData(formattedParams, "file_size", FILES_END_POINT));
 
-
-        data.put("programsAndStudies", programsAndStudies(params));
+        data.put("programsAndStudies", programsAndStudies(formattedParams));
 
         // widgets data and facet filter counts
         for (var agg: TERM_AGGS) {
@@ -282,12 +304,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 widgetData = getGroupCountHelper(aggs.get(field));
                 data.put(widgetQueryName, widgetData);
             } else {
-                widgetData = subjectCountBy(field, params, endpoint);;
+                widgetData = subjectCountBy(field, formattedParams, endpoint);;
                 data.put(widgetQueryName, widgetData);
             }
             // filterSubjectCountByXXXX
-            if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
-                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;
+            if (formattedParams.containsKey(field) && ((List<String>)formattedParams.get(field)).size() > 0) {
+                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, formattedParams, endpoint);;
                 data.put(filterCountQueryName, filterCount);
             } else {
                 data.put(filterCountQueryName, widgetData);
