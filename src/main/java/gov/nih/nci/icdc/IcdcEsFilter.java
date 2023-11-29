@@ -856,7 +856,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_CATEGORY_TYPE, "value"
         ));
 
-        Set<String> combinedCategories = Set.of("model") ;
+        Set<String> combinedCategories = Set.of("model");
 
         for (Map<String, Object> category: searchCategories) {
             String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
@@ -900,7 +900,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
             } else {
                 result.put(resultFieldName, objects);
             }
-
         }
 
         List<Map<String, String>> about_results = searchAboutPage(input);
@@ -912,7 +911,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
             List<Object> pagedCategory = paginate((List)result.get(category), size, offset);
             result.put(category, pagedCategory);
         }
-
         return result;
     }
 }
