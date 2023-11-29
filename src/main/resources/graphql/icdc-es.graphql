@@ -260,6 +260,7 @@ type GS_About {
 
 type GS_Model {
   type: String
+  value: String
   highlight: String
   node_name: String
   property_name: String
