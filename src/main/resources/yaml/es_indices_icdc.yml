@@ -745,9 +745,9 @@ Indices:
 
     mapping:
       page:
-        type: search_as_you_type
+        type: text
       title:
-        type: search_as_you_type
+        type: text
       primaryContentImage:
         type: text
       content:
@@ -759,7 +759,7 @@ Indices:
 
     mapping:
       node:
-        type: search_as_you_type
+        type: text
       node_kw:
         type: keyword
 
@@ -769,17 +769,17 @@ Indices:
 
     mapping:
       node:
-        type: search_as_you_type
+        type: text
       property:
-        type: search_as_you_type
+        type: text
       property_kw:
         type: keyword
       property_description:
-        type: search_as_you_type
+        type: text
       property_required:
-        type: search_as_you_type
+        type: text
       property_type:
-        type: search_as_you_type
+        type: text
 
   - index_name: model_values
     type: model
@@ -787,16 +787,16 @@ Indices:
 
     mapping:
       node:
-        type: search_as_you_type
+        type: text
       property:
-        type: search_as_you_type
+        type: text
       property_description:
-        type: search_as_you_type
+        type: text
       property_required:
-        type: search_as_you_type
+        type: text
       property_type:
-        type: search_as_you_type
+        type: text
       value:
-        type: search_as_you_type
+        type: text
       value_kw:
         type: keyword
