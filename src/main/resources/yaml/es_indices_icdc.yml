@@ -212,6 +212,8 @@ Indices:
         type: text
       case_id_kw:
         type: keyword
+      case_id_lc:
+        type: keyword
       sample_ids:
         type: text
       sample_id_kw:
@@ -333,6 +335,7 @@ Indices:
 
       c.case_id AS case_ids,
       c.case_id AS case_id_kw,
+      toLower(c.case_id) AS case_id_lc,
       samp.sample_id AS sample_ids,
       samp.sample_id AS sample_id_kw,
 
@@ -422,6 +425,8 @@ Indices:
       case_ids:
         type: text
       case_id_kw:
+        type: keyword
+      case_id_lc:
         type: keyword
       sample_ids:
         type: text
@@ -545,6 +550,7 @@ Indices:
 
       COLLECT(DISTINCT c.case_id) AS case_ids,
       COLLECT(DISTINCT c.case_id) AS case_id_kw,
+      COLLECT(DISTINCT toLower(c.case_id)) AS case_id_lc,
       null AS sample_ids,
       null AS sample_id_kw,
       f.uuid as file_uuids,
@@ -628,6 +634,7 @@ Indices:
 
       c.case_id AS case_ids,
       c.case_id AS case_id_kw,
+      toLower(c.case_id) AS case_id_lc,
       samp.sample_id AS sample_ids,
       samp.sample_id AS sample_id_kw,
       f.uuid as file_uuids,
