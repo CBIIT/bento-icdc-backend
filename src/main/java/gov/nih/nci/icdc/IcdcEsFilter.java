@@ -474,6 +474,30 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
+        // cast case_ids param to lowercase to standardize user input
+        String TARGET_PARAM = "case_ids";
+        String LOWERCASE_PARAM = "case_id_lc";
+        Map<String, Object> formattedParams = new HashMap<>();
+        params.forEach((key, value) -> {
+            if (key.equals(TARGET_PARAM)){
+                try{
+                    ArrayList<String> valuesList = (ArrayList<String>) value;
+                    ArrayList<String> lowercase = new ArrayList<>();
+                    valuesList.forEach(x -> {
+                        lowercase.add(x.toLowerCase());
+                    });
+                    formattedParams.put(LOWERCASE_PARAM, lowercase);
+                }
+                catch (Exception e){
+                    logger.error(e);
+                    // no action required
+                }
+            }
+            else{
+                formattedParams.put(key, value);
+            }
+        });
+
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"sample_id", "sample_id_kw"},
                 new String[]{"case_id", "case_id_kw"},
@@ -530,10 +554,34 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("sample_preservation", "sample_preservation")
         );
 
-        return overview(SAMPLES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(SAMPLES_END_POINT, formattedParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
+        // cast case_ids param to lowercase to standardize user input
+        String TARGET_PARAM = "case_ids";
+        String LOWERCASE_PARAM = "case_id_lc";
+        Map<String, Object> formattedParams = new HashMap<>();
+        params.forEach((key, value) -> {
+            if (key.equals(TARGET_PARAM)){
+                try{
+                    ArrayList<String> valuesList = (ArrayList<String>) value;
+                    ArrayList<String> lowercase = new ArrayList<>();
+                    valuesList.forEach(x -> {
+                        lowercase.add(x.toLowerCase());
+                    });
+                    formattedParams.put(LOWERCASE_PARAM, lowercase);
+                }
+                catch (Exception e){
+                    logger.error(e);
+                    // no action required
+                }
+            }
+            else{
+                formattedParams.put(key, value);
+            }
+        });
+
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"file_name", "file_name_kw"},
@@ -599,7 +647,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("access_file", "file_size")
         );
 
-        return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(FILES_END_POINT, formattedParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
