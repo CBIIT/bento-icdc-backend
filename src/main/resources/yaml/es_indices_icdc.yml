@@ -407,8 +407,6 @@ Indices:
       sample_pathology:
         type: keyword
       sample_site:
-        type: text
-      sample_site_kw:
         type: keyword
 
       file_association:
@@ -423,15 +421,15 @@ Indices:
         type: keyword
 
       case_ids:
-        type: text
-      case_id_kw:
         type: keyword
+      case_ids_txt:
+        type: text
       case_id_lc:
         type: keyword
       sample_ids:
-        type: text
-      sample_id_kw:
         type: keyword
+      sample_ids_txt:
+        type: text
       file_uuids:
         type: keyword
 
@@ -440,9 +438,9 @@ Indices:
       clinical_study_designation:
         type: text
       file_name:
-        type: text
-      file_name_kw:
         type: keyword
+      file_name_txt:
+        type: text
       file_description:
         type: keyword
       file_size:
@@ -542,22 +540,21 @@ Indices:
       COLLECT(DISTINCT samp.summarized_sample_type) AS sample_type,
       COLLECT(DISTINCT samp.specific_sample_pathology) AS sample_pathology,
       COLLECT(DISTINCT samp.sample_site) AS sample_site,
-      COLLECT(DISTINCT samp.sample_site) AS sample_site_kw,
       'study' AS file_association,
       f.file_type AS file_type,
       f.file_type AS file_type_txt,
       f.file_format AS file_format,
 
       COLLECT(DISTINCT c.case_id) AS case_ids,
-      COLLECT(DISTINCT c.case_id) AS case_id_kw,
+      COLLECT(DISTINCT c.case_id) AS case_ids_txt,
       COLLECT(DISTINCT toLower(c.case_id)) AS case_id_lc,
       null AS sample_ids,
-      null AS sample_id_kw,
+      null AS sample_ids_txt,
       f.uuid as file_uuids,
 
       'study' AS file_level,
       f.file_name as file_name,
-      f.file_name as file_name_kw,
+      f.file_name as file_name_txt,
       f.file_description as file_description,
       f.file_size as file_size,
       s.clinical_study_designation AS study_code,
@@ -626,22 +623,21 @@ Indices:
       samp.summarized_sample_type AS sample_type,
       samp.specific_sample_pathology AS sample_pathology,
       samp.sample_site AS sample_site,
-      samp.sample_site AS sample_site_kw,
       head(labels(parent)) AS file_association,
       f.file_type AS file_type,
       f.file_type AS file_type_txt,
       f.file_format AS file_format,
 
       c.case_id AS case_ids,
-      c.case_id AS case_id_kw,
+      c.case_id AS case_ids_txt,
       toLower(c.case_id) AS case_id_lc,
       samp.sample_id AS sample_ids,
-      samp.sample_id AS sample_id_kw,
+      samp.sample_id AS sample_ids_txt,
       f.uuid as file_uuids,
 
       'case' AS file_level,
       f.file_name as file_name,
-      f.file_name as file_name_kw,
+      f.file_name as file_name_txt,
       f.file_description as file_description,
       f.file_size as file_size,
       s.clinical_study_designation AS study_code,
