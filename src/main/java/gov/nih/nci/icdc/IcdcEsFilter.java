@@ -434,8 +434,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Map<String, Object> formattedParams = formatParams(params, "case_ids", "case_id_lc");
 
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"sample_id", "sample_id_kw"},
-                new String[]{"case_id", "case_id_kw"},
+                new String[]{"sample_id", "sample_ids"},
+                new String[]{"case_id", "case_ids"},
                 new String[]{"case_id_lc", "case_id_lc"},
                 new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
@@ -448,8 +448,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"necropsy_sample", "necropsy_sample"},
                 new String[]{"sample_preservation", "sample_preservation"},
                 new String[]{"files", "files"},
-                new String[]{"physical_sample_type", "physical_sample_type_kw"},
-                new String[]{"general_sample_pathology", "general_sample_pathology_kw"},
+                new String[]{"physical_sample_type", "physical_sample_type"},
+                new String[]{"general_sample_pathology", "general_sample_pathology"},
                 new String[]{"tumor_sample_origin", "tumor_sample_origin"},
                 new String[]{"comment", "comment"},
                 new String[]{"individual_id", "individual_id"},
@@ -473,11 +473,11 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "sample_id_kw"; // Default sort order
+        String defaultSort = "sample_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("sample_id", "sample_id_kw"),
-                Map.entry("case_id", "case_id_kw"),
+                Map.entry("sample_id", "sample_ids"),
+                Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("sample_site", "sample_site"),
@@ -546,7 +546,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"other_cases", "other_cases"}
         };
 
-        String defaultSort = "file_name_kw"; // Default sort order
+        String defaultSort = "file_name"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("file_name", "file_name"),
@@ -697,17 +697,17 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
-                GS_SEARCH_FIELD, List.of("sample_ids", "program_name", "clinical_study_designation",
-                    "case_id", "sample_site_txt", "physical_sample_type", "general_sample_pathology"),
-                GS_SORT_FIELD, "sample_id_kw",
+                GS_SEARCH_FIELD, List.of("sample_ids_txt", "program_name", "clinical_study_designation",
+                    "case_ids_txt", "sample_site_txt", "physical_sample_type_txt", "general_sample_pathology_txt"),
+                GS_SORT_FIELD, "sample_ids",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"sample_id", "sample_ids"},
+                        new String[]{"sample_id", "sample_ids_txt"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation"},
-                        new String[]{"case_id", "case_ids"},
+                        new String[]{"case_id", "case_ids_txt"},
                         new String[]{"sample_site", "sample_site_txt"},
-                        new String[]{"physical_sample_type", "physical_sample_type"},
-                        new String[]{"general_sample_pathology", "general_sample_pathology"}
+                        new String[]{"physical_sample_type", "physical_sample_type_txt"},
+                        new String[]{"general_sample_pathology", "general_sample_pathology_txt"}
                 },
                 GS_CATEGORY_TYPE, "sample"
         ));
