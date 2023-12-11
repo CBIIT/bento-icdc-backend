@@ -209,15 +209,15 @@ Indices:
         type: keyword
 
       case_ids:
-        type: text
-      case_id_kw:
         type: keyword
+      case_ids_txt:
+        type: text
       case_id_lc:
         type: keyword
       sample_ids:
-        type: text
-      sample_id_kw:
         type: keyword
+      sample_ids_txt:
+        type: text
 
       program_name:
         type: text
@@ -228,13 +228,13 @@ Indices:
       sample_site_txt:
         type: text
       physical_sample_type:
-        type: text
-      physical_sample_type_kw:
         type: keyword
+      physical_sample_type_txt:
+        type: text
       general_sample_pathology:
-        type: text
-      general_sample_pathology_kw:
         type: keyword
+      general_sample_pathology_txt:
+        type: text
       tumor_grade:
         type: keyword
       sample_chronology:
@@ -334,10 +334,10 @@ Indices:
       COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
 
       c.case_id AS case_ids,
-      c.case_id AS case_id_kw,
+      c.case_id AS case_ids_txt,
       toLower(c.case_id) AS case_id_lc,
       samp.sample_id AS sample_ids,
-      samp.sample_id AS sample_id_kw,
+      samp.sample_id AS sample_ids_txt,
 
       samp.tumor_grade as tumor_grade,
       samp.sample_chronology as sample_chronology,
@@ -345,9 +345,9 @@ Indices:
       samp.necropsy_sample as necropsy_sample,
       samp.sample_preservation as sample_preservation,
       samp.physical_sample_type as physical_sample_type,
-      samp.physical_sample_type as physical_sample_type_kw,
+      samp.physical_sample_type as physical_sample_type_txt,
       samp.general_sample_pathology as general_sample_pathology,
-      samp.general_sample_pathology as general_sample_pathology_kw,
+      samp.general_sample_pathology as general_sample_pathology_txt,
       samp.tumor_sample_origin as tumor_sample_origin,
       samp.comment as comment,
 
