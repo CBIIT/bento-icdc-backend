@@ -682,7 +682,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_RESULT_FIELD, "studies",
                 GS_SEARCH_FIELD, List.of("program_id", "accession_id",
                         "clinical_study_name", "clinical_study_type", "clinical_study_designation"),
-                GS_SORT_FIELD, "clinical_study_name",
+                GS_SORT_FIELD, "clinical_study_name_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_id", "program_id"},
                         new String[]{"accession_id", "accession_id"},
