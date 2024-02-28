@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN mvn package -DskipTests
 # Stage 2: Production
-FROM tomcat:9.0.83-jdk11-temurin-jammy
+FROM tomcat:9.0.86-jdk11-temurin-jammy
 
 ENV JAVA_OPTS="-Xmx4096m"
 RUN apt-get update && apt-get install -y unzip  
