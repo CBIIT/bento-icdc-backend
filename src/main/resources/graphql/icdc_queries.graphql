@@ -417,6 +417,8 @@ type FollowUpNodeData {
 }
 
 type AdverseEventNodeData {
+    case_id: String
+    day_in_cycle: Int
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
     date_of_onset: String
@@ -1518,7 +1520,28 @@ type QueryType {
     WHERE s.clinical_study_designation = $study_code
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[:of_case]-(ae:adverse_event)
-    RETURN DISTINCT ae {.*}
+    RETURN DISTINCT {
+    case_id: c.case_id,
+    day_in_cycle: ae.day_in_cycle,
+    date_of_onset: ae.date_of_onset,
+    existing_adverse_event: ae.existing_adverse_event,
+    date_of_resolution: ae.date_of_resolution,
+    ongoing_adverse_event: ae.ongoing_adverse_event,
+    adverse_event_term: ae.adverse_event_term,
+    adverse_event_description: ae.adverse_event_description,
+    adverse_event_grade: ae.adverse_event_grade,
+    adverse_event_grade_description: ae.adverse_event_grade_description,
+    adverse_event_agent_name: ae.adverse_event_agent_name,
+    adverse_event_agent_dose: ae.adverse_event_agent_dose,
+    attribution_to_research: ae.attribution_to_research,
+    attribution_to_ind: ae.attribution_to_ind,
+    attribution_to_disease: ae.attribution_to_disease,
+    attribution_to_commercial: ae.attribution_to_commercial,
+    attribution_to_other: ae.attribution_to_other,
+    other_attribution_description: ae.other_attribution_description,
+    dose_limiting_toxicity: ae.dose_limiting_toxicity,
+    unexpected_adverse_event: ae.unexpected_adverse_event
+    }
     """, passThrough: true)
 
     offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """

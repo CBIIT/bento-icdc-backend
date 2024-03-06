@@ -908,6 +908,8 @@ type FollowUpNodeData {
 }
 
 type AdverseEventNodeData {
+    case_id: String
+    day_in_cycle: Int
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
     date_of_onset: String
