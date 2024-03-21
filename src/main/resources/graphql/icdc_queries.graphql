@@ -1521,7 +1521,6 @@ type QueryType {
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[:of_case]-(ae:adverse_event)
     WITH DISTINCT ae, c
-    ORDER BY c.case_id
     RETURN {
     case_id: c.case_id,
     day_in_cycle: ae.day_in_cycle,
@@ -1544,6 +1543,7 @@ type QueryType {
     dose_limiting_toxicity: ae.dose_limiting_toxicity,
     unexpected_adverse_event: ae.unexpected_adverse_event
     }
+    ORDER BY c.case_id
     """, passThrough: true)
 
     offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """
