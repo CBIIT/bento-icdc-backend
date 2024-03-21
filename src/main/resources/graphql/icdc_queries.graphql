@@ -1520,7 +1520,8 @@ type QueryType {
     WHERE s.clinical_study_designation = $study_code
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[:of_case]-(ae:adverse_event)
-    RETURN DISTINCT {
+    WITH DISTINCT ae, c
+    RETURN {
     case_id: c.case_id,
     day_in_cycle: ae.day_in_cycle,
     date_of_onset: ae.date_of_onset,
@@ -1542,6 +1543,7 @@ type QueryType {
     dose_limiting_toxicity: ae.dose_limiting_toxicity,
     unexpected_adverse_event: ae.unexpected_adverse_event
     }
+    ORDER BY c.case_id
     """, passThrough: true)
 
     offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """
