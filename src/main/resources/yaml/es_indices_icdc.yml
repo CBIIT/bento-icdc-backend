@@ -715,6 +715,8 @@ Indices:
         type: text
       accession_id:
         type: text
+      accession_id_kw:
+        type: keyword
       study_id_kw:
         type: keyword
       clinical_study_name_kw:
@@ -739,8 +741,9 @@ Indices:
       s.study_name AS study_name,
       s.study_type AS study_type,
       s.clinical_study_designation AS clinical_study_designation,
+      s.clinical_study_designation AS clinical_study_name_kw,
       s.accession_id AS accession_id,
-      s.accession_id AS clinical_study_name_kw,
+      s.accession_id AS accession_id_kw,
       s.clinical_study_name AS clinical_study_name,
       s.clinical_study_type AS clinical_study_type,
       COLLECT(DISTINCT sf.file_name) AS study_file_names
