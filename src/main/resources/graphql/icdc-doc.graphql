@@ -723,6 +723,20 @@ type FileInList {
     other_cases: [String]
     name: String
     drs_uri: String
+    file_location: String
+    patient_id: String
+    case_name: String
+    cohort_dose: String
+    cohort_id: String
+    demographic_id: String
+    additional_breed_detail: String
+    date_of_birth: String
+    diagnosis_id: String
+    histology_date: String
+    molecular_subtype: String
+    tumor_length: String
+    tumor_width: String
+    tumor_volume: String
 }
 
 type FileOverview {
