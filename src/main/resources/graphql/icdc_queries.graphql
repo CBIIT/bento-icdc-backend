@@ -958,7 +958,7 @@ type QueryType {
     WHEN 'file_uuid' THEN file_uuid
     WHEN 'md5sum' THEN md5sum
     WHEN 'individual_id' THEN individual_id
-    WHEN 'access_file' THEN (CASE file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END)
+    WHEN 'access_file' THEN (CASE file_size > 12000000 WHEN TRUE THEN 1 ELSE 0 END)
     WHEN 'sample_id' THEN sample_id
     ELSE file_name END DESC
     """, passThrough: true)
