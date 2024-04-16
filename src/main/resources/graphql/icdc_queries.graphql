@@ -1647,7 +1647,17 @@ type QueryType {
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[:of_case]-(e:enrollment)
     MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
-    RETURN DISTINCT ps {.*}
+    WITH DISTINCT c, ps
+    RETURN {
+    case_id: c.case_id,
+    date_of_surgery: ps.date_of_surgery,
+    procedure: ps.procedure,
+    anatomical_site_of_surgery: ps.anatomical_site_of_surgery,
+    surgical_finding: ps.surgical_finding,
+    residual_disease: ps.residual_disease,
+    therapeutic_indicator: ps.therapeutic_indicator
+    }
+    ORDER BY c.case_id
     """, passThrough: true)
 
     agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] @cypher(statement: """
