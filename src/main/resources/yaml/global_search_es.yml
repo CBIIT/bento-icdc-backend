@@ -37,7 +37,7 @@ queries:
           - programs
         filter:
           type: global
-          defaultSortField: program_id_kw
+          defaultSortField: program_acronym_kw
           searches:
             - field: program_id
               type: wildcard
@@ -52,7 +52,7 @@ queries:
           - programs
         filter:
           type: global
-          defaultSortField: program_id_kw
+          defaultSortField: program_acronym_kw
           searches:
             - field: program_id
               type: wildcard

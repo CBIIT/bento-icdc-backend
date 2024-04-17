@@ -61,6 +61,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     final String GS_HIGHLIGHT_DELIMITER = "$";
     final Set<String> RANGE_PARAMS = Set.of();
 
+    final String GS_ABOUT_PG_SORT_FIELD = "title";
+    final String GS_MODEL_PAGE_SORT_FIELD = "node_name";
 
     @Autowired
     ESService esService;
@@ -753,7 +755,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_RESULT_FIELD, "programs",
                 GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_acronym",
                         "program_external_url", "program_id"),
-                GS_SORT_FIELD, "program_id_kw",
+                GS_SORT_FIELD, "program_acronym_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_id", "program_id"},
                         new String[]{"program_name", "program_name"},
@@ -869,10 +871,20 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
         List<Map<String, String>> about_results = searchAboutPage(input);
         int about_count = about_results.size();
+        // Sort About page result set
+        if (about_results != null && about_count > 0) {
+            about_results.sort(Comparator.comparing(m -> (String) m.get(GS_ABOUT_PG_SORT_FIELD)));
+        }
         result.put("about_count", about_count);
         result.put("about_page", paginate(about_results, size, offset));
 
         for (String category: combinedCategories) {
+            // Sort Model combined result sets
+            List<Map<String, Object>> GSModelObjects = (List<Map<String, Object>>)result.get(category);
+            if (GSModelObjects != null && GSModelObjects.size() > 0) {
+                GSModelObjects.sort(Comparator.comparing(m -> (String) m.get(GS_MODEL_PAGE_SORT_FIELD)));
+            }
+
             List<Object> pagedCategory = paginate((List)result.get(category), size, offset);
             result.put(category, pagedCategory);
         }

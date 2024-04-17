@@ -686,6 +686,8 @@ Indices:
         type: text
       program_acronym:
         type: text
+      program_acronym_kw:
+        type: keyword
       program_external_url:
         type: text
       program_short_description:
@@ -697,6 +699,7 @@ Indices:
       RETURN DISTINCT
       'program' AS type,
       p.program_acronym AS program_acronym,
+      p.program_acronym AS program_acronym_kw,
       p.program_id AS program_id,
       p.program_id AS program_id_kw,
       p.program_name AS program_name,
