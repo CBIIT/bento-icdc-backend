@@ -414,6 +414,7 @@ type CycleNodeData {
 }
 
 type VisitNodeData {
+    case_id: String
     visit_date: String
     visit_number: Int
     visit_id: String
@@ -1578,12 +1579,14 @@ type QueryType {
     WHERE s.clinical_study_designation = $study_code
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[*1..2]-(v:visit)
-    WITH DISTINCT v
+    WITH DISTINCT v, c
     RETURN {
+    case_id: c.case_id,
     visit_date: v.visit_date,
     visit_number: v.visit_number,
     visit_id: v.visit_id
     }
+    ORDER BY v.visit_id
     """, passThrough: true)
 
     followUpNodeData(study_code: String!): [FollowUpNodeData] @cypher(statement: """
