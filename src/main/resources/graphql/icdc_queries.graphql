@@ -531,7 +531,8 @@ type AgentNodeData {
 }
 
 type DiseaseExtentNodeData {
-    lesion_number: String
+    case_id: String
+    lesion_number: Int
     lesion_site: String
     lesion_description: String
     previously_irradiated: String
@@ -541,7 +542,7 @@ type DiseaseExtentNodeData {
     date_of_evaluation: String
     measured_how: String
     longest_measurement: String
-    evaluation_number: String
+    evaluation_number: Int
     evaluation_code: String
 }
 
@@ -1712,7 +1713,23 @@ type QueryType {
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[*1..2]-(v:visit)
     MATCH (v)<-[:on_visit]-(de:disease_extent)
-    RETURN DISTINCT de {.*}
+    WITH DISTINCT de, c
+    RETURN {
+    case_id: c.case_id,
+    lesion_number: de.lesion_number,
+    lesion_site: de.lesion_site,
+    lesion_description: de.lesion_description,
+    previously_irradiated: de.previously_irradiated,
+    previously_treated: de.previously_treated,
+    measurable_lesion: de.measurable_lesion,
+    target_lesion: de.target_lesion,
+    date_of_evaluation: de.date_of_evaluation,
+    measured_how: de.measured_how,
+    longest_measurement: de.longest_measurement,
+    evaluation_number: de.evaluation_number,
+    evaluation_code: de.evaluation_code
+    }
+    ORDER BY c.case_id
     """, passThrough: true)
 
     labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
