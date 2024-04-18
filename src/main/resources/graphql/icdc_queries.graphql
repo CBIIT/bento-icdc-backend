@@ -1586,7 +1586,7 @@ type QueryType {
     visit_number: v.visit_number,
     visit_id: v.visit_id
     }
-    ORDER BY v.visit_id
+    ORDER BY c.case_id
     """, passThrough: true)
 
     followUpNodeData(study_code: String!): [FollowUpNodeData] @cypher(statement: """
