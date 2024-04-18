@@ -905,9 +905,10 @@ type CycleNodeData {
 }
 
 type VisitNodeData {
-    inferred: Boolean
-    visit_id: String
+    case_id: String
     visit_date: String
+    visit_number: Int
+    visit_id: String
 }
 
 type FollowUpNodeData {
@@ -1006,11 +1007,14 @@ type PriorSurgeryNodeData {
 }
 
 type PhysicalExamNodeData {
+    visit_id: String
     date_of_examination: String
-    pe_comment: String
+    day_in_cycle: Int
     body_system: String
-    case_id: String
     pe_finding: String
+    pe_comment: String
+    phase_pe: Int
+    assessment_timepoint: Int
 }
 
 type AgentNodeData {
@@ -1019,7 +1023,8 @@ type AgentNodeData {
 }
 
 type DiseaseExtentNodeData {
-    lesion_number: String
+    case_id: String
+    lesion_number: Int
     lesion_site: String
     lesion_description: String
     previously_irradiated: String
@@ -1029,7 +1034,7 @@ type DiseaseExtentNodeData {
     date_of_evaluation: String
     measured_how: String
     longest_measurement: String
-    evaluation_number: String
+    evaluation_number: Int
     evaluation_code: String
 }
 
