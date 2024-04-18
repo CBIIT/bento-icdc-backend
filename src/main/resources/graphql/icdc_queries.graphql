@@ -507,6 +507,7 @@ type PriorTherapyNodeData {
 }
 
 type PriorSurgeryNodeData {
+    case_id: String
     date_of_surgery: String
     procedure: String
     anatomical_site_of_surgery: String
