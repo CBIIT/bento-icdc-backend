@@ -515,11 +515,14 @@ type PriorSurgeryNodeData {
 }
 
 type PhysicalExamNodeData {
+    visit_id: String
     date_of_examination: String
-    pe_comment: String
+    day_in_cycle: Int
     body_system: String
-    case_id: String
     pe_finding: String
+    pe_comment: String
+    phase_pe: Int
+    assessment_timepoint: Int
 }
 
 type AgentNodeData {
