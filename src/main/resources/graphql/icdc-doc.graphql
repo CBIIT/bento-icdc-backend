@@ -1035,7 +1035,7 @@ type DiseaseExtentNodeData {
     date_of_evaluation: String
     measured_how: String
     longest_measurement: String
-    evaluation_number: Int
+    evaluation_number: String
     evaluation_code: String
 }
 
