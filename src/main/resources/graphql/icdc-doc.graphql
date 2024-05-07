@@ -1008,7 +1008,7 @@ type PriorSurgeryNodeData {
 }
 
 type PhysicalExamNodeData {
-    visit_id: String
+    case_id: String
     date_of_examination: String
     day_in_cycle: Int
     body_system: String

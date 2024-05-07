@@ -517,7 +517,7 @@ type PriorSurgeryNodeData {
 }
 
 type PhysicalExamNodeData {
-    visit_id: String
+    case_id: String
     date_of_examination: String
     day_in_cycle: Int
     body_system: String
@@ -1688,9 +1688,9 @@ type QueryType {
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[*1..2]-(v:visit)
     MATCH (v)<-[:on_visit]-(pe:physical_exam)
-    WITH DISTINCT pe, v
+    WITH DISTINCT pe, c
     RETURN {
-    visit_id: v.visit_id,
+    case_id: c.case_id,
     date_of_examination: pe.date_of_examination,
     day_in_cycle: pe.day_in_cycle,
     body_system: pe.body_system,
@@ -1699,7 +1699,7 @@ type QueryType {
     phase_pe: pe.phase_pe,
     assessment_timepoint: pe.assessment_timepoint
     }
-    ORDER BY v.visit_id
+    ORDER BY c.case_id
     """, passThrough: true)
 
     vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] @cypher(statement: """
