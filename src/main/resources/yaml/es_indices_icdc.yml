@@ -128,6 +128,7 @@ Indices:
       s.clinical_study_type AS study_type,
       CASE registrations
       WHEN [] THEN ['Not Applicable']
+      WHEN null THEN ['Not Applicable']
       ELSE registrations
       END AS biobank,
       CASE ci WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
@@ -314,6 +315,7 @@ Indices:
       s.clinical_study_type AS study_type,
       CASE registrations
       WHEN [] THEN ['Not Applicable']
+      WHEN null THEN ['Not Applicable']
       ELSE registrations
       END AS biobank,
       CASE ci WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
@@ -527,7 +529,11 @@ Indices:
       s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
       s.clinical_study_designation AS clinical_study_designation,
       s.clinical_study_type AS study_type,
-      COLLECT(DISTINCT bioB) AS biobank,
+      COLLECT (DISTINCT (CASE bioB
+      WHEN [] THEN ['Not Applicable']
+      WHEN null THEN ['Not Applicable']
+      ELSE bioB
+      END)) AS biobank,
       COLLECT(DISTINCT participation) AS study_participation,
       COLLECT(DISTINCT co.cohort_description) AS cohort,
       COLLECT(DISTINCT demo.breed) AS breed,
@@ -609,6 +615,7 @@ Indices:
       s.clinical_study_type AS study_type,
       CASE registrations
       WHEN [] THEN ['Not Applicable']
+      WHEN null THEN ['Not Applicable']
       ELSE registrations
       END AS biobank,
       CASE i WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
