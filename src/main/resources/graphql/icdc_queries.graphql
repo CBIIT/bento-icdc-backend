@@ -605,6 +605,11 @@ type LabExamNodeData {
 
 }
 
+type PriorSurgeryNodeDataOverview {
+  case_count: Int
+  prior_surgeries: [PriorSurgeryNodeData]
+}
+
 type QueryType {
     "Version"
     schemaVersion: String @cypher(statement: "RETURN '2.0.0'")
@@ -1743,5 +1748,28 @@ type QueryType {
     MATCH (c)<-[*1..2]-(v:visit)
     MATCH (v)<-[:on_visit]-(le:lab_exam)
     RETURN DISTINCT le {.*}
+    """, passThrough: true)
+
+    priorSurgeryNodeDataOverview(study_code: String!): PriorSurgeryNodeDataOverview @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    MATCH (s)<-[*1..2]-(c:case)
+    MATCH (c)<-[:of_case]-(e:enrollment)
+    MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
+    WITH DISTINCT c, ps
+    ORDER BY c.case_id
+    RETURN
+    {
+      case_count: COUNT(DISTINCT c),
+      prior_surgeries: collect({
+        case_id: c.case_id,
+        date_of_surgery: ps.date_of_surgery,
+        procedure: ps.procedure,
+        anatomical_site_of_surgery: ps.anatomical_site_of_surgery,
+        surgical_finding: ps.surgical_finding,
+        residual_disease: ps.residual_disease,
+        therapeutic_indicator: ps.therapeutic_indicator
+      })
+    }
     """, passThrough: true)
 }

@@ -1096,6 +1096,11 @@ type LabExamNodeData {
 
 }
 
+type PriorSurgeryNodeDataOverview {
+  case_count: Int
+  prior_surgeries: [PriorSurgeryNodeData]
+}
+
 type QueryType {
     "Version"
     schemaVersion: String 
@@ -1221,4 +1226,6 @@ type QueryType {
     diseaseExtentNodeData(study_code: String!): [DiseaseExtentNodeData] 
 
     labExamNodeData(study_code: String!): [LabExamNodeData] 
+
+    priorSurgeryNodeDataOverview(study_code: String!): PriorSurgeryNodeDataOverview 
 }
