@@ -736,7 +736,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD, List.of( "sample_ids_txt", "file_name_txt",
-                        "file_type_txt", "case_ids_txt", "program_name", "clinical_study_designation"),
+                        "file_type_txt", "case_ids_txt", "program_name", "clinical_study_designation_txt"),
                 GS_SORT_FIELD, "file_name",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids_txt"},
@@ -744,7 +744,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                         new String[]{"file_type", "file_type_txt"},
                         new String[]{"case_id", "case_ids_txt"},
                         new String[]{"program_name", "program_name"},
-                        new String[]{"clinical_study_designation", "clinical_study_designation"}
+                        new String[]{"clinical_study_designation", "clinical_study_designation_txt"}
                 },
                 GS_CATEGORY_TYPE, "file"
         ));

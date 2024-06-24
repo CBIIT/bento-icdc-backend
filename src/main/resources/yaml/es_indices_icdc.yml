@@ -387,18 +387,18 @@ Indices:
         type: keyword
       study_participation:
         type: keyword
-      breed:
-        type: keyword
+      # breed:
+      #   type: keyword
       diagnosis:
         type: keyword
       disease_site:
         type: keyword
-      stage_of_disease:
-        type: keyword
+      # stage_of_disease:
+      #   type: keyword
       response_to_treatment:
         type: keyword
-      sex:
-        type: keyword
+      # sex:
+      #   type: keyword
       neutered_status:
         type: keyword
 
@@ -406,17 +406,17 @@ Indices:
         type: keyword
       sample_pathology:
         type: keyword
-      sample_site:
-        type: keyword
+      # sample_site:
+      #   type: keyword
 
       file_association:
         type: keyword
-      file_type:
-        type: keyword
+      # file_type:
+      #   type: keyword
       file_type_txt:
         type: text
-      file_format:
-        type: keyword
+      # file_format:
+      #   type: keyword
       file_level:
         type: keyword
 
@@ -435,17 +435,132 @@ Indices:
 
       program_name:
         type: text
-      clinical_study_designation:
+      # need to update to clinical_study_designation_txt
+      # adjust prop name accordingly in other queries
+      # clinical_study_designation:
+      #   type: text
+      clinical_study_designation_txt:
         type: text
-      file_name:
-        type: keyword
+      # file_name:
+      #   type: keyword
       file_name_txt:
         type: text
-      file_description:
-        type: keyword
-      file_size:
-        type: double
+      # file_description:
+      #   type: keyword
+      # file_size:
+      #   type: double
       study_code:
+        type: keyword
+      # physical_sample_type:
+      #   type: keyword
+      # general_sample_pathology:
+      #   type: keyword
+      # tumor_sample_origin:
+      #   type: keyword
+      # summarized_sample_type:
+      #   type: keyword
+      # specific_sample_pathology:
+      #   type: keyword
+      # date_of_sample_collection:
+      #   type: keyword
+      # tumor_grade:
+      #   type: keyword
+      # sample_chronology:
+      #   type: keyword
+      # percentage_tumor:
+      #   type: keyword
+      # necropsy_sample:
+      #   type: keyword
+      # sample_preservation:
+      #   type: keyword
+      # comment:
+      #   type: keyword
+      individual_id:
+        type: keyword
+      # patient_age_at_enrollment:
+      #   type: keyword
+      # neutered_indicator:
+      #   type: keyword
+      # weight:
+      #   type: keyword
+      # primary_disease_site:
+      #   type: keyword
+      # date_of_diagnosis:
+      #   type: keyword
+      # histology_cytopathology:
+      #   type: keyword
+      # histological_grade:
+      #   type: keyword
+      # best_response:
+      #   type: keyword
+      # pathology_report:
+      #   type: keyword
+      # treatment_data:
+      #   type: keyword
+      # follow_up_data:
+      #   type: keyword
+      # concurrent_disease:
+      #   type: keyword
+      # concurrent_disease_type:
+      #   type: keyword
+      # cohort_description:
+      #   type: keyword
+      arm:
+        type: keyword
+      other_cases:
+        type: keyword
+
+      # file manifest generation
+      # STUDY
+      clinical_study_id:
+        type: keyword
+      clinical_study_designation:
+        type: keyword
+      clinical_study_name:
+        type: keyword
+      clinical_study_description:
+        type: keyword
+      clinical_study_type:
+        type: keyword
+      date_of_iacuc_approval:
+        type: keyword
+      dates_of_conduct:
+        type: keyword
+      accession_id:
+        type: keyword
+      study_disposition:
+        type: keyword
+
+      # DEMOGRAPHIC
+      demographic_id:
+        type: keyword
+      breed:
+        type: keyword
+      additional_breed_detail:
+        type: keyword
+      patient_age_at_enrollment:
+        type: double
+      date_of_birth:
+        type: keyword
+      sex:
+        type: keyword
+      weight:
+        type: double
+      neutered_indicator:
+        type: keyword
+
+      # CASE
+      case_id:
+        type: keyword
+      patient_id:
+        type: keyword
+      patient_first_name:
+        type: keyword
+
+      # SAMPLE
+      sample_id:
+        type: keyword
+      sample_site:
         type: keyword
       physical_sample_type:
         type: keyword
@@ -455,35 +570,45 @@ Indices:
         type: keyword
       summarized_sample_type:
         type: keyword
+      molecular_subtype:
+        type: keyword
       specific_sample_pathology:
         type: keyword
       date_of_sample_collection:
         type: keyword
-      tumor_grade:
-        type: keyword
       sample_chronology:
         type: keyword
-      percentage_tumor:
-        type: keyword
       necropsy_sample:
+        type: keyword
+      tumor_grade:
+        type: keyword
+      length_of_tumor:
+        type: double
+      width_of_tumor:
+        type: double
+      volume_of_tumor:
+        type: double
+      percentage_tumor:
         type: keyword
       sample_preservation:
         type: keyword
       comment:
         type: keyword
-      individual_id:
+
+      # DIAGNOSIS
+      diagnosis_id:
         type: keyword
-      patient_age_at_enrollment:
-        type: keyword
-      neutered_indicator:
-        type: keyword
-      weight:
+      disease_term:
         type: keyword
       primary_disease_site:
+        type: keyword
+      stage_of_disease:
         type: keyword
       date_of_diagnosis:
         type: keyword
       histology_cytopathology:
+        type: keyword
+      date_of_histology_confirmation:
         type: keyword
       histological_grade:
         type: keyword
@@ -499,11 +624,39 @@ Indices:
         type: keyword
       concurrent_disease_type:
         type: keyword
+
+      # FILE
+      file_name:
+        type: keyword
+      file_type:
+        type: keyword
+      file_description:
+        type: keyword
+      file_format:
+        type: keyword
+      file_size:
+        type: double
+      md5sum:
+        type: keyword
+      file_status:
+        type: keyword
+      uuid:
+        type: keyword
+      file_location:
+        type: keyword
+
+      # COHORT
+      cohort:
+        type: keyword
       cohort_description:
         type: keyword
-      arm:
+      cohort_dose:
         type: keyword
-      other_cases:
+      cohort_id:
+        type: keyword
+
+      # missing props for file manifest
+      drs_uri:
         type: keyword
 
     cypher_query: "
@@ -518,6 +671,8 @@ Indices:
       OPTIONAL MATCH (c)<--(samp:sample)
       OPTIONAL MATCH (co)-->(a:study_arm)
       WITH DISTINCT f, c, p, s, a, co, demo, diag, samp, o, i,
+      'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
+      f.uuid AS file_uuid,
       CASE i WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS participation,
       CASE r.registration_origin WHEN s.clinical_study_designation THEN 'Not Applicable' ELSE r.registration_origin END AS bioB
       return DISTINCT
@@ -525,13 +680,29 @@ Indices:
       p.program_name AS program_name,
       p.program_acronym AS program,
       s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
+      s.clinical_study_designation AS clinical_study_designation_txt,
       s.clinical_study_designation AS clinical_study_designation,
       s.clinical_study_type AS study_type,
+      s.clinical_study_type AS clinical_study_type,
+      s.clinical_study_id AS clinical_study_id,
+      s.clinical_study_name AS clinical_study_name,
+      s.clinical_study_description AS clinical_study_description,
+      s.date_of_iacuc_approval AS date_of_iacuc_approval,
+      s.dates_of_conduct AS dates_of_conduct,
+      s.accession_id AS accession_id,
+      s.study_disposition AS study_disposition,
+      COLLECT(DISTINCT demo.demographic_id) AS demographic_id,
+      COLLECT(DISTINCT demo.additional_breed_detail) AS additional_breed_detail,
+      COLLECT(DISTINCT demo.date_of_birth) AS date_of_birth,
       COLLECT(DISTINCT bioB) AS biobank,
       COLLECT(DISTINCT participation) AS study_participation,
       COLLECT(DISTINCT co.cohort_description) AS cohort,
+      COLLECT(DISTINCT co.cohort_dose) AS cohort_dose,
+      COLLECT(DISTINCT co.cohort_id) AS cohort_id,
       COLLECT(DISTINCT demo.breed) AS breed,
+      COLLECT(DISTINCT diag.diagnosis_id) AS diagnosis_id,
       COLLECT(DISTINCT diag.disease_term) AS diagnosis,
+      COLLECT(DISTINCT diag.disease_term) AS disease_term,
       COLLECT(DISTINCT diag.primary_disease_site) as disease_site,
       COLLECT(DISTINCT diag.stage_of_disease) AS stage_of_disease,
       COLLECT(DISTINCT diag.best_response) AS response_to_treatment,
@@ -539,33 +710,46 @@ Indices:
       COLLECT(DISTINCT demo.neutered_indicator) AS neutered_status,
       COLLECT(DISTINCT samp.summarized_sample_type) AS sample_type,
       COLLECT(DISTINCT samp.specific_sample_pathology) AS sample_pathology,
-      COLLECT(DISTINCT samp.sample_site) AS sample_site,
       'study' AS file_association,
       f.file_type AS file_type,
       f.file_type AS file_type_txt,
       f.file_format AS file_format,
+      f.uuid AS uuid,
+      f.md5sum AS md5sum,
+      f.file_status AS file_status,
+      f.file_location AS file_location,
+      drs_prefix + file_uuid AS drs_uri,
 
       COLLECT(DISTINCT c.case_id) AS case_ids,
       COLLECT(DISTINCT c.case_id) AS case_ids_txt,
       COLLECT(DISTINCT toLower(c.case_id)) AS case_id_lc,
+      COLLECT(DISTINCT c.case_id) AS case_id,
+      COLLECT(DISTINCT c.patient_id) AS patient_id,
+      COLLECT(DISTINCT c.patient_first_name) AS patient_first_name,
+      null AS sample_id,
       null AS sample_ids,
       null AS sample_ids_txt,
+      null AS sample_site,
       f.uuid as file_uuids,
 
       'study' AS file_level,
       f.file_name as file_name,
       f.file_name as file_name_txt,
       f.file_description as file_description,
-      f.file_size as file_size,
+      f.file_size AS file_size,
       s.clinical_study_designation AS study_code,
       null as physical_sample_type,
       null as general_sample_pathology,
       null as tumor_sample_origin,
       null AS summarized_sample_type,
+      null AS molecular_subtype,
       null as specific_sample_pathology,
       null as date_of_sample_collection,
       null as tumor_grade,
       null as sample_chronology,
+      null AS length_of_tumor,
+      null AS width_of_tumor,
+      null AS volume_of_tumor,
       null as percentage_tumor,
       null as necropsy_sample,
       null as sample_preservation,
@@ -577,6 +761,7 @@ Indices:
       null as primary_disease_site,
       null as date_of_diagnosis,
       null as histology_cytopathology,
+      null AS date_of_histology_confirmation,
       null as histological_grade,
       null AS best_response,
       null as pathology_report,
@@ -599,22 +784,40 @@ Indices:
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (co)-->(a:study_arm)
       WITH DISTINCT f, c, p, s, a, co, demo, diag, o, i, samp, parent,
+      'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
+      f.uuid AS file_uuid,
       COLLECT(CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
       return
       'file' AS type,
       p.program_name AS program_name,
       p.program_acronym AS program,
       s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
+      s.clinical_study_designation AS clinical_study_designation_txt,
       s.clinical_study_designation AS clinical_study_designation,
       s.clinical_study_type AS study_type,
+      s.clinical_study_type AS clinical_study_type,
+      s.clinical_study_id AS clinical_study_id,
+      s.clinical_study_name AS clinical_study_name,
+      s.clinical_study_description AS clinical_study_description,
+      s.date_of_iacuc_approval AS date_of_iacuc_approval,
+      s.dates_of_conduct AS dates_of_conduct,
+      s.accession_id AS accession_id,
+      s.study_disposition AS study_disposition,
+      demo.demographic_id AS demographic_id,
+      demo.additional_breed_detail AS additional_breed_detail,
+      demo.date_of_birth AS date_of_birth,
       CASE registrations
       WHEN [] THEN ['Not Applicable']
       ELSE registrations
       END AS biobank,
       CASE i WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
       co.cohort_description AS cohort,
+      co.cohort_dose AS cohort_dose,
+      co.cohort_id AS cohort_id,
       demo.breed AS breed,
+      diag.diagnosis_id AS diagnosis_id,
       diag.disease_term AS diagnosis,
+      diag.disease_term AS disease_term,
       diag.primary_disease_site as disease_site,
       diag.stage_of_disease AS stage_of_disease,
       diag.best_response AS response_to_treatment,
@@ -622,17 +825,26 @@ Indices:
       demo.neutered_indicator AS neutered_status,
       samp.summarized_sample_type AS sample_type,
       samp.specific_sample_pathology AS sample_pathology,
-      samp.sample_site AS sample_site,
       head(labels(parent)) AS file_association,
       f.file_type AS file_type,
       f.file_type AS file_type_txt,
       f.file_format AS file_format,
+      f.uuid AS uuid,
+      f.md5sum AS md5sum,
+      f.file_status AS file_status,
+      f.file_location AS file_location,
+      drs_prefix + file_uuid AS drs_uri,
 
       c.case_id AS case_ids,
       c.case_id AS case_ids_txt,
       toLower(c.case_id) AS case_id_lc,
+      c.case_id AS case_id,
+      c.patient_id AS patient_id,
+      c.patient_first_name AS patient_first_name,
+      samp.sample_id AS sample_id,
       samp.sample_id AS sample_ids,
       samp.sample_id AS sample_ids_txt,
+      samp.sample_site AS sample_site,
       f.uuid as file_uuids,
 
       'case' AS file_level,
@@ -645,10 +857,14 @@ Indices:
       samp.general_sample_pathology as general_sample_pathology,
       samp.tumor_sample_origin as tumor_sample_origin,
       samp.summarized_sample_type AS summarized_sample_type,
+      samp.molecular_subtype AS molecular_subtype,
       samp.specific_sample_pathology as specific_sample_pathology,
       samp.date_of_sample_collection as date_of_sample_collection,
       samp.tumor_grade as tumor_grade,
       samp.sample_chronology as sample_chronology,
+      samp.length_of_tumor AS length_of_tumor,
+      samp.width_of_tumor AS width_of_tumor,
+      samp.volume_of_tumor AS volume_of_tumor,
       samp.percentage_tumor as percentage_tumor,
       samp.necropsy_sample as necropsy_sample,
       samp.sample_preservation as sample_preservation,
@@ -660,6 +876,7 @@ Indices:
       diag.primary_disease_site as primary_disease_site,
       diag.date_of_diagnosis as date_of_diagnosis,
       diag.histology_cytopathology as histology_cytopathology,
+      diag.date_of_histology_confirmation AS date_of_histology_confirmation,
       diag.histological_grade as histological_grade,
       diag.best_response AS best_response,
       diag.pathology_report as pathology_report,
