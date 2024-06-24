@@ -1092,9 +1092,9 @@ type VitalSignsNodeData {
     body_temperature_original: Float
 }
 
-type LabExamNodeData {
+# type LabExamNodeData {
 
-}
+# }
 
 type PriorSurgeryNodeDataOverview {
   case_count: Int
@@ -1225,7 +1225,7 @@ type QueryType {
 
     diseaseExtentNodeData(study_code: String!): [DiseaseExtentNodeData] 
 
-    labExamNodeData(study_code: String!): [LabExamNodeData] 
+    # labExamNodeData(study_code: String!): [LabExamNodeData] 
 
     priorSurgeryNodeDataOverview(study_code: String!): PriorSurgeryNodeDataOverview 
 }
