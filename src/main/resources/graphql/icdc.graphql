@@ -1092,9 +1092,9 @@ type VitalSignsNodeData {
     body_temperature_original: Float
 }
 
-type LabExamNodeData {
+# type LabExamNodeData {
 
-}
+# }
 
 type PriorSurgeryNodeDataOverview {
   case_count: Int
@@ -2232,14 +2232,14 @@ type QueryType {
     ORDER BY c.case_id
     """, passThrough: true)
 
-    labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
-    MATCH (s:study)
-    WHERE s.clinical_study_designation = $study_code
-    MATCH (s)<-[*1..2]-(c:case)
-    MATCH (c)<-[*1..2]-(v:visit)
-    MATCH (v)<-[:on_visit]-(le:lab_exam)
-    RETURN DISTINCT le {.*}
-    """, passThrough: true)
+    # labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
+    # MATCH (s:study)
+    # WHERE s.clinical_study_designation = $study_code
+    # MATCH (s)<-[*1..2]-(c:case)
+    # MATCH (c)<-[*1..2]-(v:visit)
+    # MATCH (v)<-[:on_visit]-(le:lab_exam)
+    # RETURN DISTINCT le {.*}
+    # """, passThrough: true)
 
     priorSurgeryNodeDataOverview(study_code: String!): PriorSurgeryNodeDataOverview @cypher(statement: """
     MATCH (s:study)
