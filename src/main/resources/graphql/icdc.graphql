@@ -1134,6 +1134,8 @@ type QueryType {
     programCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (s:study {clinical_study_designation: $study_code}) OPTIONAL MATCH (s)-[:member_of]->(p: program)  return count(DISTINCT(p))")
     programsCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)-[:member_of]->(p:program) return count(DISTINCT(p))")
 
+    creatManifest(uuids: [String]): String
+
     filesInList(uuids: [String], order_by: String = ""): [FileInList] @cypher(statement: """
     MATCH (f:file)
     WHERE f.uuid in $uuids

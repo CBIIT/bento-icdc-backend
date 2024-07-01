@@ -1134,6 +1134,8 @@ type QueryType {
     programCountOfStudy(study_code: String!): Int 
     programsCountOfCase(case_id: String!): Int 
 
+    creatManifest(uuids: [String]): String
+
     filesInList(uuids: [String], order_by: String = ""): [FileInList] 
 
     filesInListDesc(uuids: [String], order_by: String = ""): [FileInList] 
