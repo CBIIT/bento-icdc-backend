@@ -74,6 +74,7 @@ type assay {
   sample: sample @relation(name:"of_sample", direction:OUT)
   files: [file] @relation(name:"of_assay", direction:IN)
   images: [image] @relation(name:"of_assay", direction:IN)
+  schema_validation_placeholder: String
 }
 
 type biospecimen_source {
@@ -228,6 +229,7 @@ type follow_up {
 
 type image {
   assay: assay @relation(name:"of_assay", direction:OUT)
+  schema_validation_placeholder: String
 }
 
 type image_collection {
@@ -241,6 +243,7 @@ type image_collection {
 
 type lab_exam {
   visit: visit @relation(name:"on_visit", direction:OUT)
+  schema_validation_placeholder: String
 }
 
 type off_study {
