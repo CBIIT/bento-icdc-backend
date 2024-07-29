@@ -947,7 +947,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Yaml yaml = new Yaml();
                 return yaml.load(yamlData);
             } catch (Exception e) {
-                throw new UnirestException("Failed to parse YAML: " + e.getMessage() + "\nYAML Content: " + yamlData);
+                throw new UnirestException("Failed to parse YAML: " + e.getMessage());
             }
         } else {
             throw new UnirestException("Failed to fetch manifest YAML from URL: " + url + ", status: " + response.getStatus());
