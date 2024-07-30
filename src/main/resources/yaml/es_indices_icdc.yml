@@ -435,8 +435,6 @@ Indices:
 
       program_name:
         type: text
-      # need to update to clinical_study_designation_txt
-      # adjust prop name accordingly in other queries
       # clinical_study_designation:
       #   type: text
       clinical_study_designation_txt:
