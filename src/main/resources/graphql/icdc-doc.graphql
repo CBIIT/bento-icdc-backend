@@ -73,7 +73,8 @@ type agent_administration {
 type assay {
   sample: sample 
   files: [file] 
-  images: [image] 
+  images: [image]
+  schema_validation_placeholder: String 
 }
 
 type biospecimen_source {
@@ -227,7 +228,8 @@ type follow_up {
 }
 
 type image {
-  assay: assay 
+  assay: assay
+  schema_validation_placeholder: String
 }
 
 type image_collection {
@@ -240,7 +242,8 @@ type image_collection {
 }
 
 type lab_exam {
-  visit: visit 
+  visit: visit
+  schema_validation_placeholder: String
 }
 
 type off_study {
@@ -1092,8 +1095,13 @@ type VitalSignsNodeData {
     body_temperature_original: Float
 }
 
-type LabExamNodeData {
+# type LabExamNodeData {
 
+# }
+
+type PriorSurgeryNodeDataOverview {
+  case_count: Int
+  prior_surgeries: [PriorSurgeryNodeData]
 }
 
 type QueryType {
@@ -1220,5 +1228,7 @@ type QueryType {
 
     diseaseExtentNodeData(study_code: String!): [DiseaseExtentNodeData] 
 
-    labExamNodeData(study_code: String!): [LabExamNodeData] 
+    # labExamNodeData(study_code: String!): [LabExamNodeData] 
+
+    priorSurgeryNodeDataOverview(study_code: String!): PriorSurgeryNodeDataOverview 
 }

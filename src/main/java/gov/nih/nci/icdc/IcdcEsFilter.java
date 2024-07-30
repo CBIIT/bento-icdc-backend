@@ -907,7 +907,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
             // Sort Model combined result sets
             List<Map<String, Object>> GSModelObjects = (List<Map<String, Object>>)result.get(category);
             if (GSModelObjects != null && GSModelObjects.size() > 0) {
-                GSModelObjects.sort(Comparator.comparing(m -> (String) m.get(GS_MODEL_PAGE_SORT_FIELD)));
+                // replace alphanumeric val and sort result set
+                GSModelObjects.sort(Comparator.comparing(m -> ((String) m.get(GS_MODEL_PAGE_SORT_FIELD))
+                  .replaceAll("[^a-zA-Z0-9]", " ")
+                ));
             }
 
             List<Object> pagedCategory = paginate((List)result.get(category), size, offset);
