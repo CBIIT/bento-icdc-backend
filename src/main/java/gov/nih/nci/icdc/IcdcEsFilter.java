@@ -14,8 +14,15 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
+
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.yaml.snakeyaml.Yaml;
+
 @Component
 public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
@@ -64,6 +71,20 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     final String GS_ABOUT_PG_SORT_FIELD = "title";
     final String GS_MODEL_PAGE_SORT_FIELD = "node_name";
 
+    final String RAW_MANIFEST_YAML_URL = "https://raw.githubusercontent.com/CBIIT/icdc-model-tool/develop/model-desc/icdc-manifest-props.yml";
+    final String EXPORT_PROPS = "ExportProps";
+    final String PROPERTY = "property";
+    final String DISPLAY = "display";
+    static final Map<String, String> STATIC_PROPS;
+    static {
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        map.put("file_name", "name");
+        map.put("drs_uri", "drs_uri");
+        map.put("clinical_study_designation", "Study Code");
+        map.put("case_id", "Case ID");
+        STATIC_PROPS = Collections.unmodifiableMap(map);
+    }
+
     @Autowired
     ESService esService;
 
@@ -98,6 +119,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                         .dataFetcher("globalSearch", env -> {
                             Map<String, Object> args = env.getArguments();
                             return globalSearch(args);
+                        })
+                        .dataFetcher("createManifest", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return createManifest(args);
                         })
                 )
                 .build();
@@ -736,7 +761,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD, List.of( "sample_ids_txt", "file_name_txt",
-                        "file_type_txt", "case_ids_txt", "program_name", "clinical_study_designation"),
+                        "file_type_txt", "case_ids_txt", "program_name", "clinical_study_designation_txt"),
                 GS_SORT_FIELD, "file_name",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids_txt"},
@@ -744,7 +769,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                         new String[]{"file_type", "file_type_txt"},
                         new String[]{"case_id", "case_ids_txt"},
                         new String[]{"program_name", "program_name"},
-                        new String[]{"clinical_study_designation", "clinical_study_designation"}
+                        new String[]{"clinical_study_designation", "clinical_study_designation_txt"}
                 },
                 GS_CATEGORY_TYPE, "file"
         ));
@@ -915,5 +940,115 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         });
 
         return formattedParams;
+    }
+
+    private Map<String, Object> getManifestYaml(String url) throws UnirestException {
+        HttpResponse<String> response = Unirest.get(url).asString();
+        if (response.getStatus() == 200) {
+            String yamlData = response.getBody();
+            try {
+                Yaml yaml = new Yaml();
+                return yaml.load(yamlData);
+            } catch (Exception e) {
+                throw new UnirestException("Failed to parse YAML: " + e.getMessage());
+            }
+        } else {
+            throw new UnirestException("Failed to fetch manifest YAML from URL: " + url + ", status: " + response.getStatus());
+        }
+    }
+
+    private Map<String, String> parseYamlExportProps(Map<String, Object> yamlData) {
+        Map<String, String> exportPropsMap = new LinkedHashMap<>();
+
+        for (Map.Entry<String, Object> yamlEntry: yamlData.entrySet()) {
+            Map<String, Object> nodeProps = (Map<String, Object>) yamlEntry.getValue();
+            for (Map.Entry<String, Object> propEntry : nodeProps.entrySet()) {
+                Object propValue = propEntry.getValue();
+                if (propValue instanceof Map) {
+                    Map<String, List<Map<String, String>>> propsMap = (Map<String, List<Map<String, String>>>) propValue;
+                    for (Map.Entry<String, List<Map<String, String>>> propsMapEntry : propsMap.entrySet()) {
+                        String key = propsMapEntry.getKey();
+                        List<Map<String, String>> propList = propsMapEntry.getValue();
+                        for (Map<String, String> prop : propList) {
+                            String property = prop.get(PROPERTY);
+                            String display = prop.get(DISPLAY);
+                            if (key.equals(EXPORT_PROPS)) {
+                                exportPropsMap.put(property, display);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return exportPropsMap;
+    }
+
+    private LinkedHashMap<String, String> combinePropsMaps(Map<String, String> staticProps, Map<String, String> exportProps) {
+        LinkedHashMap<String, String> combinedPropsMap = new LinkedHashMap<>();
+        for (Map.Entry<String, String> staticEntry : staticProps.entrySet()) {
+            combinedPropsMap.put(staticEntry.getKey(), staticEntry.getValue());
+        }
+        for (Map.Entry<String, String> exportEntry : exportProps.entrySet()) {
+            combinedPropsMap.put(exportEntry.getKey(), exportEntry.getValue());
+        }
+        return combinedPropsMap;
+    }
+
+    private String[][] convertMapToPropArray(Map<String, String> map) {
+        String[][] propArray = new String[map.size()][2];
+        int i = 0;
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            propArray[i][0] = entry.getKey();
+            propArray[i][1] = entry.getKey();
+            i++;
+        }
+        return propArray;
+    }
+
+    private String buildManifestCSV(LinkedHashMap<String, String> manifestProps, List<Map<String, Object>> overviewData) {
+        StringBuilder csvBuilder = new StringBuilder();
+        String headers = manifestProps.values().stream().collect(Collectors.joining(","));
+        csvBuilder.append(headers).append("\n");
+
+        for (Map<String, Object> record : overviewData) {
+            List<String> row = new ArrayList<>();
+            for (String key : manifestProps.keySet()) {
+                Object value = record.get(key);
+                row.add(value != null ? value.toString() : "");
+            }
+            csvBuilder.append(String.join(",", row)).append("\n");
+        }
+
+        return csvBuilder.toString();
+    }
+
+    private String createManifest(Map<String, Object> params) throws IOException, UnirestException {
+        Map<String, Object> yamlData = getManifestYaml(RAW_MANIFEST_YAML_URL);
+        Map<String, String> manifestExportProps = parseYamlExportProps(yamlData);
+        LinkedHashMap<String, String> combinedManifestProps = combinePropsMaps(STATIC_PROPS, manifestExportProps);
+        
+        final String[][] PROPERTIES = convertMapToPropArray(combinedManifestProps);
+        String defaultSort = "file_name";
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("file_name", "file_name"),
+                Map.entry("file_type", "file_type"),
+                Map.entry("file_association", "file_association"),
+                Map.entry("file_description", "file_description"),
+                Map.entry("file_format", "file_format"),
+                Map.entry("file_size", "file_size"),
+                Map.entry("case_ids", "case_ids"),
+                Map.entry("breed", "breed"),
+                Map.entry("diagnosis", "diagnosis"),
+                Map.entry("study_code", "study_code"),
+                Map.entry("uuid", "uuid"),
+                Map.entry("md5sum", "md5sum"),
+                Map.entry("individual_id", "individual_id"),
+                Map.entry("access_file", "access_file"),
+                Map.entry("sample_id", "sample_id")
+        );
+
+        List<Map<String, Object>> overview = overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+
+        return buildManifestCSV(combinedManifestProps, overview);
     }
 }

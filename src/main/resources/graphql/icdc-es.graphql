@@ -416,4 +416,12 @@ type QueryType {
     first: Int = 10
     offset: Int = 0
   ): GlobalSearchResult
+
+  createManifest(
+    uuid: [String]
+    order_by: String = ""
+    sort_direction: String = "ASC"
+    first: Int = 10
+    offset: Int = 0
+  ): String
 }
