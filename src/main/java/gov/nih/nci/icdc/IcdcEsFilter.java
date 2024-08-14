@@ -1014,7 +1014,15 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
             List<String> row = new ArrayList<>();
             for (String key : manifestProps.keySet()) {
                 Object value = record.get(key);
-                row.add(value != null ? value.toString() : "");
+                if (value != null) {
+                    String stringValue = value.toString();
+                    if (stringValue.contains(",") || stringValue.contains("\"")) {
+                        stringValue = "\"" + stringValue.replace("\"", "\"\"") + "\"";
+                    }
+                    row.add(stringValue);
+                } else {
+                    row.add("");
+                }
             }
             csvBuilder.append(String.join(",", row)).append("\n");
         }
