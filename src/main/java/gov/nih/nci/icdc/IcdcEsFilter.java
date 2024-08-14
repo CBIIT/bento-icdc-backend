@@ -664,32 +664,51 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, String>> searchAboutPage(String input) throws IOException {
-        final String ABOUT_CONTENT = "content.paragraph";
+        final String ABOUT_PARAGRAPH = "content.paragraph";
+        final String ABOUT_ROW = "content.table.body.row";
+
         Map<String, Object> query = Map.of(
-                "query", Map.of("match", Map.of(ABOUT_CONTENT, input)),
-                "highlight", Map.of(
-                        "fields", Map.of(ABOUT_CONTENT, Map.of()),
-                        "pre_tags", GS_HIGHLIGHT_DELIMITER,
-                        "post_tags", GS_HIGHLIGHT_DELIMITER
+            "query", Map.of(
+                "bool", Map.of(
+                    "should", List.of(
+                        Map.of("match", Map.of(ABOUT_PARAGRAPH, input)),
+                        Map.of("match", Map.of(ABOUT_ROW, input))
+                    )
+                )
+            ),
+            "highlight", Map.of(
+                "fields", Map.of(
+                    ABOUT_PARAGRAPH, Map.of(),
+                    ABOUT_ROW, Map.of()
                 ),
-                "size", ESService.MAX_ES_SIZE
+                "pre_tags", GS_HIGHLIGHT_DELIMITER,
+                "post_tags", GS_HIGHLIGHT_DELIMITER
+            ),
+            "size", ESService.MAX_ES_SIZE
         );
+
         Request request = new Request("GET", GS_ABOUT_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
 
         List<Map<String, String>> result = new ArrayList<>();
 
-        for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
-            for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
-                String page = hit.getAsJsonObject().get("_source").getAsJsonObject().get("page").getAsString();
-                String title = hit.getAsJsonObject().get("_source").getAsJsonObject().get("title").getAsString();
-                result.add(Map.of(
-                        GS_CATEGORY_TYPE, GS_ABOUT,
-                        "page", page,
-                        "title", title,
-                        "text", highlight.getAsString()
-                ));
+        for (JsonElement hit : jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
+            JsonObject source = hit.getAsJsonObject().get("_source").getAsJsonObject();
+            String page = source.get("page").getAsString();
+            String title = source.get("title").getAsString();
+
+            for (String field : List.of(ABOUT_PARAGRAPH, ABOUT_ROW)) {
+                if (hit.getAsJsonObject().get("highlight").getAsJsonObject().has(field)) {
+                    for (JsonElement highlight : hit.getAsJsonObject().get("highlight").getAsJsonObject().get(field).getAsJsonArray()) {
+                        result.add(Map.of(
+                            GS_CATEGORY_TYPE, GS_ABOUT,
+                            "page", page,
+                            "title", title,
+                            "text", highlight.getAsString()
+                        ));
+                    }
+                }
             }
         }
 
