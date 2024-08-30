@@ -733,7 +733,7 @@ Indices:
       null AS sample_id,
       null AS sample_ids,
       null AS sample_ids_txt,
-      null AS sample_site,
+      COLLECT(DISTINCT samp.sample_site) AS sample_site,
       f.uuid as file_uuids,
 
       'study' AS file_level,
