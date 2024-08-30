@@ -389,18 +389,12 @@ Indices:
         type: keyword
       study_participation:
         type: keyword
-      # breed:
-      #   type: keyword
       diagnosis:
         type: keyword
       disease_site:
         type: keyword
-      # stage_of_disease:
-      #   type: keyword
       response_to_treatment:
         type: keyword
-      # sex:
-      #   type: keyword
       neutered_status:
         type: keyword
 
@@ -408,17 +402,11 @@ Indices:
         type: keyword
       sample_pathology:
         type: keyword
-      # sample_site:
-      #   type: keyword
 
       file_association:
         type: keyword
-      # file_type:
-      #   type: keyword
       file_type_txt:
         type: text
-      # file_format:
-      #   type: keyword
       file_level:
         type: keyword
 
@@ -437,74 +425,14 @@ Indices:
 
       program_name:
         type: text
-      # clinical_study_designation:
-      #   type: text
       clinical_study_designation_txt:
         type: text
-      # file_name:
-      #   type: keyword
       file_name_txt:
         type: text
-      # file_description:
-      #   type: keyword
-      # file_size:
-      #   type: double
       study_code:
         type: keyword
-      # physical_sample_type:
-      #   type: keyword
-      # general_sample_pathology:
-      #   type: keyword
-      # tumor_sample_origin:
-      #   type: keyword
-      # summarized_sample_type:
-      #   type: keyword
-      # specific_sample_pathology:
-      #   type: keyword
-      # date_of_sample_collection:
-      #   type: keyword
-      # tumor_grade:
-      #   type: keyword
-      # sample_chronology:
-      #   type: keyword
-      # percentage_tumor:
-      #   type: keyword
-      # necropsy_sample:
-      #   type: keyword
-      # sample_preservation:
-      #   type: keyword
-      # comment:
-      #   type: keyword
       individual_id:
         type: keyword
-      # patient_age_at_enrollment:
-      #   type: keyword
-      # neutered_indicator:
-      #   type: keyword
-      # weight:
-      #   type: keyword
-      # primary_disease_site:
-      #   type: keyword
-      # date_of_diagnosis:
-      #   type: keyword
-      # histology_cytopathology:
-      #   type: keyword
-      # histological_grade:
-      #   type: keyword
-      # best_response:
-      #   type: keyword
-      # pathology_report:
-      #   type: keyword
-      # treatment_data:
-      #   type: keyword
-      # follow_up_data:
-      #   type: keyword
-      # concurrent_disease:
-      #   type: keyword
-      # concurrent_disease_type:
-      #   type: keyword
-      # cohort_description:
-      #   type: keyword
       arm:
         type: keyword
       other_cases:
@@ -733,7 +661,7 @@ Indices:
       null AS sample_id,
       null AS sample_ids,
       null AS sample_ids_txt,
-      null AS sample_site,
+      COLLECT(DISTINCT samp.sample_site) AS sample_site,
       f.uuid as file_uuids,
 
       'study' AS file_level,
