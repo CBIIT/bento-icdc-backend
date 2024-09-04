@@ -786,6 +786,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                         new String[]{"sample_id", "sample_ids_txt"},
                         new String[]{"file_name", "file_name_txt"},
                         new String[]{"file_type", "file_type_txt"},
+                        new String[]{"file_association", "file_association"},
                         new String[]{"case_id", "case_ids_txt"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation_txt"}

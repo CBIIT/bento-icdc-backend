@@ -247,6 +247,7 @@ type GS_File {
   type: String
   file_name: String
   file_type: String
+  file_association: String
   program_name: String
   clinical_study_designation: String
   case_id: String
