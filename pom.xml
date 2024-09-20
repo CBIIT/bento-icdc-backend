@@ -17,12 +17,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.16.RELEASE</version>
+        <version>2.6.14</version>
 	</parent>
 
 	<properties>
-		<java.version>11</java.version>
-		<spring.version>5.1.17.RELEASE</spring.version>
+		<java.version>17</java.version>
+		<!-- <spring.version>5.1.17.RELEASE</spring.version> -->
 		<spring.restdocs.version>2.0.5.RELEASE</spring.restdocs.version>
         <log4j2.version>2.17.1</log4j2.version>
 	</properties>
@@ -60,17 +60,17 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
+			<!-- <version>${spring.version}</version> -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
+			<!-- <version>${spring.version}</version> -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
+			<!-- <version>${spring.version}</version> -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
