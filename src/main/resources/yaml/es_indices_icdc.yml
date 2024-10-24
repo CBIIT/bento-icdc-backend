@@ -602,7 +602,7 @@ Indices:
       'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
       f.uuid AS file_uuid,
       CASE i WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS participation,
-      CASE r.registration_origin WHEN s.clinical_study_designation THEN 'Not Applicable' ELSE r.registration_origin END AS bioB
+      r.registration_origin AS bioB
       return DISTINCT
       'file' AS type,
       p.program_name AS program_name,
@@ -622,11 +622,16 @@ Indices:
       COLLECT(DISTINCT demo.demographic_id) AS demographic_id,
       COLLECT(DISTINCT demo.additional_breed_detail) AS additional_breed_detail,
       COLLECT(DISTINCT demo.date_of_birth) AS date_of_birth,
-      COLLECT (DISTINCT (CASE bioB
-      WHEN [] THEN ['Not Applicable']
-      WHEN null THEN ['Not Applicable']
-      ELSE bioB
-      END)) AS biobank,
+      CASE 
+        COLLECT(DISTINCT(bioB))
+        WHEN []
+        THEN ['Not Applicable']
+        WHEN null
+        THEN ['Not Applicable']
+        ELSE
+        [b in COLLECT(DISTINCT (bioB)) WHERE b <> s.clinical_study_designation] 
+      END
+      AS biobank,
       COLLECT(DISTINCT participation) AS study_participation,
       COLLECT(DISTINCT co.cohort_description) AS cohort,
       COLLECT(DISTINCT co.cohort_dose) AS cohort_dose,
