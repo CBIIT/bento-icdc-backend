@@ -595,6 +595,7 @@ Indices:
       OPTIONAL MATCH (c)<--(demo:demographic)
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)<--(r:registration)
+      WHERE NOT (c) <--(r: registration {registration_origin: s.clinical_study_designation})
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (c)<--(samp:sample)
       OPTIONAL MATCH (co)-->(a:study_arm)
@@ -602,7 +603,7 @@ Indices:
       'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
       f.uuid AS file_uuid,
       CASE i WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS participation,
-      r.registration_origin AS bioB
+      CASE r.registration_origin WHEN s.clinical_study_designation THEN 'Not Applicable' ELSE r.registration_origin END AS bioB
       return DISTINCT
       'file' AS type,
       p.program_name AS program_name,
@@ -622,16 +623,11 @@ Indices:
       COLLECT(DISTINCT demo.demographic_id) AS demographic_id,
       COLLECT(DISTINCT demo.additional_breed_detail) AS additional_breed_detail,
       COLLECT(DISTINCT demo.date_of_birth) AS date_of_birth,
-      CASE 
-        COLLECT(DISTINCT(bioB))
-        WHEN []
-        THEN ['Not Applicable']
-        WHEN null
-        THEN ['Not Applicable']
-        ELSE
-        [b in COLLECT(DISTINCT (bioB)) WHERE b <> s.clinical_study_designation] 
-      END
-      AS biobank,
+      COLLECT (DISTINCT (CASE bioB
+      WHEN [] THEN 'Not Applicable'
+      WHEN null THEN 'Not Applicable'
+      ELSE bioB
+      END)) AS biobank,
       COLLECT(DISTINCT participation) AS study_participation,
       COLLECT(DISTINCT co.cohort_description) AS cohort,
       COLLECT(DISTINCT co.cohort_dose) AS cohort_dose,
