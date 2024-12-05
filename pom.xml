@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>gov.nih.nci.bento</groupId>
+	<groupId>gov.nih.nci.bento</groupId>
 	<artifactId>ICDC</artifactId>
 	<version>14.8.1</version>
 	<packaging>war</packaging>
@@ -84,9 +84,9 @@
 			<version>5.4.0</version>
 			<exclusions>
 				<exclusion>
-                    <groupId>org.jetbrains</groupId>
-                    <artifactId>annotations</artifactId>
-                </exclusion>
+					<groupId>org.jetbrains</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
 				<exclusion>
 					<groupId>com.graphql-java</groupId>
 					<artifactId>graphql-java</artifactId>
@@ -195,47 +195,47 @@
 			<version>23.0.0</version>
 		</dependency>
 
-        <!-- OpenSearch Java REST API -->
-        <dependency>
-            <groupId>org.opensearch.client</groupId>
-            <artifactId>opensearch-rest-client</artifactId>
+		<!-- OpenSearch Java REST API -->
+		<dependency>
+			<groupId>org.opensearch.client</groupId>
+			<artifactId>opensearch-rest-client</artifactId>
 			<version>2.17.0</version>
 			<exclusions>
 				<exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpclient</artifactId>
+				</exclusion>
 				<exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
 			</exclusions>
-        </dependency>
+		</dependency>
 		<dependency>
 			<groupId>org.opensearch.client</groupId>
 			<artifactId>opensearch-rest-high-level-client</artifactId>
 			<version>2.17.0</version>
 			<exclusions>
 				<exclusion>
-                    <groupId>joda-time</groupId>
-                    <artifactId>joda-time</artifactId>
-                </exclusion>
+					<groupId>joda-time</groupId>
+					<artifactId>joda-time</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
 		<!-- AWS Java SDK -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.12.147</version>
-            <scope>compile</scope>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-core</artifactId>
+			<version>1.12.147</version>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
 			</exclusions>
-        </dependency>
+		</dependency>
 
 		<!-- lombok -->
 		<dependency>
@@ -247,11 +247,11 @@
 
 		<!-- JSON -->
 		<dependency>
-    		<groupId>org.json</groupId>
-    		<artifactId>json</artifactId>
-    		<version>20231013</version>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20231013</version>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -259,33 +259,33 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.4.1</version>
-                <executions>
-                    <execution>
-                        <id>enforce</id>
-                        <configuration>
-                            <rules>
-                                <dependencyConvergence>
-                                    <excludes>
-                                    </excludes>
-                                </dependencyConvergence>
-                            </rules>
-                        </configuration>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>8.4.2</version>
-            </plugin>
-        </plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.4.1</version>
+				<executions>
+					<execution>
+						<id>enforce</id>
+						<configuration>
+							<rules>
+								<dependencyConvergence>
+									<excludes>
+									</excludes>
+								</dependencyConvergence>
+							</rules>
+						</configuration>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>8.4.2</version>
+			</plugin>
+		</plugins>
 	</build>
 
 </project>
