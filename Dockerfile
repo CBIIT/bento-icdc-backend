@@ -8,7 +8,7 @@ RUN mvn package -DskipTests
 FROM tomcat:10.1.31-jdk17-temurin-jammy AS fnl_base_image
 
 ENV JAVA_OPTS="-Xmx4096m"
-RUN apt-get update && apt-get install -y unzip  
+RUN apt-get update && apt-get install -y unzip
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
 COPY --from=build /usr/src/app/target/ICDC-14.9.0.war /usr/local/tomcat/webapps/ROOT.war
