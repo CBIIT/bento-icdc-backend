@@ -350,6 +350,7 @@ type QueryType {
     sort_direction: String = "ASC"
     first: Int = 10
     offset: Int = 0
+    filter_text: String
   ): [CaseOverviewES]
 
   sampleOverview(
