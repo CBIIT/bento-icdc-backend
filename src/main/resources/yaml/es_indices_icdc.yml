@@ -221,8 +221,14 @@ Indices:
         type: keyword
       breed:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       diagnosis:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       disease_site:
         type: keyword
       stage_of_disease:
@@ -236,8 +242,14 @@ Indices:
 
       sample_type:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       sample_pathology:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
 
       file_association:
         type: keyword
@@ -248,12 +260,18 @@ Indices:
 
       case_ids:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       case_ids_txt:
         type: text
       case_id_lc:
         type: keyword
       sample_ids:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       sample_ids_txt:
         type: text
 
@@ -263,6 +281,9 @@ Indices:
         type: text
       sample_site:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       sample_site_txt:
         type: text
       physical_sample_type:
@@ -275,14 +296,29 @@ Indices:
         type: text
       tumor_grade:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       sample_chronology:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       percentage_tumor:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       necropsy_sample:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       sample_preservation:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       tumor_sample_origin:
         type: keyword
       comment:
@@ -428,6 +464,9 @@ Indices:
         type: keyword
       diagnosis:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       disease_site:
         type: keyword
       response_to_treatment:
@@ -442,6 +481,9 @@ Indices:
 
       file_association:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       file_type_txt:
         type: text
       file_level:
@@ -449,6 +491,9 @@ Indices:
 
       case_ids:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       case_ids_txt:
         type: text
       case_id_lc:
@@ -468,6 +513,9 @@ Indices:
         type: text
       study_code:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       individual_id:
         type: keyword
       arm:
@@ -501,6 +549,9 @@ Indices:
         type: keyword
       breed:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       additional_breed_detail:
         type: keyword
       patient_age_at_enrollment:
@@ -525,6 +576,9 @@ Indices:
       # SAMPLE
       sample_id:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       sample_site:
         type: keyword
       physical_sample_type:
@@ -593,14 +647,29 @@ Indices:
       # FILE
       file_name:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       file_type:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       file_description:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       file_format:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       file_size:
         type: double
+        fields:
+          analyzed:
+            type: text
       md5sum:
         type: keyword
       file_status:
