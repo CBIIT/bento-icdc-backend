@@ -11,26 +11,47 @@ Indices:
         type: keyword
       study_type:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       biobank:
         type: keyword
       study_participation:
         type: keyword
       breed:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       breed_txt:
         type: text
       diagnosis:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       disease_site:
         type: keyword
       stage_of_disease:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       response_to_treatment:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       sex:
         type: keyword
+        fields:
+          analyzed:
+            type: text
       neutered_status:
         type: keyword
+        fields:
+          analyzed:
+            type: text
 
       sample_type:
         type: keyword
@@ -52,6 +73,9 @@ Indices:
         type: text
       case_id_kw:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       case_id_lc:
         type: keyword
 
@@ -63,12 +87,25 @@ Indices:
         type: text
       study_code:
         type: keyword
+        fields:
+          analyzed:
+            type: keyword
       cohort:
         type: keyword
+        fields:
+          analyzed:
+            type: text
+
       age:
         type: float
+        fields:
+          analyzed:
+            type: text
       weight:
         type: float
+        fields:
+          analyzed:
+            type: text
       files:
         type: keyword
       other_cases:
