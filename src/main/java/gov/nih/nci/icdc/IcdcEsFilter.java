@@ -33,6 +33,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     final String OFFSET = "offset";
     final String ORDER_BY = "order_by";
     final String SORT_DIRECTION = "sort_direction";
+    final String FILTER_TEXT = "filter_text";
 
     final String PROGRAMS_END_POINT = "/programs/_search";
     final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
@@ -596,14 +597,56 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION, FILTER_TEXT));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
-        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        String filterText = (String)params.get(FILTER_TEXT);
+        if (!filterText.isEmpty()){
+            query = buildTableFilterQuery(filterText, properties, query);
+        } else {
+            query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        }
         int pageSize = (int) params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
         List<Map<String, Object>> page = esService.collectPage(request, query, properties, pageSize, offset);
         return page;
+    }
+
+    private Map<String, Object> buildTableFilterQuery(String filterText, String[][] properties, Map<String, Object> query) {
+        if (filterText == null || filterText.isEmpty()) return Map.of();
+
+        // get analyzed versions of props defined in indices yaml
+        List<String> fields = Arrays.stream(properties)
+            .map(property -> property[1] + ".analyzed")
+            .collect(Collectors.toList());
+
+        Map<String, Object> tableMultiMatch = Map.of(
+            "multi_match", Map.of(
+                "query", filterText,
+                "fields", fields,
+                "type", "best_fields",
+                "lenient", true
+            )
+        );
+
+        // check if query already contains bool object
+        Map<String, Object> boolQuery = (Map<String, Object>) query.getOrDefault("query", Map.of("bool", Map.of()));
+
+        // extract must/filter objects from bool
+        List<Object> must = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("must", List.of()));
+        List<Object> filter = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("filter", List.of()));
+
+        // assemble query
+        must.add(tableMultiMatch);
+        boolQuery = Map.of(
+            "bool", Map.of(
+                "must", must,
+                "filter", filter
+            )
+        );
+        query.put("query", boolQuery);
+
+        return query;
     }
 
     private Map<String, String> mapSortOrder(String order_by, String direction, String defaultSort, Map<String, String> mapping) {
