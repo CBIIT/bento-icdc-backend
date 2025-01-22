@@ -322,6 +322,7 @@ type QueryType {
     file_association: [String] = []
     file_type: [String] = []
     file_format: [String] = []
+    filter_text: String = ""
   ): SearchResult
 
   caseOverview(
