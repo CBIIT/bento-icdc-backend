@@ -344,7 +344,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         final String subCategory = "study_code";
 
         String[] subCategories = new String[] { subCategory };
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(FILTER_TEXT));
         String[] AGG_NAMES = new String[] {category};
         query = esService.addAggregations(query, AGG_NAMES);
         esService.addSubAggregations(query, category, subCategories);
