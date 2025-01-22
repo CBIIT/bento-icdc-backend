@@ -256,7 +256,11 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         }
         final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
-        Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first"));
+        Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first", FILTER_TEXT));
+        if (!formattedParams.get(FILTER_TEXT).toString().isEmpty()) {
+            String filterText = formattedParams.get(FILTER_TEXT).toString();
+            query = buildTableFilterQuery(filterText, null, query);
+        }
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
@@ -615,26 +619,37 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     private Map<String, Object> buildTableFilterQuery(String filterText, String[][] properties, Map<String, Object> query) {
         if (filterText == null || filterText.isEmpty()) return Map.of();
 
-        // get analyzed versions of props defined in indices yaml
-        List<String> fields = Arrays.stream(properties)
-            .map(property -> property[1] + ".analyzed")
-            .collect(Collectors.toList());
-
-        Map<String, Object> tableMultiMatch = Map.of(
-            "multi_match", Map.of(
-                "query", filterText,
-                "fields", fields,
-                "type", "best_fields",
-                "lenient", true
-            )
-        );
-
         // check if query already contains bool object
         Map<String, Object> boolQuery = (Map<String, Object>) query.getOrDefault("query", Map.of("bool", Map.of()));
 
         // extract must/filter objects from bool
         List<Object> must = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("must", List.of()));
         List<Object> filter = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("filter", List.of()));
+
+        Map<String, Object> tableMultiMatch;
+
+        if (properties != null) {
+            // get analyzed versions of props defined in indices yaml
+            List<String> fields = Arrays.stream(properties)
+            .map(property -> property[1] + ".analyzed")
+            .collect(Collectors.toList());
+
+            tableMultiMatch = Map.of(
+                "multi_match", Map.of(
+                    "query", filterText,
+                    "fields", fields,
+                    "type", "best_fields",
+                    "lenient", true
+                )
+            );
+        } else {
+            tableMultiMatch = Map.of(
+                "multi_match", Map.of(
+                    "query", filterText,
+                    "lenient", true
+                )
+            );
+        }
 
         // assemble query
         must.add(tableMultiMatch);
