@@ -274,7 +274,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
         Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
         studyFileParam.put("file_level", List.of("study"));
-        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first"));
+        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first", FILTER_TEXT));
         studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
         int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
@@ -331,7 +331,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private double getVolumeOfData(Map<String, Object> params, String fieldName, String indexName) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(FILTER_TEXT));
         query = esService.addSumAggregation(query, fieldName);
         Request request = new Request("GET", indexName);
         request.setJsonEntity(gson.toJson(query));
@@ -375,12 +375,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> subjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, FILTER_TEXT));
         return getGroupCount(category, query, endpoint);
     }
 
     private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category, FILTER_TEXT));
         return getGroupCount(category, query, endpoint);
     }
 
