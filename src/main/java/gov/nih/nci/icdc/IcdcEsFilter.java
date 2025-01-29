@@ -259,7 +259,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first", FILTER_TEXT));
         if (!formattedParams.get(FILTER_TEXT).toString().isEmpty()) {
             String filterText = formattedParams.get(FILTER_TEXT).toString();
-            query = buildTableFilterQuery(filterText, null, query);
+            query = buildTableFilterQuery(filterText, query);
         }
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
