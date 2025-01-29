@@ -170,6 +170,10 @@ type SearchResult {
   numberOfStudyFiles: Int
   numberOfAliquots: Int
   volumeOfData: Float
+  caseIds: [String]
+  sampleIds: [String]
+  fileIds: [String]
+  studyFileIds: [String]
 
   caseCountByProgram: [GroupCountES]
   caseCountByStudyCode: [GroupCountES]

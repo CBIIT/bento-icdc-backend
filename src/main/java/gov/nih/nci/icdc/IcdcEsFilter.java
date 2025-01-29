@@ -266,10 +266,28 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
         int numberOfSamples = sampleCountResult.get("count").getAsInt();
 
+        Request sampleIdsRequest = new Request("GET", SAMPLES_END_POINT);
+        sampleIdsRequest.setJsonEntity(gson.toJson(query));
+        JsonObject sampleIdsResult = esService.send(sampleIdsRequest);
+        JsonArray sampleIdsArray = sampleIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        List<String> sampleIds = new ArrayList<>();
+        for (var sampleId: sampleIdsArray) {
+            sampleIds.add(sampleId.getAsJsonObject().get("_source").getAsJsonObject().get("sample_ids").getAsString());
+        }
+
         Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
         fileCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject fileCountResult = esService.send(fileCountRequest);
         int numberOfFiles = fileCountResult.get("count").getAsInt();
+
+        Request fileIdsRequest = new Request("GET", FILES_END_POINT);
+        fileIdsRequest.setJsonEntity(gson.toJson(query));
+        JsonObject fileIdsResult = esService.send(fileIdsRequest);
+        JsonArray fileIdsArray = fileIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        List<String> fileIds = new ArrayList<>();
+        for (var fileId: fileIdsArray) {
+            fileIds.add(fileId.getAsJsonObject().get("_source").getAsJsonObject().get("file_uuids").getAsString());
+        }
 
         Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
         Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
@@ -279,10 +297,28 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
         int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
 
+        Request studyFileIdsRequest = new Request("GET", FILES_END_POINT);
+        studyFileIdsRequest.setJsonEntity(gson.toJson(studyFileQuery));
+        JsonObject studyFileIdsResult = esService.send(studyFileIdsRequest);
+        JsonArray studyFileIdsArray = studyFileIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        List<String> studyFileIds = new ArrayList<>();
+        for (var studyFileId: studyFileIdsArray) {
+            studyFileIds.add(studyFileId.getAsJsonObject().get("_source").getAsJsonObject().get("file_uuids").getAsString());
+        }
+
         Request caseCountRequest = new Request("GET", CASES_COUNT_END_POINT);
         caseCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject caseCountResult = esService.send(caseCountRequest);
         int numberOfCases = caseCountResult.get("count").getAsInt();
+
+        Request caseIdsRequest = new Request("GET", CASES_END_POINT);
+        caseIdsRequest.setJsonEntity(gson.toJson(query));
+        JsonObject caseIdsResult = esService.send(caseIdsRequest);
+        JsonArray caseIdsArray = caseIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        List<String> caseIds = new ArrayList<>();
+        for (var caseId: caseIdsArray) {
+            caseIds.add(caseId.getAsJsonObject().get("_source").getAsJsonObject().get("case_ids").getAsString());
+        }
 
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES);
@@ -302,6 +338,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         data.put("volumeOfData", getVolumeOfData(formattedParams, "file_size", FILES_END_POINT));
 
         data.put("programsAndStudies", programsAndStudies(formattedParams));
+        data.put("caseIds", caseIds);
+        data.put("sampleIds", sampleIds);
+        data.put("fileIds", fileIds);
+        data.put("studyFileIds", studyFileIds);
 
         // widgets data and facet filter counts
         for (var agg: TERM_AGGS) {
@@ -601,15 +641,16 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION, FILTER_TEXT));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
-        String filterText = (String)params.get(FILTER_TEXT);
-        if (!filterText.isEmpty()){
-            query = buildTableFilterQuery(filterText, properties, query);
-        } else {
-            query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
-        }
+        // String filterText = (String)params.get(FILTER_TEXT);
+        // if (!filterText.isEmpty() | filterText != null) {
+        //     query = buildTableFilterQuery(filterText, properties, query);
+        // } else {
+        //     query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        // }
+        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
         int pageSize = (int) params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
         List<Map<String, Object>> page = esService.collectPage(request, query, properties, pageSize, offset);
