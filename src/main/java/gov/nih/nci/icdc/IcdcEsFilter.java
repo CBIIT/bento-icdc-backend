@@ -657,7 +657,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         return page;
     }
 
-    private Map<String, Object> buildTableFilterQuery(String filterText, String[][] properties, Map<String, Object> query) {
+    private Map<String, Object> buildTableFilterQuery(String filterText, Map<String, Object> query) {
         if (filterText == null || filterText.isEmpty()) return Map.of();
 
         // check if query already contains bool object
@@ -667,30 +667,35 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         List<Object> must = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("must", List.of()));
         List<Object> filter = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("filter", List.of()));
 
-        Map<String, Object> tableMultiMatch;
+        Map<String, Object> tableMultiMatch = Map.of(
+            "multi_match", Map.of(
+                "query", filterText,
+                "lenient", true
+            )
+        );
 
-        if (properties != null) {
-            // get analyzed versions of props defined in indices yaml
-            List<String> fields = Arrays.stream(properties)
-            .map(property -> property[1] + ".analyzed")
-            .collect(Collectors.toList());
+        // if (properties != null) {
+        //     // get analyzed versions of props defined in indices yaml
+        //     List<String> fields = Arrays.stream(properties)
+        //     .map(property -> property[1] + ".analyzed")
+        //     .collect(Collectors.toList());
 
-            tableMultiMatch = Map.of(
-                "multi_match", Map.of(
-                    "query", filterText,
-                    "fields", fields,
-                    "type", "best_fields",
-                    "lenient", true
-                )
-            );
-        } else {
-            tableMultiMatch = Map.of(
-                "multi_match", Map.of(
-                    "query", filterText,
-                    "lenient", true
-                )
-            );
-        }
+        //     tableMultiMatch = Map.of(
+        //         "multi_match", Map.of(
+        //             "query", filterText,
+        //             "fields", fields,
+        //             "type", "best_fields",
+        //             "lenient", true
+        //         )
+        //     );
+        // } else {
+        //     tableMultiMatch = Map.of(
+        //         "multi_match", Map.of(
+        //             "query", filterText,
+        //             "lenient", true
+        //         )
+        //     );
+        // }
 
         // assemble query
         must.add(tableMultiMatch);
