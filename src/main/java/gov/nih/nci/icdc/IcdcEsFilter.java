@@ -33,7 +33,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     final String OFFSET = "offset";
     final String ORDER_BY = "order_by";
     final String SORT_DIRECTION = "sort_direction";
-    final String FILTER_TEXT = "filter_text";
+    final String SEARCH_TEXT = "search_text";
 
     final String PROGRAMS_END_POINT = "/programs/_search";
     final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
@@ -256,10 +256,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         }
         final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
-        Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first", FILTER_TEXT));
-        if (!formattedParams.get(FILTER_TEXT).toString().isEmpty()) {
-            String filterText = formattedParams.get(FILTER_TEXT).toString();
-            query = buildTableFilterQuery(filterText, query);
+        Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first", SEARCH_TEXT));
+        if (!formattedParams.get(SEARCH_TEXT).toString().isEmpty()) {
+            String searchText = formattedParams.get(SEARCH_TEXT).toString();
+            query = buildTableFilterQuery(searchText, query);
         }
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
@@ -298,7 +298,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
         Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
         studyFileParam.put("file_level", List.of("study"));
-        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first", FILTER_TEXT));
+        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first", SEARCH_TEXT));
         studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
         int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
@@ -395,7 +395,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private double getVolumeOfData(Map<String, Object> params, String fieldName, String indexName) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(FILTER_TEXT));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(SEARCH_TEXT));
         query = esService.addSumAggregation(query, fieldName);
         Request request = new Request("GET", indexName);
         request.setJsonEntity(gson.toJson(query));
@@ -408,7 +408,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         final String subCategory = "study_code";
 
         String[] subCategories = new String[] { subCategory };
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(FILTER_TEXT));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(SEARCH_TEXT));
         String[] AGG_NAMES = new String[] {category};
         query = esService.addAggregations(query, AGG_NAMES);
         esService.addSubAggregations(query, category, subCategories);
@@ -439,12 +439,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> subjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, FILTER_TEXT));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, SEARCH_TEXT));
         return getGroupCount(category, query, endpoint);
     }
 
     private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category, FILTER_TEXT));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category, SEARCH_TEXT));
         return getGroupCount(category, query, endpoint);
     }
 
