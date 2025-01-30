@@ -266,28 +266,34 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
         int numberOfSamples = sampleCountResult.get("count").getAsInt();
 
-        Request sampleIdsRequest = new Request("GET", SAMPLES_END_POINT);
-        sampleIdsRequest.setJsonEntity(gson.toJson(query));
-        JsonObject sampleIdsResult = esService.send(sampleIdsRequest);
-        JsonArray sampleIdsArray = sampleIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-        List<String> sampleIds = new ArrayList<>();
-        for (var sampleId: sampleIdsArray) {
-            sampleIds.add(sampleId.getAsJsonObject().get("_source").getAsJsonObject().get("sample_ids").getAsString());
-        }
+        // Request sampleIdsRequest = new Request("GET", SAMPLES_END_POINT);
+        // sampleIdsRequest.setJsonEntity(gson.toJson(query));
+        // JsonObject sampleIdsResult = esService.send(sampleIdsRequest);
+        // JsonArray sampleIdsArray = sampleIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        // List<String> sampleIds = new ArrayList<>();
+        // for (var sampleId: sampleIdsArray) {
+        //     sampleIds.add(sampleId.getAsJsonObject().get("_source").getAsJsonObject().get("sample_ids").getAsString());
+        // }
+
+        List<String> sampleIds = fetchIdsFromResults(query, SAMPLES_END_POINT, "sample_ids");
+        System.out.println("SAMPLE IDS: " + sampleIds);
 
         Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
         fileCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject fileCountResult = esService.send(fileCountRequest);
         int numberOfFiles = fileCountResult.get("count").getAsInt();
 
-        Request fileIdsRequest = new Request("GET", FILES_END_POINT);
-        fileIdsRequest.setJsonEntity(gson.toJson(query));
-        JsonObject fileIdsResult = esService.send(fileIdsRequest);
-        JsonArray fileIdsArray = fileIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-        List<String> fileIds = new ArrayList<>();
-        for (var fileId: fileIdsArray) {
-            fileIds.add(fileId.getAsJsonObject().get("_source").getAsJsonObject().get("file_uuids").getAsString());
-        }
+        // Request fileIdsRequest = new Request("GET", FILES_END_POINT);
+        // fileIdsRequest.setJsonEntity(gson.toJson(query));
+        // JsonObject fileIdsResult = esService.send(fileIdsRequest);
+        // JsonArray fileIdsArray = fileIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        // List<String> fileIds = new ArrayList<>();
+        // for (var fileId: fileIdsArray) {
+        //     fileIds.add(fileId.getAsJsonObject().get("_source").getAsJsonObject().get("file_uuids").getAsString());
+        // }
+
+        List<String> fileIds = fetchIdsFromResults(query, FILES_END_POINT, "file_uuids");
+        System.out.println("FILE IDS:  " + fileIds);
 
         Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
         Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
@@ -297,28 +303,34 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
         int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
 
-        Request studyFileIdsRequest = new Request("GET", FILES_END_POINT);
-        studyFileIdsRequest.setJsonEntity(gson.toJson(studyFileQuery));
-        JsonObject studyFileIdsResult = esService.send(studyFileIdsRequest);
-        JsonArray studyFileIdsArray = studyFileIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-        List<String> studyFileIds = new ArrayList<>();
-        for (var studyFileId: studyFileIdsArray) {
-            studyFileIds.add(studyFileId.getAsJsonObject().get("_source").getAsJsonObject().get("file_uuids").getAsString());
-        }
+        // Request studyFileIdsRequest = new Request("GET", FILES_END_POINT);
+        // studyFileIdsRequest.setJsonEntity(gson.toJson(studyFileQuery));
+        // JsonObject studyFileIdsResult = esService.send(studyFileIdsRequest);
+        // JsonArray studyFileIdsArray = studyFileIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        // List<String> studyFileIds = new ArrayList<>();
+        // for (var studyFileId: studyFileIdsArray) {
+        //     studyFileIds.add(studyFileId.getAsJsonObject().get("_source").getAsJsonObject().get("file_uuids").getAsString());
+        // }
+
+        List<String> studyFileIds = fetchIdsFromResults(studyFileQuery, FILES_END_POINT, "file_uuids");
+        System.out.println("STUDY FILE IDS:  " + fileIds);
 
         Request caseCountRequest = new Request("GET", CASES_COUNT_END_POINT);
         caseCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject caseCountResult = esService.send(caseCountRequest);
         int numberOfCases = caseCountResult.get("count").getAsInt();
 
-        Request caseIdsRequest = new Request("GET", CASES_END_POINT);
-        caseIdsRequest.setJsonEntity(gson.toJson(query));
-        JsonObject caseIdsResult = esService.send(caseIdsRequest);
-        JsonArray caseIdsArray = caseIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-        List<String> caseIds = new ArrayList<>();
-        for (var caseId: caseIdsArray) {
-            caseIds.add(caseId.getAsJsonObject().get("_source").getAsJsonObject().get("case_ids").getAsString());
-        }
+        // Request caseIdsRequest = new Request("GET", CASES_END_POINT);
+        // caseIdsRequest.setJsonEntity(gson.toJson(query));
+        // JsonObject caseIdsResult = esService.send(caseIdsRequest);
+        // JsonArray caseIdsArray = caseIdsResult.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        // List<String> caseIds = new ArrayList<>();
+        // for (var caseId: caseIdsArray) {
+        //     caseIds.add(caseId.getAsJsonObject().get("_source").getAsJsonObject().get("case_ids").getAsString());
+        // }
+
+        List<String> caseIds = fetchIdsFromResults(query, CASES_END_POINT, "case_ids");
+        System.out.println("CASE IDS:  " + caseIds);
 
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES);
@@ -368,6 +380,18 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         }
 
         return data;
+    }
+
+    private List<String> fetchIdsFromResults(Map<String, Object> query, String endpoint, String idField) throws IOException {
+        Request request = new Request("GET", endpoint);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject result = esService.send(request);
+        JsonArray hitsArray = result.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        List<String> idsArray = new ArrayList<>();
+        for (var id: hitsArray) {
+            idsArray.add(id.getAsJsonObject().get("_source").getAsJsonObject().get(idField).getAsString());
+        }
+        return idsArray;
     }
 
     private double getVolumeOfData(Map<String, Object> params, String fieldName, String indexName) throws IOException {
