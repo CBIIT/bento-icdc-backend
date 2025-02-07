@@ -293,6 +293,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
         studyFileParam.put("file_level", List.of("study"));
         Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first", SEARCH_TEXT));
+        if (!studyFileParam.get(SEARCH_TEXT).toString().isEmpty()) {
+            String studyFileSearchText = formattedParams.get(SEARCH_TEXT).toString();
+            studyFileQuery = buildTableFilterQuery(studyFileSearchText, studyFileQuery);
+        }
         studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
         int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
