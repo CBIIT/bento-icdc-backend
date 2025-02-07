@@ -228,7 +228,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       disease_site:
         type: keyword
       stage_of_disease:
@@ -249,7 +249,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
 
       file_association:
         type: keyword
@@ -262,7 +262,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       case_ids_txt:
         type: text
       case_id_lc:
@@ -271,7 +271,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       sample_ids_txt:
         type: text
 
@@ -466,7 +466,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       disease_site:
         type: keyword
       response_to_treatment:
@@ -483,7 +483,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       file_type_txt:
         type: text
       file_level:
@@ -493,7 +493,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       case_ids_txt:
         type: text
       case_id_lc:
@@ -515,7 +515,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       individual_id:
         type: keyword
       arm:
@@ -578,7 +578,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       sample_site:
         type: keyword
       physical_sample_type:
@@ -649,7 +649,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       file_type:
         type: keyword
         fields:
@@ -664,7 +664,7 @@ Indices:
         type: keyword
         fields:
           analyzed:
-            type: keyword
+            type: text
       file_size:
         type: double
         fields:
