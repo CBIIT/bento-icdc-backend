@@ -631,12 +631,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
-        // String filterText = (String)params.get(FILTER_TEXT);
-        // if (!filterText.isEmpty() | filterText != null) {
-        //     query = buildTableFilterQuery(filterText, properties, query);
-        // } else {
-        //     query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
-        // }
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
         int pageSize = (int) params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
@@ -660,29 +654,6 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 "lenient", true
             )
         );
-
-        // if (properties != null) {
-        //     // get analyzed versions of props defined in indices yaml
-        //     List<String> fields = Arrays.stream(properties)
-        //     .map(property -> property[1] + ".analyzed")
-        //     .collect(Collectors.toList());
-
-        //     tableMultiMatch = Map.of(
-        //         "multi_match", Map.of(
-        //             "query", filterText,
-        //             "fields", fields,
-        //             "type", "best_fields",
-        //             "lenient", true
-        //         )
-        //     );
-        // } else {
-        //     tableMultiMatch = Map.of(
-        //         "multi_match", Map.of(
-        //             "query", filterText,
-        //             "lenient", true
-        //         )
-        //     );
-        // }
 
         // assemble query
         must.add(tableMultiMatch);
