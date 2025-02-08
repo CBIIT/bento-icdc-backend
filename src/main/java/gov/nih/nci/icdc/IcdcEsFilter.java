@@ -259,7 +259,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first", SEARCH_TEXT));
         if (!formattedParams.get(SEARCH_TEXT).toString().isEmpty()) {
             String searchText = formattedParams.get(SEARCH_TEXT).toString();
-            query = buildTableFilterQuery(searchText, query);
+            query = buildTableSearchQuery(searchText, query);
         }
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
@@ -277,7 +277,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first", SEARCH_TEXT));
         if (!studyFileParam.get(SEARCH_TEXT).toString().isEmpty()) {
             String studyFileSearchText = formattedParams.get(SEARCH_TEXT).toString();
-            studyFileQuery = buildTableFilterQuery(studyFileSearchText, studyFileQuery);
+            studyFileQuery = buildTableSearchQuery(studyFileSearchText, studyFileQuery);
         }
         studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
@@ -638,8 +638,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         return page;
     }
 
-    private Map<String, Object> buildTableFilterQuery(String filterText, Map<String, Object> query) {
-        if (filterText == null || filterText.isEmpty()) return Map.of();
+    private Map<String, Object> buildTableSearchQuery(String searchText, Map<String, Object> query) {
+        if (searchText == null || searchText.isEmpty()) return Map.of();
 
         // check if query already contains bool object
         Map<String, Object> boolQuery = (Map<String, Object>) query.getOrDefault("query", Map.of("bool", Map.of()));
@@ -650,7 +650,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
         Map<String, Object> tableMultiMatch = Map.of(
             "multi_match", Map.of(
-                "query", filterText,
+                "query", searchText,
                 "lenient", true
             )
         );
