@@ -610,6 +610,24 @@ type PriorSurgeryNodeDataOverview {
   prior_surgeries: [PriorSurgeryNodeData]
 }
 
+type FileCartChartItem {
+    label: String
+    value: Int
+}
+
+type FileCartChartData {
+    fileType: [FileCartChartItem]
+    fileFormat: [FileCartChartItem]
+    fileAssociation: [FileCartChartItem]
+}
+
+type FileCartOverviewData {
+    totalNumberOfFiles: Int
+    studiesInCart: [String]
+    totalNumberOfCases: Int
+    charts: FileCartChartData
+}
+
 type QueryType {
     "Version"
     schemaVersion: String @cypher(statement: "RETURN '2.0.0'")
