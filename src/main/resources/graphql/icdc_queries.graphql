@@ -610,22 +610,22 @@ type PriorSurgeryNodeDataOverview {
   prior_surgeries: [PriorSurgeryNodeData]
 }
 
-type FileCartChartItem {
+type CartChartItem {
     label: String
     value: Int
 }
 
-type FileCartChartData {
-    fileType: [FileCartChartItem]
-    fileFormat: [FileCartChartItem]
-    fileAssociation: [FileCartChartItem]
+type CartChartData {
+    fileType: [CartChartItem]
+    fileFormat: [CartChartItem]
+    fileAssociation: [CartChartItem]
 }
 
-type FileCartOverviewData {
+type CartOverviewData {
     totalNumberOfFiles: Int
     studiesInCart: [String]
     totalNumberOfCases: Int
-    charts: FileCartChartData
+    charts: CartChartData
 }
 
 type QueryType {
@@ -1789,5 +1789,9 @@ type QueryType {
         therapeutic_indicator: ps.therapeutic_indicator
       })
     }
+    """, passThrough: true)
+
+    cartOverview(file_uuids: [String!]): CartOverviewData @cypher(statement: """
+    
     """, passThrough: true)
 }
