@@ -1792,6 +1792,44 @@ type QueryType {
     """, passThrough: true)
 
     cartOverview(file_uuids: [String!]): CartOverviewData @cypher(statement: """
-    
+    MATCH (f:file)
+    WHERE f.uuid IN $file_uuids
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (f)-[*]->(c:case)
+    OPTIONAL MATCH (s:study)<-[:member_of]-(c)
+    WITH
+      COLLECT(f) AS files,
+      COUNT(DISTINCT f) AS totalFiles,
+      COLLECT(DISTINCT s.clinical_study_designation) AS studies,
+      COUNT(DISTINCT c) AS totalCases,
+      COLLECT(DISTINCT parent) AS parents
+    CALL {
+      WITH files
+      UNWIND files AS f
+      WITH f.file_type AS fileType, COUNT(*) AS fileTypeCount
+      RETURN COLLECT({ label: fileType, value: fileTypeCount }) AS fileTypeCounts
+    }
+    CALL {
+      WITH files
+      UNWIND files AS f
+      WITH f.file_format AS fileFormat, COUNT(*) AS fileFormatCount
+      RETURN COLLECT({ label: fileFormat, value: fileFormatCount }) AS fileFormatCounts
+    }
+    CALL {
+      WITH parents
+      UNWIND parents AS p
+      WITH p AS fileAssociation, COUNT(*) AS fileAssociationCount
+      RETURN COLLECT({ label: fileAssociation, value: fileAssociationCount }) AS fileAssociationCounts
+    }
+    RETURN {
+      totalNumberOfFiles: totalFiles,
+      studiesInCart: studies,
+      totalNumberOfCases: totalCases,
+      charts: {
+        fileType: fileTypeCounts,
+        fileFormat: fileFormatCounts,
+        fileAssociation: fileAssociationCounts
+      }
+    }
     """, passThrough: true)
 }
