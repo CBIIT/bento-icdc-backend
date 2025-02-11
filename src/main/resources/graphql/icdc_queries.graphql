@@ -1802,7 +1802,7 @@ type QueryType {
       COUNT(DISTINCT f) AS totalFiles,
       COLLECT(DISTINCT s.clinical_study_designation) AS studies,
       COUNT(DISTINCT c) AS totalCases,
-      COLLECT(DISTINCT parent) AS parents
+      COLLECT(head(labels(parent))) AS parents
     CALL {
       WITH files
       UNWIND files AS f
