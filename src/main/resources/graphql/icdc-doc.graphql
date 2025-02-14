@@ -73,8 +73,7 @@ type agent_administration {
 type assay {
   sample: sample 
   files: [file] 
-  images: [image]
-  schema_validation_placeholder: String 
+  images: [image] 
 }
 
 type biospecimen_source {
@@ -228,8 +227,7 @@ type follow_up {
 }
 
 type image {
-  assay: assay
-  schema_validation_placeholder: String
+  assay: assay 
 }
 
 type image_collection {
@@ -242,8 +240,7 @@ type image_collection {
 }
 
 type lab_exam {
-  visit: visit
-  schema_validation_placeholder: String
+  visit: visit 
 }
 
 type off_study {
@@ -1104,6 +1101,24 @@ type PriorSurgeryNodeDataOverview {
   prior_surgeries: [PriorSurgeryNodeData]
 }
 
+type CartChartItem {
+    label: String
+    value: Int
+}
+
+type CartChartData {
+    fileType: [CartChartItem]
+    fileFormat: [CartChartItem]
+    fileAssociation: [CartChartItem]
+}
+
+type CartOverviewData {
+    totalNumberOfFiles: Int
+    studiesInCart: [String]
+    totalNumberOfCases: Int
+    charts: CartChartData
+}
+
 type QueryType {
     "Version"
     schemaVersion: String 
@@ -1140,7 +1155,7 @@ type QueryType {
     sampleCountOfCase(case_id: String!): Int 
 
     programCountOfStudy(study_code: String!): Int 
-    programsCountOfCase(case_id: String!): Int
+    programsCountOfCase(case_id: String!): Int 
 
     filesInList(uuids: [String], order_by: String = ""): [FileInList] 
 
@@ -1231,4 +1246,6 @@ type QueryType {
     # labExamNodeData(study_code: String!): [LabExamNodeData] 
 
     priorSurgeryNodeDataOverview(study_code: String!): PriorSurgeryNodeDataOverview 
+
+    cartOverview(file_uuids: [String!]): CartOverviewData 
 }
