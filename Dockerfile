@@ -11,4 +11,4 @@ ENV JAVA_OPTS="-Xmx4096m"
 RUN apt-get update && apt-get install -y unzip
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
-COPY --from=build /usr/src/app/target/ICDC-14.9.0.war /usr/local/tomcat/webapps/ROOT.war
+COPY --from=build /usr/src/app/target/ICDC-14.10.0.war /usr/local/tomcat/webapps/ROOT.war
