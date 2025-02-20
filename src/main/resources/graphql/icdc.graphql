@@ -1113,6 +1113,7 @@ type CartChartData {
     fileType: [CartChartItem]
     fileFormat: [CartChartItem]
     fileAssociation: [CartChartItem]
+    schema_validation_placeholder: String
 }
 
 type CartOverviewData {
