@@ -33,6 +33,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     final String OFFSET = "offset";
     final String ORDER_BY = "order_by";
     final String SORT_DIRECTION = "sort_direction";
+    final String SEARCH_TEXT = "search_text";
 
     final String PROGRAMS_END_POINT = "/programs/_search";
     final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
@@ -255,7 +256,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         }
         final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
-        Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first"));
+        Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first", SEARCH_TEXT));
+        Object searchTextObject = formattedParams.get(SEARCH_TEXT);
+        if (searchTextObject != null && !searchTextObject.toString().isEmpty()) {
+            String searchText = searchTextObject.toString();
+            query = buildTableSearchQuery(searchText, query);
+        }
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
@@ -269,7 +275,11 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
         Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
         studyFileParam.put("file_level", List.of("study"));
-        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first"));
+        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first", SEARCH_TEXT));
+        if (searchTextObject != null && !searchTextObject.toString().isEmpty()) {
+            String studyFileSearchText = searchTextObject.toString();
+            studyFileQuery = buildTableSearchQuery(studyFileSearchText, studyFileQuery);
+        }
         studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
         int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
@@ -278,6 +288,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         caseCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject caseCountResult = esService.send(caseCountRequest);
         int numberOfCases = caseCountResult.get("count").getAsInt();
+
+        // get IDs associated with corresponding counts
+        List<String> caseIds = fetchIdsFromResults(query, CASES_END_POINT, "case_ids", numberOfCases);
+        List<String> sampleIds = fetchIdsFromResults(query, SAMPLES_END_POINT, "sample_ids", numberOfSamples);
+        List<String> fileIds = fetchIdsFromResults(query, FILES_END_POINT, "file_uuids", numberOfFiles);
+        List<String> studyFileIds = fetchIdsFromResults(studyFileQuery, FILES_END_POINT, "file_uuids", numberOfStudyFiles);
 
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES);
@@ -297,6 +313,10 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         data.put("volumeOfData", getVolumeOfData(formattedParams, "file_size", FILES_END_POINT));
 
         data.put("programsAndStudies", programsAndStudies(formattedParams));
+        data.put("caseIds", caseIds);
+        data.put("sampleIds", sampleIds);
+        data.put("fileIds", fileIds);
+        data.put("studyFileIds", studyFileIds);
 
         // widgets data and facet filter counts
         for (var agg: TERM_AGGS) {
@@ -325,8 +345,21 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         return data;
     }
 
+    private List<String> fetchIdsFromResults(Map<String, Object> query, String endpoint, String idField, int size) throws IOException {
+        query.put("size", size);
+        Request request = new Request("GET", endpoint);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject result = esService.send(request);
+        JsonArray hitsArray = result.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+        List<String> idsArray = new ArrayList<>();
+        for (JsonElement id: hitsArray) {
+            idsArray.add(id.getAsJsonObject().get("_source").getAsJsonObject().get(idField).getAsString());
+        }
+        return idsArray;
+    }
+
     private double getVolumeOfData(Map<String, Object> params, String fieldName, String indexName) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(SEARCH_TEXT));
         query = esService.addSumAggregation(query, fieldName);
         Request request = new Request("GET", indexName);
         request.setJsonEntity(gson.toJson(query));
@@ -339,7 +372,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         final String subCategory = "study_code";
 
         String[] subCategories = new String[] { subCategory };
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(SEARCH_TEXT));
         String[] AGG_NAMES = new String[] {category};
         query = esService.addAggregations(query, AGG_NAMES);
         esService.addSubAggregations(query, category, subCategories);
@@ -370,12 +403,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> subjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, SEARCH_TEXT));
         return getGroupCount(category, query, endpoint);
     }
 
     private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category, SEARCH_TEXT));
         return getGroupCount(category, query, endpoint);
     }
 
@@ -604,6 +637,36 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         int offset = (int) params.get(OFFSET);
         List<Map<String, Object>> page = esService.collectPage(request, query, properties, pageSize, offset);
         return page;
+    }
+
+    private Map<String, Object> buildTableSearchQuery(String searchText, Map<String, Object> query) {
+        if (searchText == null || searchText.isEmpty()) return Map.of();
+
+        // check if query already contains bool object
+        Map<String, Object> boolQuery = (Map<String, Object>) query.getOrDefault("query", Map.of("bool", Map.of()));
+
+        // extract must/filter objects from bool
+        List<Object> must = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("must", List.of()));
+        List<Object> filter = new ArrayList<>((List<Object>) ((Map<String, Object>) boolQuery.getOrDefault("bool", Map.of())).getOrDefault("filter", List.of()));
+
+        Map<String, Object> tableMultiMatch = Map.of(
+            "multi_match", Map.of(
+                "query", searchText,
+                "lenient", true
+            )
+        );
+
+        // assemble query
+        must.add(tableMultiMatch);
+        boolQuery = Map.of(
+            "bool", Map.of(
+                "must", must,
+                "filter", filter
+            )
+        );
+        query.put("query", boolQuery);
+
+        return query;
     }
 
     private Map<String, String> mapSortOrder(String order_by, String direction, String defaultSort, Map<String, String> mapping) {
