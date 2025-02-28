@@ -257,8 +257,9 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
         Map<String, Object> query = esService.buildFacetFilterQuery(formattedParams, Set.of(), Set.of("first", SEARCH_TEXT));
-        if (!formattedParams.get(SEARCH_TEXT).toString().isEmpty()) {
-            String searchText = formattedParams.get(SEARCH_TEXT).toString();
+        Object searchTextObject = formattedParams.get(SEARCH_TEXT);
+        if (searchTextObject != null && !searchTextObject.toString().isEmpty()) {
+            String searchText = searchTextObject.toString();
             query = buildTableSearchQuery(searchText, query);
         }
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
@@ -275,8 +276,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         Map<String, Object> studyFileParam = new HashMap<>(formattedParams);
         studyFileParam.put("file_level", List.of("study"));
         Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first", SEARCH_TEXT));
-        if (!studyFileParam.get(SEARCH_TEXT).toString().isEmpty()) {
-            String studyFileSearchText = formattedParams.get(SEARCH_TEXT).toString();
+        if (searchTextObject != null && !searchTextObject.toString().isEmpty()) {
+            String studyFileSearchText = searchTextObject.toString();
             studyFileQuery = buildTableSearchQuery(studyFileSearchText, studyFileQuery);
         }
         studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
