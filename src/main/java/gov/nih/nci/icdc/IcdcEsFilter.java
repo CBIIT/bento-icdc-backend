@@ -351,7 +351,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         JsonObject result = esService.send(request);
         JsonArray hitsArray = result.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
         List<String> idsArray = new ArrayList<>();
-        for (var id: hitsArray) {
+        for (JsonElement id: hitsArray) {
             idsArray.add(id.getAsJsonObject().get("_source").getAsJsonObject().get(idField).getAsString());
         }
         return idsArray;
