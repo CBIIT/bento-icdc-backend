@@ -5,8 +5,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN mvn package -DskipTests
 # Stage 2: Production
-FROM tomcat:10.1.17-jdk17 AS fnl_base_image
-#FROM 9.0.102-jdk8-corretto-al2 AS fnl_base_image
+FROM tomcat:9.0.102-jdk8-corretto-al2 AS fnl_base_image
 
 ENV JAVA_OPTS="-Xmx4096m"
 RUN yum update -y && yum install -y unzip  
