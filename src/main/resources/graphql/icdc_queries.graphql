@@ -1842,4 +1842,18 @@ type QueryType {
       }
     }
     """, passThrough: true)
+
+    humanRelevanceNodeData(study_code: String): [HumanRelevanceNodeData] @cypher(statement: """
+    MATCH (hr:human_relevance)
+    WHERE $study_code = "" OR hr.human_relevance_record_id = $study_code
+    RETURN DISTINCT {
+        human_relevance_record_id: hr.human_relevance_record_id,
+        human_relevance_statement: hr.human_relevance_statement,
+        relevant_human_cancer: hr.relevant_human_cancer,
+        relevant_experimental_therapeutic_intervention: hr.relevant_experimental_therapeutic_intervention,
+        relevant_human_genes: hr.relevant_human_genes,
+        relevant_human_pathways: hr.relevant_human_pathways,
+        nci_link_to_relevant_human_cancer: hr.nci_link_to_relevant_human_cancer
+    }
+    """, passThrough: true)
 }
