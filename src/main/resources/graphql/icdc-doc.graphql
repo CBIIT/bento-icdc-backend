@@ -1164,10 +1164,10 @@ type CartOverviewData {
 type HumanRelevanceNodeData {
     human_relevance_record_id: String
     human_relevance_statement: String
-    relevant_human_cancer: String
-    relevant_experimental_therapeutic_intervention: String
-    relevant_human_genes: String
-    relevant_human_pathways: String
+    relevant_human_cancer: [String]
+    relevant_experimental_therapeutic_intervention: [String]
+    relevant_human_genes: [String]
+    relevant_human_pathways: [String]
     nci_link_to_relevant_human_cancer: String
 }
 

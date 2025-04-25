@@ -631,10 +631,10 @@ type CartOverviewData {
 type HumanRelevanceNodeData {
     human_relevance_record_id: String
     human_relevance_statement: String
-    relevant_human_cancer: String
-    relevant_experimental_therapeutic_intervention: String
-    relevant_human_genes: String
-    relevant_human_pathways: String
+    relevant_human_cancer: [String]
+    relevant_experimental_therapeutic_intervention: [String]
+    relevant_human_genes: [String]
+    relevant_human_pathways: [String]
     nci_link_to_relevant_human_cancer: String
 }
 
@@ -1849,10 +1849,10 @@ type QueryType {
     RETURN DISTINCT {
         human_relevance_record_id: hr.human_relevance_record_id,
         human_relevance_statement: hr.human_relevance_statement,
-        relevant_human_cancer: hr.relevant_human_cancer,
-        relevant_experimental_therapeutic_intervention: hr.relevant_experimental_therapeutic_intervention,
-        relevant_human_genes: hr.relevant_human_genes,
-        relevant_human_pathways: hr.relevant_human_pathways,
+        relevant_human_cancer: apoc.convert.fromJsonList(hr.relevant_human_cancer),
+        relevant_experimental_therapeutic_intervention: apoc.convert.fromJsonList(hr.relevant_experimental_therapeutic_intervention),
+        relevant_human_genes: apoc.convert.fromJsonList(hr.relevant_human_genes),
+        relevant_human_pathways: apoc.convert.fromJsonList(hr.relevant_human_pathways),
         nci_link_to_relevant_human_cancer: hr.nci_link_to_relevant_human_cancer
     }
     """, passThrough: true)
