@@ -1301,5 +1301,5 @@ type QueryType {
 
     cartOverview(file_uuids: [String!]): CartOverviewData 
 
-    humanRelevanceNodeData(study_code: String): [HumanRelevanceNodeData] 
+    humanRelevanceNodeData(study_codes: [String] = [""]): [HumanRelevanceNodeData] 
 }
