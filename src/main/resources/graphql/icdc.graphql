@@ -2378,7 +2378,7 @@ type QueryType {
 
     humanRelevanceNodeData(study_codes: [String] = [""]): [HumanRelevanceNodeData] @cypher(statement: """
     MATCH (hr:human_relevance)
-    WHERE $study_codes = [""] OR hr.human_relevance_record_id IN $study_codes
+    WHERE ($study_codes = [""] OR $study_codes = []) OR hr.human_relevance_record_id IN $study_codes
     RETURN DISTINCT {
         human_relevance_record_id: hr.human_relevance_record_id,
         human_relevance_statement: hr.human_relevance_statement,
