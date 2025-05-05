@@ -18,7 +18,6 @@ type adverse_event {
   other_attribution_description: String
   dose_limiting_toxicity: String
   unexpected_adverse_event: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   agent: agent @relation(name:"of_agent", direction:OUT)
   cases: [case] @relation(name:"had_adverse_event", direction:IN)
@@ -29,7 +28,6 @@ type adverse_event {
 type agent {
   medication: String
   document_number: String
-  crdc_id: String
   study_arms: [study_arm] @relation(name:"of_study_arm", direction:OUT)
   agent_administrations: [agent_administration] @relation(name:"of_agent", direction:IN)
   adverse_events: [adverse_event] @relation(name:"of_agent", direction:IN)
@@ -76,6 +74,7 @@ type assay {
   sample: sample @relation(name:"of_sample", direction:OUT)
   files: [file] @relation(name:"of_assay", direction:IN)
   images: [image] @relation(name:"of_assay", direction:IN)
+  schema_validation_placeholder: String
 }
 
 type biospecimen_source {
@@ -230,6 +229,7 @@ type follow_up {
 
 type image {
   assay: assay @relation(name:"of_assay", direction:OUT)
+  schema_validation_placeholder: String
 }
 
 type image_collection {
@@ -243,6 +243,7 @@ type image_collection {
 
 type lab_exam {
   visit: visit @relation(name:"on_visit", direction:OUT)
+  schema_validation_placeholder: String
 }
 
 type off_study {
@@ -1112,6 +1113,7 @@ type CartChartData {
     fileType: [CartChartItem]
     fileFormat: [CartChartItem]
     fileAssociation: [CartChartItem]
+    schema_validation_placeholder: String
 }
 
 type CartOverviewData {
