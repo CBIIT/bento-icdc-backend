@@ -18,7 +18,6 @@ type adverse_event {
   other_attribution_description: String
   dose_limiting_toxicity: String
   unexpected_adverse_event: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   agent: agent @relation(name:"of_agent", direction:OUT)
   cases: [case] @relation(name:"had_adverse_event", direction:IN)
@@ -29,7 +28,6 @@ type adverse_event {
 type agent {
   medication: String
   document_number: String
-  crdc_id: String
   study_arms: [study_arm] @relation(name:"of_study_arm", direction:OUT)
   agent_administrations: [agent_administration] @relation(name:"of_agent", direction:IN)
   adverse_events: [adverse_event] @relation(name:"of_agent", direction:IN)
@@ -68,7 +66,6 @@ type agent_administration {
   missed_dose_units_of_measure: String
   medication_course_number: String
   comment: String
-  crdc_id: String
   agent: agent @relation(name:"of_agent", direction:OUT)
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
@@ -77,17 +74,16 @@ type assay {
   sample: sample @relation(name:"of_sample", direction:OUT)
   files: [file] @relation(name:"of_assay", direction:IN)
   images: [image] @relation(name:"of_assay", direction:IN)
+  schema_validation_placeholder: String
 }
 
 type biospecimen_source {
   biospecimen_repository_acronym: String
   biospecimen_repository_full_name: String
-  crdc_id: String
 }
 
 type canine_individual {
   canine_individual_id: String
-  crdc_id: String
   cases: [case] @relation(name:"represents", direction:IN)
 }
 
@@ -95,12 +91,11 @@ type case {
   case_id: String
   patient_id: String
   patient_first_name: String
-  crdc_id: String
   cohort: cohort @relation(name:"member_of", direction:OUT)
   study: study @relation(name:"member_of", direction:OUT)
   enrollment: enrollment @relation(name:"of_case", direction:IN)
   demographic: demographic @relation(name:"of_case", direction:IN)
-  diagnosis: diagnosis @relation(name:"of_case", direction:IN)
+  diagnoses: [diagnosis] @relation(name:"of_case", direction:IN)
   cycles: [cycle] @relation(name:"of_case", direction:IN)
   follow_ups: [follow_up] @relation(name:"of_case", direction:IN)
   samples: [sample] @relation(name:"of_case", direction:IN)
@@ -117,9 +112,8 @@ type case {
 
 type cohort {
   cohort_description: String
-  cohort_id: String
   cohort_dose: String
-  crdc_id: String
+  cohort_id: String
   cases: [case] @relation(name:"member_of", direction:IN)
   study_arm: study_arm @relation(name:"member_of", direction:OUT)
   study: study @relation(name:"member_of", direction:OUT)
@@ -129,7 +123,6 @@ type cycle {
   cycle_number: Int
   date_of_cycle_start: String
   date_of_cycle_end: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   visits: [visit] @relation(name:"of_cycle", direction:IN)
 }
@@ -149,7 +142,6 @@ type demographic {
   weight_original: Float
   weight_original_unit: String
   neutered_indicator: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
 }
 
@@ -168,13 +160,12 @@ type diagnosis {
   follow_up_data: String
   concurrent_disease: String
   concurrent_disease_type: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   files: [file] @relation(name:"from_diagnosis", direction:IN)
 }
 
 type disease_extent {
-  lesion_number: Int
+  lesion_number: String
   lesion_site: String
   lesion_description: String
   previously_irradiated: String
@@ -187,9 +178,8 @@ type disease_extent {
   longest_measurement_unit: String
   longest_measurement_original: Float
   longest_measurement_original_unit: String
-  evaluation_number: Int
+  evaluation_number: String
   evaluation_code: String
-  crdc_id: String
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
@@ -202,7 +192,6 @@ type enrollment {
   site_short_name: String
   veterinary_medical_center: String
   patient_subgroup: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   prior_therapies: [prior_therapy] @relation(name:"at_enrollment", direction:IN)
   prior_surgeries: [prior_surgery] @relation(name:"at_enrollment", direction:IN)
@@ -214,12 +203,11 @@ type file {
   file_type: String
   file_description: String
   file_format: String
-  file_size: Int
+  file_size: Float
   md5sum: String
   file_status: String
   uuid: String
   file_location: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   study: study @relation(name:"of_study", direction:OUT)
   sample: sample @relation(name:"of_sample", direction:OUT)
@@ -236,7 +224,6 @@ type follow_up {
   treatment_since_last_contact: Boolean
   physical_exam_performed: Boolean
   physical_exam_changes: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
 }
 
@@ -253,6 +240,7 @@ type human_relevance {
 
 type image {
   assay: assay @relation(name:"of_assay", direction:OUT)
+  schema_validation_placeholder: String
 }
 
 type image_collection {
@@ -261,12 +249,12 @@ type image_collection {
   image_collection_url: String
   repository_name: String
   collection_access: String
-  crdc_id: String
   study: study @relation(name:"of_study", direction:OUT)
 }
 
 type lab_exam {
   visit: visit @relation(name:"on_visit", direction:OUT)
+  schema_validation_placeholder: String
 }
 
 type off_study {
@@ -279,7 +267,6 @@ type off_study {
   date_last_medication_administration: String
   best_resp_vet_tx_tp_best_response: String
   date_of_best_response: String
-  crdc_id: String
   case: case @relation(name:"went_off_study", direction:IN)
 }
 
@@ -292,7 +279,6 @@ type off_treatment {
   date_last_medication_administration: String
   best_resp_vet_tx_tp_best_response: String
   date_of_best_response: String
-  crdc_id: String
   case: case @relation(name:"went_off_treatment", direction:IN)
 }
 
@@ -303,8 +289,7 @@ type physical_exam {
   pe_finding: String
   pe_comment: String
   phase_pe: String
-  assessment_timepoint: String
-  crdc_id: String
+  assessment_timepoint: Int
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
@@ -313,7 +298,6 @@ type principal_investigator {
   pi_first_name: String
   pi_last_name: String
   pi_middle_initial: String
-  crdc_id: String
   studies: [study] @relation(name:"of_study", direction:OUT)
 }
 
@@ -324,7 +308,6 @@ type prior_surgery {
   surgical_finding: String
   residual_disease: String
   therapeutic_indicator: String
-  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   next_prior_surgery: prior_surgery @relation(name:"next", direction:OUT)
   prior_prior_surgery: prior_surgery @relation(name:"next", direction:IN)
@@ -360,7 +343,6 @@ type prior_therapy {
   date_of_last_dose_any_therapy: String
   treatment_performed_at_site: Boolean
   treatment_performed_in_minimal_residual: Boolean
-  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   next_prior_therapy: prior_therapy @relation(name:"next", direction:OUT)
   prior_prior_therapy: prior_therapy @relation(name:"next", direction:IN)
@@ -373,7 +355,6 @@ type program {
   program_full_description: String
   program_external_url: String
   program_sort_order: Int
-  crdc_id: String
   studies: [study] @relation(name:"member_of", direction:IN)
 }
 
@@ -384,14 +365,12 @@ type publication {
   journal_citation: String
   digital_object_id: String
   pubmed_id: Float
-  crdc_id: String
   study: study @relation(name:"of_study", direction:OUT)
 }
 
 type registration {
   registration_origin: String
   registration_id: String
-  crdc_id: String
   cases: [case] @relation(name:"of_case", direction:OUT)
 }
 
@@ -423,7 +402,6 @@ type sample {
   percentage_tumor: String
   sample_preservation: String
   comment: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   visit: visit @relation(name:"on_visit", direction:OUT)
   assays: [assay] @relation(name:"of_sample", direction:IN)
@@ -442,7 +420,6 @@ type study {
   dates_of_conduct: String
   accession_id: String
   study_disposition: String
-  crdc_id: String
   study_arms: [study_arm] @relation(name:"member_of", direction:IN)
   program: program @relation(name:"member_of", direction:OUT)
   cases: [case] @relation(name:"member_of", direction:IN)
@@ -457,10 +434,9 @@ type study {
 
 type study_arm {
   arm: String
+  ctep_treatment_assignment_code: String
   arm_description: String
   arm_id: String
-  ctep_treatment_assignment_code: String
-  crdc_id: String
   cohorts: [cohort] @relation(name:"member_of", direction:IN)
   study: study @relation(name:"member_of", direction:OUT)
   agents: [agent] @relation(name:"of_study_arm", direction:IN)
@@ -471,15 +447,13 @@ type study_site {
   site_short_name: String
   veterinary_medical_center: String
   registering_institution: String
-  crdc_id: String
   studies: [study] @relation(name:"of_study", direction:OUT)
 }
 
 type visit {
   visit_date: String
-  visit_number: Int
+  visit_number: String
   visit_id: String
-  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   cycle: cycle @relation(name:"of_cycle", direction:OUT)
   agent_administrations: [agent_administration] @relation(name:"on_visit", direction:IN)
@@ -498,24 +472,23 @@ type vital_signs {
   body_temperature_unit: String
   body_temperature_original: Float
   body_temperature_original_unit: String
+  pulse: Int
+  pulse_unit: String
+  pulse_original: Int
+  pulse_original_unit: String
   respiration_rate: Int
   respiration_rate_unit: String
   respiration_rate_original: Int
   respiration_rate_original_unit: String
   respiration_pattern: String
-  pulse: Int
-  pulse_unit: String
-  pulse_original: Int
-  pulse_original_unit: String
-  pulse_ox: Float
-  pulse_ox_unit: String
-  pulse_ox_original: Float
-  pulse_ox_original_unit: String
   systolic_bp: Int
   systolic_bp_unit: String
   systolic_bp_original: Int
   systolic_bp_original_unit: String
-  ecg: String
+  pulse_ox: Float
+  pulse_ox_unit: String
+  pulse_ox_original: Float
+  pulse_ox_original_unit: String
   patient_weight: Float
   patient_weight_unit: String
   patient_weight_original: Float
@@ -525,9 +498,9 @@ type vital_signs {
   body_surface_area_original: Float
   body_surface_area_original_unit: String
   modified_ecog: String
-  assessment_timepoint: String
+  ecg: String
+  assessment_timepoint: Int
   phase: String
-  crdc_id: String
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
@@ -1152,6 +1125,7 @@ type CartChartData {
     fileType: [CartChartItem]
     fileFormat: [CartChartItem]
     fileAssociation: [CartChartItem]
+    schema_validation_placeholder: String
 }
 
 type CartOverviewData {
