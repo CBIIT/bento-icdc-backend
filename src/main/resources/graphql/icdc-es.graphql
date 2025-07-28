@@ -299,6 +299,19 @@ type GlobalSearchResult {
   model: [GS_Model]
 }
 
+type ExternalDataOverview {
+  entity_id: String
+  CRDCLinks: [CRDCLink]
+}
+
+scalar JSON
+
+type CRDCLink {
+  repository: String
+  url: String
+  metadata: JSON
+}
+
 schema {
   query: QueryType
 }
@@ -430,4 +443,12 @@ type QueryType {
     first: Int = 10
     offset: Int = 0
   ): String
+
+  externalDataOverview(
+    entity_id: String
+    order_by: String = ""
+    sort_direction: String = "ASC"
+    first: Int = 10
+    offset: Int = 0
+  ): [ExternalDataOverview]
 }

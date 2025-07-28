@@ -226,6 +226,17 @@ type follow_up {
   case: case 
 }
 
+type human_relevance {
+  human_relevance_record_id: String
+  human_relevance_statement: String
+  relevant_human_cancer: String
+  relevant_experimental_therapeutic_intervention: String
+  relevant_human_genes: String
+  relevant_human_pathways: String
+  nci_link_to_relevant_human_cancer: String
+  study: study 
+}
+
 type image {
   assay: assay 
 }
@@ -410,6 +421,7 @@ type study {
   program: program 
   cases: [case] 
   cohorts: [cohort] 
+  human_relevance: human_relevance
   study_sites: [study_site] 
   principal_investigators: [principal_investigator] 
   files: [file] 
@@ -1119,6 +1131,16 @@ type CartOverviewData {
     charts: CartChartData
 }
 
+type HumanRelevanceNodeData {
+    human_relevance_record_id: String
+    human_relevance_statement: String
+    relevant_human_cancer: [String]
+    relevant_experimental_therapeutic_intervention: [String]
+    relevant_human_genes: [String]
+    relevant_human_pathways: [String]
+    nci_link_to_relevant_human_cancer: String
+}
+
 type QueryType {
     "Version"
     schemaVersion: String 
@@ -1248,4 +1270,6 @@ type QueryType {
     priorSurgeryNodeDataOverview(study_code: String!): PriorSurgeryNodeDataOverview 
 
     cartOverview(file_uuids: [String!]): CartOverviewData 
+
+    humanRelevanceNodeData(study_codes: [String] = [""]): [HumanRelevanceNodeData] 
 }

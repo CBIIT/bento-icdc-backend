@@ -1069,3 +1069,19 @@ Indices:
         type: text
       value_kw:
         type: keyword
+
+  - index_name: external_data
+    type: external
+    
+    mapping:
+      entity_id:
+        type: keyword
+      CRDCLinks:
+        type: nested
+        properties:
+          repository:
+            type: keyword
+          url:
+            type: keyword
+          metadata:
+            type: object

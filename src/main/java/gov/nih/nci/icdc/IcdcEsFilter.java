@@ -6,6 +6,8 @@ import gov.nih.nci.bento.model.AbstractPrivateESDataFetcher;
 // import gov.nih.nci.bento.model.search.yaml.YamlQueryFactory;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
+import graphql.language.StringValue;
+import graphql.schema.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
@@ -54,6 +56,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     final String VALUES_COUNT_END_POINT = "/model_values/_count";
     final String GS_ABOUT_END_POINT = "/about_page/_search";
     final String GS_MODEL_END_POINT = "/data_model/_search";
+    final String EXTERNAL_DATA_END_POINT = "/external_data/_search";
+    final String EXTERNAL_DATA_COUNT_END_POINT = "/external_data/_count";
 
     final int GS_LIMIT = 10;
     final String GS_END_POINT = "endpoint";
@@ -98,6 +102,26 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {
+        GraphQLScalarType jsonScalar = GraphQLScalarType.newScalar()
+            .name("JSON")
+            .description("Arbitrary JSON")
+            .coercing(new Coercing<Object, Object>() {
+                @Override
+                public Object serialize(Object dataFetcherResult) {
+                    return dataFetcherResult;
+                }
+
+                @Override
+                public Object parseValue(Object input) {
+                    return input;
+                }
+
+                @Override
+                public Object parseLiteral(Object input) {
+                    return input instanceof StringValue ? ((StringValue) input).getValue() : null;
+                }
+            })
+            .build();
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
                         // .dataFetchers(yamlQueryFactory.createYamlQueries(Const.ES_ACCESS_TYPE.PRIVATE))
@@ -125,7 +149,12 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return createManifest(args);
                         })
+                        .dataFetcher("externalDataOverview", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return externalDataOverview(args);
+                        })
                 )
+                .scalar(jsonScalar)
                 .build();
     }
 
@@ -1141,5 +1170,22 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         List<Map<String, Object>> overview = overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
 
         return buildManifestCSV(combinedManifestProps, overview);
+    }
+
+    private List<Map<String, Object>> externalDataOverview(Map<String, Object> params) throws IOException {
+
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"entity_id", "entity_id"},
+                new String[]{"CRDCLinks", "CRDCLinks"},
+        };
+
+        String defaultSort = "entity_id"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("entity_id", "entity_id"),
+                Map.entry("CRDCLinks", "CRDCLinks")
+        );
+
+        return overview(EXTERNAL_DATA_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 }
