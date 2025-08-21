@@ -1,0 +1,171 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: bento-icdc-backend
+  version: 1.0.0
+  description: |
+    Spring Boot backend for ICDC. Exposes health/version endpoints and a GraphQL
+    POST endpoint used by the frontend.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://{host}
+    description: Deployed environments
+    variables:
+      host:
+        default: caninecommons-dev.cancer.gov
+        enum:
+          - caninecommons-dev.cancer.gov
+          - caninecommons-qa.cancer.gov
+          - caninecommons-stage.cancer.gov
+          - caninecommons.cancer.gov
+
+tags:
+  - name: health
+    description: Liveness and version endpoints
+  - name: graphql
+    description: GraphQL transport (POST /graphql)
+
+paths:
+  /ping:
+    get:
+      tags:
+        - health
+      summary: Liveness check
+      operationId: getPing
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: pong
+
+  /version:
+    get:
+      tags:
+        - health
+      summary: Service version
+      operationId: getVersion
+      responses:
+        '200':
+          description: Version info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionOnly'
+              example:
+                version: "14.13.0.220"
+
+  /neo4j-version:
+    get:
+      tags:
+        - health
+      summary: Neo4j version
+      operationId: getNeo4jVersion
+      responses:
+        '200':
+          description: Neo4j version info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionOnly'
+              example:
+                version: "4.3.5"
+
+  /opensearch-version:
+    get:
+      tags:
+        - health
+      summary: OpenSearch version
+      operationId: getOpenSearchVersion
+      responses:
+        '200':
+          description: OpenSearch version info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionOnly'
+              example:
+                version: "7.10.2"
+
+  /graphql:
+    post:
+      tags:
+        - graphql
+      summary: Execute GraphQL operation
+      description: Send GraphQL queries or mutations as JSON. POST only.
+      operationId: postGraphQL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphQLRequest'
+            example:
+              query: "query { __typename }"
+      responses:
+        '200':
+          description: GraphQL response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+              example:
+                data:
+                  __typename: "Query"
+
+components:
+  schemas:
+    VersionOnly:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string
+
+    GraphQLRequest:
+      type: object
+      required:
+        - query
+      additionalProperties: false
+      properties:
+        query:
+          type: string
+        variables:
+          type: object
+          additionalProperties: true
+        operationName:
+          type: string
+
+    GraphQLResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+
+    GraphQLError:
+      type: object
+      properties:
+        message:
+          type: string
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              column:
+                type: integer
+        path:
+          type: array
+          items:
+            type: string
