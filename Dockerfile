@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN mvn package -DskipTests
 # Stage 2: Production
-FROM tomcat:10.1.31-jdk17-temurin-jammy AS fnl_base_image
+FROM tomcat:10.1.34-jre17-temurin-jammy AS fnl_base_image
 
 ENV JAVA_OPTS="-Xmx4096m"
 RUN apt-get update && apt-get install -y unzip
