@@ -300,8 +300,10 @@ type GlobalSearchResult {
 }
 
 type ExternalDataOverview {
-  entity_id: String
+  clinical_study_designation: String
   CRDCLinks: [CRDCLink]
+  numberOfCRDCNodes: Int
+  numberOfImageCollections: Int
 }
 
 scalar JSON
@@ -445,7 +447,7 @@ type QueryType {
   ): String
 
   externalDataOverview(
-    entity_id: String
+    clinical_study_designation: String
     order_by: String = ""
     sort_direction: String = "ASC"
     first: Int = 10
