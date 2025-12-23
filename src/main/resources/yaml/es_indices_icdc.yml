@@ -1074,8 +1074,10 @@ Indices:
     type: external
     
     mapping:
-      entity_id:
+      clinical_study_designation:
         type: keyword
+      timestamp:
+        type: date
       CRDCLinks:
         type: nested
         properties:
@@ -1085,3 +1087,7 @@ Indices:
             type: keyword
           metadata:
             type: object
+      numberOfCRDCNodes:
+        type: integer
+      numberOfImageCollections:
+        type: integer
