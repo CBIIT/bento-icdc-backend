@@ -1,0 +1,30 @@
+name: Coverage (Maven + Coveralls)
+
+on:
+  push:
+    branches: [ unit-test-setup ]
+  pull_request:
+
+jobs:
+  test-and-coveralls:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Run tests + JaCoCo report
+        run: mvn test
+
+      - name: Upload coverage to Coveralls (JaCoCo XML)
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/site/jacoco/jacoco.xml
+          format: jacoco
