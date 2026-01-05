@@ -2,7 +2,7 @@ name: Coverage (Maven + Coveralls)
 
 on:
   push:
-    branches: [ unit-test-setup ]
+    branches: [ coverage-report ]
   pull_request:
 
 jobs:
