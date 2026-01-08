@@ -1,4 +1,5 @@
 type adverse_event {
+  adverse_event_record_id: String
   day_in_cycle: Int
   date_of_onset: String
   existing_adverse_event: String
@@ -18,117 +19,78 @@ type adverse_event {
   other_attribution_description: String
   dose_limiting_toxicity: String
   unexpected_adverse_event: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
-  agent: agent @relation(name:"of_agent", direction:OUT)
   cases: [case] @relation(name:"had_adverse_event", direction:IN)
   next_adverse_event: adverse_event @relation(name:"next", direction:OUT)
   prior_adverse_event: adverse_event @relation(name:"next", direction:IN)
 }
 
-type agent {
-  medication: String
-  document_number: String
-  study_arms: [study_arm] @relation(name:"of_study_arm", direction:OUT)
-  agent_administrations: [agent_administration] @relation(name:"of_agent", direction:IN)
-  adverse_events: [adverse_event] @relation(name:"of_agent", direction:IN)
-}
-
-type agent_administration {
-  document_number: String
-  medication: String
-  route_of_administration: String
-  medication_lot_number: String
-  medication_vial_id: String
-  medication_actual_units_of_measure: String
-  medication_duration: Float
-  medication_duration_unit: String
-  medication_duration_original: Float
-  medication_duration_original_unit: String
-  medication_units_of_measure: String
-  medication_actual_dose: Float
-  medication_actual_dose_unit: String
-  medication_actual_dose_original: Float
-  medication_actual_dose_original_unit: String
-  phase: String
-  start_time: String
-  stop_time: String
-  dose_level: Float
-  dose_level_unit: String
-  dose_level_original: Float
-  dose_level_original_unit: String
-  dose_units_of_measure: String
-  date_of_missed_dose: String
-  medication_missed_dose: String
-  missed_dose_amount: Float
-  missed_dose_amount_unit: String
-  missed_dose_amount_original: Float
-  missed_dose_amount_original_unit: String
-  missed_dose_units_of_measure: String
-  medication_course_number: String
-  comment: String
-  agent: agent @relation(name:"of_agent", direction:OUT)
-  visit: visit @relation(name:"on_visit", direction:OUT)
-}
-
-type assay {
-  sample: sample @relation(name:"of_sample", direction:OUT)
-  files: [file] @relation(name:"of_assay", direction:IN)
-  images: [image] @relation(name:"of_assay", direction:IN)
-  schema_validation_placeholder: String
-}
-
 type biospecimen_source {
   biospecimen_repository_acronym: String
   biospecimen_repository_full_name: String
+  crdc_id: String
 }
 
 type canine_individual {
   canine_individual_id: String
+  crdc_id: String
   cases: [case] @relation(name:"represents", direction:IN)
 }
 
 type case {
-  case_id: String
+  case_record_id: String
   patient_id: String
   patient_first_name: String
+  crdc_id: String
   cohort: cohort @relation(name:"member_of", direction:OUT)
   study: study @relation(name:"member_of", direction:OUT)
   enrollment: enrollment @relation(name:"of_case", direction:IN)
   demographic: demographic @relation(name:"of_case", direction:IN)
-  diagnoses: [diagnosis] @relation(name:"of_case", direction:IN)
+  diagnosis: diagnosis @relation(name:"of_case", direction:IN)
   cycles: [cycle] @relation(name:"of_case", direction:IN)
-  follow_ups: [follow_up] @relation(name:"of_case", direction:IN)
   samples: [sample] @relation(name:"of_case", direction:IN)
   files: [file] @relation(name:"of_case", direction:IN)
   visits: [visit] @relation(name:"of_case", direction:IN)
   adverse_events: [adverse_event] @relation(name:"of_case", direction:IN)
   registrations: [registration] @relation(name:"of_case", direction:IN)
+  consent_group: consent_group @relation(name:"of_case", direction:OUT)
   study_arm: study_arm @relation(name:"of_study_arm", direction:OUT)
   adverse_event: adverse_event @relation(name:"had_adverse_event", direction:OUT)
-  off_study: off_study @relation(name:"went_off_study", direction:OUT)
-  off_treatment: off_treatment @relation(name:"went_off_treatment", direction:OUT)
   canine_individual: canine_individual @relation(name:"represents", direction:OUT)
 }
 
 type cohort {
+  cohort_record_id: String
   cohort_description: String
   cohort_dose: String
-  cohort_id: String
+  crdc_id: String
   cases: [case] @relation(name:"member_of", direction:IN)
   study_arm: study_arm @relation(name:"member_of", direction:OUT)
   study: study @relation(name:"member_of", direction:OUT)
 }
 
+type consent_group {
+  consent_group_record_id: String
+  consent_group_name: String
+  consent_group_number: Int
+  crdc_id: String
+  cases: [case] @relation(name:"of_case", direction:IN)
+  study: study @relation(name:"of_consent_group", direction:OUT)
+}
+
 type cycle {
+  cycle_record_id: String
   cycle_number: Int
   date_of_cycle_start: String
   date_of_cycle_end: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   visits: [visit] @relation(name:"of_cycle", direction:IN)
 }
 
 type demographic {
-  demographic_id: String
+  demographic_record_id: String
   breed: String
   additional_breed_detail: String
   patient_age_at_enrollment: Float
@@ -142,11 +104,12 @@ type demographic {
   weight_original: Float
   weight_original_unit: String
   neutered_indicator: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
 }
 
 type diagnosis {
-  diagnosis_id: String
+  diagnosis_record_id: String
   disease_term: String
   primary_disease_site: String
   stage_of_disease: String
@@ -160,12 +123,14 @@ type diagnosis {
   follow_up_data: String
   concurrent_disease: String
   concurrent_disease_type: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   files: [file] @relation(name:"from_diagnosis", direction:IN)
 }
 
 type disease_extent {
-  lesion_number: String
+  disease_extent_record_id: String
+  lesion_number: Int
   lesion_site: String
   lesion_description: String
   previously_irradiated: String
@@ -178,20 +143,22 @@ type disease_extent {
   longest_measurement_unit: String
   longest_measurement_original: Float
   longest_measurement_original_unit: String
-  evaluation_number: String
+  evaluation_number: Int
   evaluation_code: String
+  crdc_id: String
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
 type enrollment {
-  enrollment_id: String
-  date_of_registration: String
-  registering_institution: String
+  enrollment_record_id: String
   initials: String
-  date_of_informed_consent: String
   site_short_name: String
   veterinary_medical_center: String
+  registering_institution: String
+  date_of_registration: String
+  date_of_informed_consent: String
   patient_subgroup: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   prior_therapies: [prior_therapy] @relation(name:"at_enrollment", direction:IN)
   prior_surgeries: [prior_surgery] @relation(name:"at_enrollment", direction:IN)
@@ -203,28 +170,16 @@ type file {
   file_type: String
   file_description: String
   file_format: String
-  file_size: Float
+  file_size: Int
   md5sum: String
   file_status: String
   uuid: String
   file_location: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   study: study @relation(name:"of_study", direction:OUT)
   sample: sample @relation(name:"of_sample", direction:OUT)
-  assay: assay @relation(name:"of_assay", direction:OUT)
   diagnosis: diagnosis @relation(name:"from_diagnosis", direction:OUT)
-}
-
-type follow_up {
-  document_number: String
-  date_of_last_contact: String
-  patient_status: String
-  explain_unknown_status: String
-  contact_type: String
-  treatment_since_last_contact: Boolean
-  physical_exam_performed: Boolean
-  physical_exam_changes: String
-  case: case @relation(name:"of_case", direction:OUT)
 }
 
 type human_relevance {
@@ -238,82 +193,45 @@ type human_relevance {
   study: study @relation(name:"of_study", direction:OUT)
 }
 
-type image {
-  assay: assay @relation(name:"of_assay", direction:OUT)
-  schema_validation_placeholder: String
-}
-
-type image_collection {
-  image_collection_name: String
-  image_type_included: String
-  image_collection_url: String
-  repository_name: String
-  collection_access: String
-  study: study @relation(name:"of_study", direction:OUT)
-}
-
-type lab_exam {
-  visit: visit @relation(name:"on_visit", direction:OUT)
-  schema_validation_placeholder: String
-}
-
-type off_study {
-  document_number: String
-  date_off_study: String
-  reason_off_study: String
-  date_of_disease_progression: String
-  date_off_treatment: String
-  best_resp_vet_tx_tp_secondary_response: String
-  date_last_medication_administration: String
-  best_resp_vet_tx_tp_best_response: String
-  date_of_best_response: String
-  case: case @relation(name:"went_off_study", direction:IN)
-}
-
-type off_treatment {
-  document_number: String
-  date_off_treatment: String
-  reason_off_treatment: String
-  date_of_disease_progression: String
-  best_resp_vet_tx_tp_secondary_response: String
-  date_last_medication_administration: String
-  best_resp_vet_tx_tp_best_response: String
-  date_of_best_response: String
-  case: case @relation(name:"went_off_treatment", direction:IN)
-}
-
 type physical_exam {
+  physical_exam_record_id: String
   date_of_examination: String
   day_in_cycle: Int
   body_system: String
   pe_finding: String
   pe_comment: String
   phase_pe: String
-  assessment_timepoint: Int
+  assessment_timepoint: String
+  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
 type principal_investigator {
+  person_record_id: String
   pi_first_name: String
   pi_last_name: String
   pi_middle_initial: String
+  crdc_id: String
   studies: [study] @relation(name:"of_study", direction:OUT)
 }
 
 type prior_surgery {
+  prior_surgery_record_id: String
   date_of_surgery: String
   procedure: String
   anatomical_site_of_surgery: String
   surgical_finding: String
   residual_disease: String
   therapeutic_indicator: String
+  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   next_prior_surgery: prior_surgery @relation(name:"next", direction:OUT)
   prior_prior_surgery: prior_surgery @relation(name:"next", direction:IN)
 }
 
 type prior_therapy {
+  prior_therapy_record_id: String
   date_of_first_dose: String
   date_of_last_dose: String
   agent_name: String
@@ -343,6 +261,7 @@ type prior_therapy {
   date_of_last_dose_any_therapy: String
   treatment_performed_at_site: Boolean
   treatment_performed_in_minimal_residual: Boolean
+  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   next_prior_therapy: prior_therapy @relation(name:"next", direction:OUT)
   prior_prior_therapy: prior_therapy @relation(name:"next", direction:IN)
@@ -355,6 +274,7 @@ type program {
   program_full_description: String
   program_external_url: String
   program_sort_order: Int
+  crdc_id: String
   studies: [study] @relation(name:"member_of", direction:IN)
 }
 
@@ -365,12 +285,14 @@ type publication {
   journal_citation: String
   digital_object_id: String
   pubmed_id: Float
+  crdc_id: String
   study: study @relation(name:"of_study", direction:OUT)
 }
 
 type registration {
   registration_origin: String
-  registration_id: String
+  registration_record_id: String
+  crdc_id: String
   cases: [case] @relation(name:"of_case", direction:OUT)
 }
 
@@ -402,9 +324,9 @@ type sample {
   percentage_tumor: String
   sample_preservation: String
   comment: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   visit: visit @relation(name:"on_visit", direction:OUT)
-  assays: [assay] @relation(name:"of_sample", direction:IN)
   files: [file] @relation(name:"of_sample", direction:IN)
   next_sample: sample @relation(name:"next", direction:OUT)
   prior_sample: sample @relation(name:"next", direction:IN)
@@ -420,6 +342,7 @@ type study {
   dates_of_conduct: String
   accession_id: String
   study_disposition: String
+  crdc_id: String
   study_arms: [study_arm] @relation(name:"member_of", direction:IN)
   program: program @relation(name:"member_of", direction:OUT)
   cases: [case] @relation(name:"member_of", direction:IN)
@@ -428,18 +351,17 @@ type study {
   study_sites: [study_site] @relation(name:"of_study", direction:IN)
   principal_investigators: [principal_investigator] @relation(name:"of_study", direction:IN)
   files: [file] @relation(name:"of_study", direction:IN)
-  image_collections: [image_collection] @relation(name:"of_study", direction:IN)
   publications: [publication] @relation(name:"of_study", direction:IN)
+  NONE: [consent_group] @relation(name:"of_consent_group", direction:IN)
 }
 
 type study_arm {
-  arm: String
-  ctep_treatment_assignment_code: String
-  arm_description: String
   arm_id: String
+  arm: String
+  arm_description: String
+  crdc_id: String
   cohorts: [cohort] @relation(name:"member_of", direction:IN)
   study: study @relation(name:"member_of", direction:OUT)
-  agents: [agent] @relation(name:"of_study_arm", direction:IN)
   cases: [case] @relation(name:"of_study_arm", direction:IN)
 }
 
@@ -447,19 +369,19 @@ type study_site {
   site_short_name: String
   veterinary_medical_center: String
   registering_institution: String
+  crdc_id: String
   studies: [study] @relation(name:"of_study", direction:OUT)
 }
 
 type visit {
+  visit_record_id: String
   visit_date: String
-  visit_number: String
-  visit_id: String
+  visit_number: Int
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   cycle: cycle @relation(name:"of_cycle", direction:OUT)
-  agent_administrations: [agent_administration] @relation(name:"on_visit", direction:IN)
   samples: [sample] @relation(name:"on_visit", direction:IN)
   physical_exams: [physical_exam] @relation(name:"on_visit", direction:IN)
-  lab_exams: [lab_exam] @relation(name:"on_visit", direction:IN)
   disease_extents: [disease_extent] @relation(name:"on_visit", direction:IN)
   vital_signs: [vital_signs] @relation(name:"on_visit", direction:IN)
   next_visit: visit @relation(name:"next", direction:OUT)
@@ -467,28 +389,30 @@ type visit {
 }
 
 type vital_signs {
+  vital_signs_record_id: String
   date_of_vital_signs: String
   body_temperature: Float
   body_temperature_unit: String
   body_temperature_original: Float
   body_temperature_original_unit: String
-  pulse: Int
-  pulse_unit: String
-  pulse_original: Int
-  pulse_original_unit: String
   respiration_rate: Int
   respiration_rate_unit: String
   respiration_rate_original: Int
   respiration_rate_original_unit: String
   respiration_pattern: String
-  systolic_bp: Int
-  systolic_bp_unit: String
-  systolic_bp_original: Int
-  systolic_bp_original_unit: String
+  pulse: Int
+  pulse_unit: String
+  pulse_original: Int
+  pulse_original_unit: String
   pulse_ox: Float
   pulse_ox_unit: String
   pulse_ox_original: Float
   pulse_ox_original_unit: String
+  systolic_bp: Int
+  systolic_bp_unit: String
+  systolic_bp_original: Int
+  systolic_bp_original_unit: String
+  ecg: String
   patient_weight: Float
   patient_weight_unit: String
   patient_weight_original: Float
@@ -498,9 +422,8 @@ type vital_signs {
   body_surface_area_original: Float
   body_surface_area_original_unit: String
   modified_ecog: String
-  ecg: String
-  assessment_timepoint: Int
-  phase: String
+  assessment_timepoint: String
+  crdc_id: String
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
@@ -520,7 +443,7 @@ type CaseDetail {
     arm: String
     ctep_treatment_assignment_code: String
     cohort_description: String
-    case_id: String
+    case_record_id: String
     patient_id: String
     patient_first_name: String
     breed: String
@@ -581,7 +504,7 @@ type FileOverview2 {
 }
 
 type CaseOverview {
-    case_id: String
+    case_record_id: String
     program: String
     study_code: String
     study_type: String
@@ -603,7 +526,7 @@ type CaseOverview {
 
 
 type FilesOfCase{
-    case_id: String
+    case_record_id: String
     parent:String
     file_name: String
     file_type: String
@@ -633,7 +556,7 @@ type FileDetail {
     arm: String
     cohort_description: String
     cohort_dose: String
-    case_id: String
+    case_record_id: String
     breed: String
     weight: Float
     sex: String
@@ -695,7 +618,7 @@ type FileInList {
     file_description: String
     file_format: String
     file_size: Float
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     study_code: String
@@ -761,7 +684,7 @@ type FileOverview {
     file_description: String
     file_format: String
     file_size: Float
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     study_code: String
@@ -803,7 +726,7 @@ type FileOverview {
 
 type SampleOverview {
     sample_id: String
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     sample_site: String
@@ -841,7 +764,7 @@ type SampleOverview {
 }
 
 type CaseOverview2 {
-    case_id: String
+    case_record_id: String
     study_code: String
     study_type: String
     cohort: String
@@ -915,12 +838,12 @@ type CycleNodeData {
     cycle_number: Int
     date_of_cycle_end: String
     crf_id: String
-    case_id: String
+    case_record_id: String
     date_of_cycle_start: String
 }
 
 type VisitNodeData {
-    case_id: String
+    case_record_id: String
     visit_date: String
     visit_number: Int
     visit_id: String
@@ -938,7 +861,7 @@ type FollowUpNodeData {
 }
 
 type AdverseEventNodeData {
-    case_id: String
+    case_record_id: String
     day_in_cycle: Int
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
@@ -1013,7 +936,7 @@ type PriorTherapyNodeData {
 }
 
 type PriorSurgeryNodeData {
-    case_id: String
+    case_record_id: String
     date_of_surgery: String
     procedure: String
     anatomical_site_of_surgery: String
@@ -1023,7 +946,7 @@ type PriorSurgeryNodeData {
 }
 
 type PhysicalExamNodeData {
-    case_id: String
+    case_record_id: String
     date_of_examination: String
     day_in_cycle: Int
     body_system: String
@@ -1039,7 +962,7 @@ type AgentNodeData {
 }
 
 type DiseaseExtentNodeData {
-    case_id: String
+    case_record_id: String
     lesion_number: Int
     lesion_site: String
     lesion_description: String
@@ -1089,7 +1012,7 @@ type VitalSignsNodeData {
     body_surface_area_original_unit: String
     patient_weight: Float
     patient_weight_unit: String
-    case_id: String
+    case_record_id: String
     time_of_observation: String
     pulse_original_unit: String
     respiration_rate_original_unit: String
@@ -1125,7 +1048,6 @@ type CartChartData {
     fileType: [CartChartItem]
     fileFormat: [CartChartItem]
     fileAssociation: [CartChartItem]
-    schema_validation_placeholder: String
 }
 
 type CartOverviewData {
@@ -1158,7 +1080,7 @@ type QueryType {
     numberOfPrograms: Int @cypher(statement: "MATCH (n:program) RETURN count (n)")
     numberOfAliquots: Int @cypher(statement: "MATCH (n:aliquot) return count(n)")
     volumeOfData: Float @cypher(statement: "MATCH (f:file) WITH DISTINCT f return sum(f.file_size)")
-    volumeOfDataOfCase(case_id: String!): Float @cypher(statement: "MATCH (c:case{case_id: $case_id})-->(s:study) WITH s OPTIONAL MATCH (s)<--(f:file) WITH SUM(f.file_size) AS study_file_size OPTIONAL MATCH (c:case{case_id: $case_id})<-[*]-(f:file) with DISTINCT f, study_file_size RETURN SUM(f.file_size) + study_file_size")
+    volumeOfDataOfCase(case_record_id: String!): Float @cypher(statement: "MATCH (c:case{case_record_id: $case_record_id})-->(s:study) WITH s OPTIONAL MATCH (s)<--(f:file) WITH SUM(f.file_size) AS study_file_size OPTIONAL MATCH (c:case{case_record_id: $case_record_id})<-[*]-(f:file) with DISTINCT f, study_file_size RETURN SUM(f.file_size) + study_file_size")
     volumeOfDataOfProgram(program_id: String!): Float @cypher(statement: "MATCH (f:file)-[*]->(:program {program_acronym: $program_id}) WITH DISTINCT f return sum(f.file_size)")
     volumeOfDataOfStudy(study_code: String!): Float @cypher(statement: "MATCH (f:file)-[*]->(:study {clinical_study_designation: $study_code}) WITH DISTINCT f return sum(f.file_size)")
 
@@ -1169,19 +1091,19 @@ type QueryType {
     fileCountOfStudyFiles(study_code: String!): Int @cypher(statement: "MATCH (f:file)-->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(distinct(f))")
     aliquotCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code  return count(DISTINCT(a))")
     caseCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (c:case)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(distinct(c))")
-    fileCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(c:case {case_id: $case_id}) return count(DISTINCT(f))")
-    studyFileCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)<--(f:file) return count(DISTINCT(f))")
-    aliquotCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(c:case {case_id: $case_id}) return count(DISTINCT(a))")
+    fileCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(c:case {case_record_id: $case_record_id}) return count(DISTINCT(f))")
+    studyFileCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (c:case {case_record_id: $case_record_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)<--(f:file) return count(DISTINCT(f))")
+    aliquotCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(c:case {case_record_id: $case_record_id}) return count(DISTINCT(a))")
     sampleCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:sample)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(s))")
     fileCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(f))")
     studyFileCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:study)-[*]->(:program {program_acronym: $program_id}) OPTIONAL MATCH (s) <-- (f:file) return count(DISTINCT(f))")
     aliquotCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(a))")
     studyCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:study)-[*]->(:program {program_acronym: $program_id}) WHERE s.study_disposition = 'Unrestricted' return count(DISTINCT(s))")
     caseCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (c:case)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(c))")
-    sampleCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id})<-[*]-(s:sample) RETURN count(distinct(s))")
+    sampleCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (c:case {case_record_id: $case_record_id})<-[*]-(s:sample) RETURN count(distinct(s))")
 
     programCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (s:study {clinical_study_designation: $study_code}) OPTIONAL MATCH (s)-[:member_of]->(p: program)  return count(DISTINCT(p))")
-    programsCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)-[:member_of]->(p:program) return count(DISTINCT(p))")
+    programsCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (c:case {case_record_id: $case_record_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)-[:member_of]->(p:program) return count(DISTINCT(p))")
 
     filesInList(uuids: [String], order_by: String = ""): [FileInList] @cypher(statement: """
     MATCH (f:file)
@@ -1204,7 +1126,7 @@ type QueryType {
     f.file_description AS file_description,
     f.file_format AS file_format,
     f.file_size AS file_size,
-    c.case_id AS case_id,
+    c.case_record_id AS case_record_id,
     demo.breed AS breed,
     diag.disease_term AS diagnosis,
     CASE WHEN s.clinical_study_designation IS NULL
@@ -1246,7 +1168,7 @@ type QueryType {
     diag.concurrent_disease_type AS concurrent_disease_type,
     co.cohort_description AS cohort_description,
     a.arm AS arm,
-    collect(DISTINCT o.case_id) AS other_cases,
+    collect(DISTINCT o.case_record_id) AS other_cases,
     'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
     f.file_location AS file_location,
     c.patient_id AS patient_id,
@@ -1269,7 +1191,7 @@ type QueryType {
     file_description: file_description,
     file_format: file_format,
     file_size: file_size,
-    case_id: case_id,
+    case_record_id: case_record_id,
     breed: breed,
     diagnosis: diagnosis,
     study_code: study_code,
@@ -1334,7 +1256,7 @@ type QueryType {
     WHEN 'file_description' THEN file_description
     WHEN 'file_format' THEN file_format
     WHEN 'file_size' THEN file_size
-    WHEN 'case_id' THEN case_id
+    WHEN 'case_record_id' THEN case_record_id
     WHEN 'breed' THEN breed
     WHEN 'diagnosis' THEN diagnosis
     WHEN 'study_code' THEN study_code
@@ -1367,7 +1289,7 @@ type QueryType {
     f.file_description AS file_description,
     f.file_format AS file_format,
     f.file_size AS file_size,
-    c.case_id AS case_id,
+    c.case_record_id AS case_record_id,
     demo.breed AS breed,
     diag.disease_term AS diagnosis,
     CASE WHEN s.clinical_study_designation IS NULL
@@ -1409,7 +1331,7 @@ type QueryType {
     diag.concurrent_disease_type AS concurrent_disease_type,
     co.cohort_description AS cohort_description,
     a.arm AS arm,
-    collect(DISTINCT o.case_id) AS other_cases,
+    collect(DISTINCT o.case_record_id) AS other_cases,
     'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
     f.file_location AS file_location,
     c.patient_id AS patient_id,
@@ -1432,7 +1354,7 @@ type QueryType {
     file_description: file_description,
     file_format: file_format,
     file_size: file_size,
-    case_id: case_id,
+    case_record_id: case_record_id,
     breed: breed,
     diagnosis: diagnosis,
     study_code: study_code,
@@ -1497,7 +1419,7 @@ type QueryType {
     WHEN 'file_description' THEN file_description
     WHEN 'file_format' THEN file_format
     WHEN 'file_size' THEN file_size
-    WHEN 'case_id' THEN case_id
+    WHEN 'case_record_id' THEN case_record_id
     WHEN 'breed' THEN breed
     WHEN 'diagnosis' THEN diagnosis
     WHEN 'study_code' THEN study_code
@@ -1587,8 +1509,8 @@ type QueryType {
     ORDER BY s.clinical_study_designation
     """, passThrough: true)
 
-    filesOfCase(case_id: String!): [FilesOfCase] @cypher(statement: """
-    MATCH (f:file)-[*]->(c:case{case_id: $case_id})
+    filesOfCase(case_record_id: String!): [FilesOfCase] @cypher(statement: """
+    MATCH (f:file)-[*]->(c:case{case_record_id: $case_record_id})
     WITH DISTINCT(f) AS f
     MATCH (f)-->(parent)
     RETURN{
@@ -1602,16 +1524,16 @@ type QueryType {
     uuid: f.uuid,
     file_location: f.file_location,
     parent: head(labels(parent)),
-    case_id: $case_id
+    case_record_id: $case_record_id
     }
     """, passThrough: true)
 
-    filesOfCases(case_ids: [String!]!): [FilesOfCase] @cypher(statement: """
+    filesOfCases(case_record_ids: [String!]!): [FilesOfCase] @cypher(statement: """
     MATCH (f:file)-[*]->(c:case)
     WITH
     DISTINCT(f) AS f,
     c MATCH (f)-->(parent)
-    WHERE c.case_id IN $case_ids
+    WHERE c.case_record_id IN $case_record_ids
     RETURN{
     file_status: f.file_status,
     file_name: f.file_name,
@@ -1623,12 +1545,12 @@ type QueryType {
     uuid: f.uuid,
     file_location: f.file_location,
     parent: head(labels(parent)),
-    case_id: c.case_id
+    case_record_id: c.case_record_id
     }
     """, passThrough: true)
 
-    multiStudyCases(case_id: String): MultiStudyCases @cypher(statement: """
-    MATCH (:case {case_id: $case_id})-->(i:canine_individual)
+    multiStudyCases(case_record_id: String): MultiStudyCases @cypher(statement: """
+    MATCH (:case {case_record_id: $case_record_id})-->(i:canine_individual)
     MATCH (i)<--(c:case)
     OPTIONAL MATCH (c)<--(samp:sample)
     OPTIONAL MATCH (c)<-[*]-(f:file)
@@ -1637,15 +1559,15 @@ type QueryType {
     WITH i, c, f, samp, sf
     RETURN{
     individualId: i.canine_individual_id,
-    caseIds: collect(DISTINCT c.case_id),
+    caseIds: collect(DISTINCT c.case_record_id),
     sampleIds: collect(DISTINCT samp.sample_id),
     fileIds: collect(DISTINCT f.uuid),
     studyFileIds: collect(DISTINCT sf.uuid)
     }
     """, passThrough: true)
 
-    caseDetail(case_id: String): CaseDetail @cypher(statement: """
-    MATCH (c:case {case_id: $case_id})-->(s:study)-->(p:program)
+    caseDetail(case_record_id: String): CaseDetail @cypher(statement: """
+    MATCH (c:case {case_record_id: $case_record_id})-->(s:study)-->(p:program)
     OPTIONAL MATCH (c)-->(co:cohort)-->(a:study_arm)
     OPTIONAL MATCH (c)<--(demo:demographic)
     OPTIONAL MATCH (c)<--(diag:diagnosis)
@@ -1657,7 +1579,7 @@ type QueryType {
     arm: a.arm,
     ctep_treatment_assignment_code: a.ctep_treatment_assignment_code,
     cohort_description: co.cohort_description,
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     patient_id: c.patient_id,
     patient_first_name: c.patient_first_name,
     breed: demo.breed,
@@ -1721,7 +1643,7 @@ type QueryType {
     OPTIONAL MATCH (samp:sample)-[*]->(c)
     WITH DISTINCT c AS c, p, s, demo, diag, f, samp, prt
     RETURN{
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     study_code: s.clinical_study_designation,
     program: p.program_acronym,
     study_type: s.clinical_study_type,
@@ -1742,16 +1664,16 @@ type QueryType {
     }
     """, passThrough: true)
 
-    casesInList(case_ids: [String!]!): [CaseOverview] @cypher(statement: """
+    casesInList(case_record_ids: [String!]!): [CaseOverview] @cypher(statement: """
     MATCH
     (p:program)<-[*]-(s:study)<-[*]-(c:case)<--(demo:demographic),
     (c)<--(diag:diagnosis)
-    WHERE c.case_id IN $case_ids
+    WHERE c.case_record_id IN $case_record_ids
     OPTIONAL MATCH (f:file)-[*]->(c)
     OPTIONAL MATCH (samp:sample)-[*]->(c)
     WITH DISTINCT c AS c, p, s, demo, diag, f, samp
     RETURN{
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     study_code: s.clinical_study_designation,
     program: p.program_acronym,
     study_type: s.clinical_study_type,
@@ -1791,8 +1713,8 @@ type QueryType {
     RETURN DISTINCT(c)
     """)
 
-    samplesByCaseId(case_id: String!): [sample] @cypher(statement: """
-    MATCH (c:case {case_id: $case_id})<-[*]-(s:sample)
+    samplesByCaseId(case_record_id: String!): [sample] @cypher(statement: """
+    MATCH (c:case {case_record_id: $case_record_id})<-[*]-(s:sample)
     RETURN s
     """)
 
@@ -1829,14 +1751,14 @@ type QueryType {
     OPTIONAL MATCH (f)-->(samp:sample)
     WITH DISTINCT (f) AS f, s, c, co, arm, demo, diag, v, samp,
     f.file_type as file_type,
-    c.case_id as case_id
+    c.case_record_id as case_record_id
     RETURN{
     clinical_study_designation: s.clinical_study_designation,
     clinical_study_name: s.clinical_study_name,
     arm: arm.arm,
     cohort_description: co.cohort_description,
     cohort_dose: co.cohort_dose,
-    case_id: case_id,
+    case_record_id: case_record_id,
     breed: demo.breed,
     weight: demo.weight,
     sex: demo.sex,
@@ -1874,7 +1796,7 @@ type QueryType {
     size: f.file_size,
     url: f.file_location
     }
-    ORDER BY file_type, case_id
+    ORDER BY file_type, case_record_id
     """, passThrough: true)
 
     "For IndexD to replace manifest"
@@ -1943,9 +1865,9 @@ type QueryType {
     ELSE file_name END DESC
     """, passThrough: true)
 
-    unifiedViewData(case_ids: [String] = [""]): UnifiedCounts @cypher(statement: """
+    unifiedViewData(case_record_ids: [String] = [""]): UnifiedCounts @cypher(statement: """
     MATCH (c:case)
-    WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids)
+    WHERE ($case_record_ids = [""] OR $case_record_ids IS NULL OR c.case_record_id IN $case_record_ids)
     OPTIONAL MATCH (s:study)<--(c)
     OPTIONAL MATCH (f:file)-[*]->(c)
     OPTIONAL MATCH (samp:sample)-->(c)
@@ -2063,7 +1985,7 @@ type QueryType {
     OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
     RETURN {
     agent: COUNT(DISTINCT a),
-    cycle: COUNT(DISTINCT cy.case_id),
+    cycle: COUNT(DISTINCT cy.case_record_id),
     visit: COUNT(DISTINCT left(v.visit_id, 13)),
     follow_up: COUNT(DISTINCT fu),
     adverse_event: COUNT(DISTINCT endNode(aeoc)),
@@ -2072,9 +1994,9 @@ type QueryType {
     prior_therapy: COUNT(DISTINCT pt),
     prior_surgery: COUNT(DISTINCT ps),
     agent_administration: COUNT(DISTINCT aa),
-    physical_exam: COUNT(DISTINCT pe.case_id),
-    vital_signs: COUNT(DISTINCT vs.case_id),
-    disease_extent: COUNT(DISTINCT de.case_id),
+    physical_exam: COUNT(DISTINCT pe.case_record_id),
+    vital_signs: COUNT(DISTINCT vs.case_record_id),
+    disease_extent: COUNT(DISTINCT de.case_record_id),
     lab_exam: COUNT(DISTINCT le)
     }
     """, passThrough: true)
@@ -2122,12 +2044,12 @@ type QueryType {
     MATCH (c)<-[*1..2]-(v:visit)
     WITH DISTINCT v, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     visit_date: v.visit_date,
     visit_number: v.visit_number,
     visit_id: v.visit_id
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     followUpNodeData(study_code: String!): [FollowUpNodeData] @cypher(statement: """
@@ -2145,7 +2067,7 @@ type QueryType {
     MATCH (c)<-[:of_case]-(ae:adverse_event)
     WITH DISTINCT ae, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     day_in_cycle: ae.day_in_cycle,
     date_of_onset: ae.date_of_onset,
     existing_adverse_event: ae.existing_adverse_event,
@@ -2166,7 +2088,7 @@ type QueryType {
     dose_limiting_toxicity: ae.dose_limiting_toxicity,
     unexpected_adverse_event: ae.unexpected_adverse_event
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """
@@ -2202,7 +2124,7 @@ type QueryType {
     MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
     WITH DISTINCT c, ps
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     date_of_surgery: ps.date_of_surgery,
     procedure: ps.procedure,
     anatomical_site_of_surgery: ps.anatomical_site_of_surgery,
@@ -2210,7 +2132,7 @@ type QueryType {
     residual_disease: ps.residual_disease,
     therapeutic_indicator: ps.therapeutic_indicator
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] @cypher(statement: """
@@ -2230,7 +2152,7 @@ type QueryType {
     MATCH (v)<-[:on_visit]-(pe:physical_exam)
     WITH DISTINCT pe, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     date_of_examination: pe.date_of_examination,
     day_in_cycle: pe.day_in_cycle,
     body_system: pe.body_system,
@@ -2239,7 +2161,7 @@ type QueryType {
     phase_pe: pe.phase_pe,
     assessment_timepoint: pe.assessment_timepoint
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] @cypher(statement: """
@@ -2259,7 +2181,7 @@ type QueryType {
     MATCH (v)<-[:on_visit]-(de:disease_extent)
     WITH DISTINCT de, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     lesion_number: de.lesion_number,
     lesion_site: de.lesion_site,
     lesion_description: de.lesion_description,
@@ -2273,7 +2195,7 @@ type QueryType {
     evaluation_number: de.evaluation_number,
     evaluation_code: de.evaluation_code
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     # labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
@@ -2292,12 +2214,12 @@ type QueryType {
     MATCH (c)<-[:of_case]-(e:enrollment)
     MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
     WITH DISTINCT c, ps
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     RETURN
     {
       case_count: COUNT(DISTINCT c),
       prior_surgeries: collect({
-        case_id: c.case_id,
+        case_record_id: c.case_record_id,
         date_of_surgery: ps.date_of_surgery,
         procedure: ps.procedure,
         anatomical_site_of_surgery: ps.anatomical_site_of_surgery,
