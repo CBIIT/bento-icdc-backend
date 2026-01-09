@@ -800,7 +800,7 @@ type GroupCount {
 
 type MultiStudyCases {
     individualId: String
-    caseIds: [String]
+    caseRecordIds: [String]
     sampleIds: [String]
     fileIds: [String]
     studyFileIds: [String]
@@ -1559,7 +1559,7 @@ type QueryType {
     WITH i, c, f, samp, sf
     RETURN{
     individualId: i.canine_individual_id,
-    caseIds: collect(DISTINCT c.case_record_id),
+    caseRecordIds: collect(DISTINCT c.case_record_id),
     sampleIds: collect(DISTINCT samp.sample_id),
     fileIds: collect(DISTINCT f.uuid),
     studyFileIds: collect(DISTINCT sf.uuid)
@@ -1713,7 +1713,7 @@ type QueryType {
     RETURN DISTINCT(c)
     """)
 
-    samplesByCaseId(case_record_id: String!): [sample] @cypher(statement: """
+    samplesByCaseRecordId(case_record_id: String!): [sample] @cypher(statement: """
     MATCH (c:case {case_record_id: $case_record_id})<-[*]-(s:sample)
     RETURN s
     """)

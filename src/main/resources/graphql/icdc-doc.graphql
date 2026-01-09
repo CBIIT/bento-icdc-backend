@@ -800,7 +800,7 @@ type GroupCount {
 
 type MultiStudyCases {
     individualId: String
-    caseIds: [String]
+    caseRecordIds: [String]
     sampleIds: [String]
     fileIds: [String]
     studyFileIds: [String]
@@ -1131,7 +1131,7 @@ type QueryType {
     "Find nodes with parameters"
     casesByStudyId(study_id: String!): [case] 
 
-    samplesByCaseId(case_record_id: String!): [sample] 
+    samplesByCaseRecordId(case_record_id: String!): [sample] 
 
     filesBySampleId(sample_id: String!): [file] 
 
