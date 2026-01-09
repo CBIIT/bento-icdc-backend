@@ -14,7 +14,7 @@ type CaseDetail {
     arm: String
     ctep_treatment_assignment_code: String
     cohort_description: String
-    case_id: String
+    case_record_id: String
     patient_id: String
     patient_first_name: String
     breed: String
@@ -75,7 +75,7 @@ type FileOverview2 {
 }
 
 type CaseOverview {
-    case_id: String
+    case_record_id: String
     program: String
     study_code: String
     study_type: String
@@ -97,7 +97,7 @@ type CaseOverview {
 
 
 type FilesOfCase{
-    case_id: String
+    case_record_id: String
     parent:String
     file_name: String
     file_type: String
@@ -127,7 +127,7 @@ type FileDetail {
     arm: String
     cohort_description: String
     cohort_dose: String
-    case_id: String
+    case_record_id: String
     breed: String
     weight: Float
     sex: String
@@ -189,7 +189,7 @@ type FileInList {
     file_description: String
     file_format: String
     file_size: Float
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     study_code: String
@@ -255,7 +255,7 @@ type FileOverview {
     file_description: String
     file_format: String
     file_size: Float
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     study_code: String
@@ -297,7 +297,7 @@ type FileOverview {
 
 type SampleOverview {
     sample_id: String
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     sample_site: String
@@ -335,7 +335,7 @@ type SampleOverview {
 }
 
 type CaseOverview2 {
-    case_id: String
+    case_record_id: String
     study_code: String
     study_type: String
     cohort: String
@@ -371,7 +371,7 @@ type GroupCount {
 
 type MultiStudyCases {
     individualId: String
-    caseIds: [String]
+    caseRecordIds: [String]
     sampleIds: [String]
     fileIds: [String]
     studyFileIds: [String]
@@ -409,12 +409,12 @@ type CycleNodeData {
     cycle_number: Int
     date_of_cycle_end: String
     crf_id: String
-    case_id: String
+    case_record_id: String
     date_of_cycle_start: String
 }
 
 type VisitNodeData {
-    case_id: String
+    case_record_id: String
     visit_date: String
     visit_number: Int
     visit_id: String
@@ -432,7 +432,7 @@ type FollowUpNodeData {
 }
 
 type AdverseEventNodeData {
-    case_id: String
+    case_record_id: String
     day_in_cycle: Int
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
@@ -507,7 +507,7 @@ type PriorTherapyNodeData {
 }
 
 type PriorSurgeryNodeData {
-    case_id: String
+    case_record_id: String
     date_of_surgery: String
     procedure: String
     anatomical_site_of_surgery: String
@@ -517,7 +517,7 @@ type PriorSurgeryNodeData {
 }
 
 type PhysicalExamNodeData {
-    case_id: String
+    case_record_id: String
     date_of_examination: String
     day_in_cycle: Int
     body_system: String
@@ -533,7 +533,7 @@ type AgentNodeData {
 }
 
 type DiseaseExtentNodeData {
-    case_id: String
+    case_record_id: String
     lesion_number: Int
     lesion_site: String
     lesion_description: String
@@ -583,7 +583,7 @@ type VitalSignsNodeData {
     body_surface_area_original_unit: String
     patient_weight: Float
     patient_weight_unit: String
-    case_id: String
+    case_record_id: String
     time_of_observation: String
     pulse_original_unit: String
     respiration_rate_original_unit: String
@@ -651,7 +651,7 @@ type QueryType {
     numberOfPrograms: Int @cypher(statement: "MATCH (n:program) RETURN count (n)")
     numberOfAliquots: Int @cypher(statement: "MATCH (n:aliquot) return count(n)")
     volumeOfData: Float @cypher(statement: "MATCH (f:file) WITH DISTINCT f return sum(f.file_size)")
-    volumeOfDataOfCase(case_id: String!): Float @cypher(statement: "MATCH (c:case{case_id: $case_id})-->(s:study) WITH s OPTIONAL MATCH (s)<--(f:file) WITH SUM(f.file_size) AS study_file_size OPTIONAL MATCH (c:case{case_id: $case_id})<-[*]-(f:file) with DISTINCT f, study_file_size RETURN SUM(f.file_size) + study_file_size")
+    volumeOfDataOfCase(case_record_id: String!): Float @cypher(statement: "MATCH (c:case{case_record_id: $case_record_id})-->(s:study) WITH s OPTIONAL MATCH (s)<--(f:file) WITH SUM(f.file_size) AS study_file_size OPTIONAL MATCH (c:case{case_record_id: $case_record_id})<-[*]-(f:file) with DISTINCT f, study_file_size RETURN SUM(f.file_size) + study_file_size")
     volumeOfDataOfProgram(program_id: String!): Float @cypher(statement: "MATCH (f:file)-[*]->(:program {program_acronym: $program_id}) WITH DISTINCT f return sum(f.file_size)")
     volumeOfDataOfStudy(study_code: String!): Float @cypher(statement: "MATCH (f:file)-[*]->(:study {clinical_study_designation: $study_code}) WITH DISTINCT f return sum(f.file_size)")
 
@@ -662,19 +662,19 @@ type QueryType {
     fileCountOfStudyFiles(study_code: String!): Int @cypher(statement: "MATCH (f:file)-->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(distinct(f))")
     aliquotCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code  return count(DISTINCT(a))")
     caseCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (c:case)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(distinct(c))")
-    fileCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(c:case {case_id: $case_id}) return count(DISTINCT(f))")
-    studyFileCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)<--(f:file) return count(DISTINCT(f))")
-    aliquotCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(c:case {case_id: $case_id}) return count(DISTINCT(a))")
+    fileCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(c:case {case_record_id: $case_record_id}) return count(DISTINCT(f))")
+    studyFileCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (c:case {case_record_id: $case_record_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)<--(f:file) return count(DISTINCT(f))")
+    aliquotCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(c:case {case_record_id: $case_record_id}) return count(DISTINCT(a))")
     sampleCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:sample)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(s))")
     fileCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(f))")
     studyFileCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:study)-[*]->(:program {program_acronym: $program_id}) OPTIONAL MATCH (s) <-- (f:file) return count(DISTINCT(f))")
     aliquotCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(a))")
     studyCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:study)-[*]->(:program {program_acronym: $program_id}) WHERE s.study_disposition = 'Unrestricted' return count(DISTINCT(s))")
     caseCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (c:case)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(c))")
-    sampleCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id})<-[*]-(s:sample) RETURN count(distinct(s))")
+    sampleCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (c:case {case_record_id: $case_record_id})<-[*]-(s:sample) RETURN count(distinct(s))")
 
     programCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (s:study {clinical_study_designation: $study_code}) OPTIONAL MATCH (s)-[:member_of]->(p: program)  return count(DISTINCT(p))")
-    programsCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)-[:member_of]->(p:program) return count(DISTINCT(p))")
+    programsCountOfCase(case_record_id: String!): Int @cypher(statement: "MATCH (c:case {case_record_id: $case_record_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)-[:member_of]->(p:program) return count(DISTINCT(p))")
 
     filesInList(uuids: [String], order_by: String = ""): [FileInList] @cypher(statement: """
     MATCH (f:file)
@@ -697,7 +697,7 @@ type QueryType {
     f.file_description AS file_description,
     f.file_format AS file_format,
     f.file_size AS file_size,
-    c.case_id AS case_id,
+    c.case_record_id AS case_record_id,
     demo.breed AS breed,
     diag.disease_term AS diagnosis,
     CASE WHEN s.clinical_study_designation IS NULL
@@ -739,7 +739,7 @@ type QueryType {
     diag.concurrent_disease_type AS concurrent_disease_type,
     co.cohort_description AS cohort_description,
     a.arm AS arm,
-    collect(DISTINCT o.case_id) AS other_cases,
+    collect(DISTINCT o.case_record_id) AS other_cases,
     'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
     f.file_location AS file_location,
     c.patient_id AS patient_id,
@@ -762,7 +762,7 @@ type QueryType {
     file_description: file_description,
     file_format: file_format,
     file_size: file_size,
-    case_id: case_id,
+    case_record_id: case_record_id,
     breed: breed,
     diagnosis: diagnosis,
     study_code: study_code,
@@ -827,7 +827,7 @@ type QueryType {
     WHEN 'file_description' THEN file_description
     WHEN 'file_format' THEN file_format
     WHEN 'file_size' THEN file_size
-    WHEN 'case_id' THEN case_id
+    WHEN 'case_record_id' THEN case_record_id
     WHEN 'breed' THEN breed
     WHEN 'diagnosis' THEN diagnosis
     WHEN 'study_code' THEN study_code
@@ -860,7 +860,7 @@ type QueryType {
     f.file_description AS file_description,
     f.file_format AS file_format,
     f.file_size AS file_size,
-    c.case_id AS case_id,
+    c.case_record_id AS case_record_id,
     demo.breed AS breed,
     diag.disease_term AS diagnosis,
     CASE WHEN s.clinical_study_designation IS NULL
@@ -902,7 +902,7 @@ type QueryType {
     diag.concurrent_disease_type AS concurrent_disease_type,
     co.cohort_description AS cohort_description,
     a.arm AS arm,
-    collect(DISTINCT o.case_id) AS other_cases,
+    collect(DISTINCT o.case_record_id) AS other_cases,
     'drs://nci-crdc.datacommons.io/dg.4DFC/' AS drs_prefix,
     f.file_location AS file_location,
     c.patient_id AS patient_id,
@@ -925,7 +925,7 @@ type QueryType {
     file_description: file_description,
     file_format: file_format,
     file_size: file_size,
-    case_id: case_id,
+    case_record_id: case_record_id,
     breed: breed,
     diagnosis: diagnosis,
     study_code: study_code,
@@ -990,7 +990,7 @@ type QueryType {
     WHEN 'file_description' THEN file_description
     WHEN 'file_format' THEN file_format
     WHEN 'file_size' THEN file_size
-    WHEN 'case_id' THEN case_id
+    WHEN 'case_record_id' THEN case_record_id
     WHEN 'breed' THEN breed
     WHEN 'diagnosis' THEN diagnosis
     WHEN 'study_code' THEN study_code
@@ -1080,8 +1080,8 @@ type QueryType {
     ORDER BY s.clinical_study_designation
     """, passThrough: true)
 
-    filesOfCase(case_id: String!): [FilesOfCase] @cypher(statement: """
-    MATCH (f:file)-[*]->(c:case{case_id: $case_id})
+    filesOfCase(case_record_id: String!): [FilesOfCase] @cypher(statement: """
+    MATCH (f:file)-[*]->(c:case{case_record_id: $case_record_id})
     WITH DISTINCT(f) AS f
     MATCH (f)-->(parent)
     RETURN{
@@ -1095,16 +1095,16 @@ type QueryType {
     uuid: f.uuid,
     file_location: f.file_location,
     parent: head(labels(parent)),
-    case_id: $case_id
+    case_record_id: $case_record_id
     }
     """, passThrough: true)
 
-    filesOfCases(case_ids: [String!]!): [FilesOfCase] @cypher(statement: """
+    filesOfCases(case_record_ids: [String!]!): [FilesOfCase] @cypher(statement: """
     MATCH (f:file)-[*]->(c:case)
     WITH
     DISTINCT(f) AS f,
     c MATCH (f)-->(parent)
-    WHERE c.case_id IN $case_ids
+    WHERE c.case_record_id IN $case_record_ids
     RETURN{
     file_status: f.file_status,
     file_name: f.file_name,
@@ -1116,12 +1116,12 @@ type QueryType {
     uuid: f.uuid,
     file_location: f.file_location,
     parent: head(labels(parent)),
-    case_id: c.case_id
+    case_record_id: c.case_record_id
     }
     """, passThrough: true)
 
-    multiStudyCases(case_id: String): MultiStudyCases @cypher(statement: """
-    MATCH (:case {case_id: $case_id})-->(i:canine_individual)
+    multiStudyCases(case_record_id: String): MultiStudyCases @cypher(statement: """
+    MATCH (:case {case_record_id: $case_record_id})-->(i:canine_individual)
     MATCH (i)<--(c:case)
     OPTIONAL MATCH (c)<--(samp:sample)
     OPTIONAL MATCH (c)<-[*]-(f:file)
@@ -1130,15 +1130,15 @@ type QueryType {
     WITH i, c, f, samp, sf
     RETURN{
     individualId: i.canine_individual_id,
-    caseIds: collect(DISTINCT c.case_id),
+    caseRecordIds: collect(DISTINCT c.case_record_id),
     sampleIds: collect(DISTINCT samp.sample_id),
     fileIds: collect(DISTINCT f.uuid),
     studyFileIds: collect(DISTINCT sf.uuid)
     }
     """, passThrough: true)
 
-    caseDetail(case_id: String): CaseDetail @cypher(statement: """
-    MATCH (c:case {case_id: $case_id})-->(s:study)-->(p:program)
+    caseDetail(case_record_id: String): CaseDetail @cypher(statement: """
+    MATCH (c:case {case_record_id: $case_record_id})-->(s:study)-->(p:program)
     OPTIONAL MATCH (c)-->(co:cohort)-->(a:study_arm)
     OPTIONAL MATCH (c)<--(demo:demographic)
     OPTIONAL MATCH (c)<--(diag:diagnosis)
@@ -1150,7 +1150,7 @@ type QueryType {
     arm: a.arm,
     ctep_treatment_assignment_code: a.ctep_treatment_assignment_code,
     cohort_description: co.cohort_description,
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     patient_id: c.patient_id,
     patient_first_name: c.patient_first_name,
     breed: demo.breed,
@@ -1214,7 +1214,7 @@ type QueryType {
     OPTIONAL MATCH (samp:sample)-[*]->(c)
     WITH DISTINCT c AS c, p, s, demo, diag, f, samp, prt
     RETURN{
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     study_code: s.clinical_study_designation,
     program: p.program_acronym,
     study_type: s.clinical_study_type,
@@ -1235,16 +1235,16 @@ type QueryType {
     }
     """, passThrough: true)
 
-    casesInList(case_ids: [String!]!): [CaseOverview] @cypher(statement: """
+    casesInList(case_record_ids: [String!]!): [CaseOverview] @cypher(statement: """
     MATCH
     (p:program)<-[*]-(s:study)<-[*]-(c:case)<--(demo:demographic),
     (c)<--(diag:diagnosis)
-    WHERE c.case_id IN $case_ids
+    WHERE c.case_record_id IN $case_record_ids
     OPTIONAL MATCH (f:file)-[*]->(c)
     OPTIONAL MATCH (samp:sample)-[*]->(c)
     WITH DISTINCT c AS c, p, s, demo, diag, f, samp
     RETURN{
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     study_code: s.clinical_study_designation,
     program: p.program_acronym,
     study_type: s.clinical_study_type,
@@ -1284,8 +1284,8 @@ type QueryType {
     RETURN DISTINCT(c)
     """)
 
-    samplesByCaseId(case_id: String!): [sample] @cypher(statement: """
-    MATCH (c:case {case_id: $case_id})<-[*]-(s:sample)
+    samplesByCaseRecordId(case_record_id: String!): [sample] @cypher(statement: """
+    MATCH (c:case {case_record_id: $case_record_id})<-[*]-(s:sample)
     RETURN s
     """)
 
@@ -1322,14 +1322,14 @@ type QueryType {
     OPTIONAL MATCH (f)-->(samp:sample)
     WITH DISTINCT (f) AS f, s, c, co, arm, demo, diag, v, samp,
     f.file_type as file_type,
-    c.case_id as case_id
+    c.case_record_id as case_record_id
     RETURN{
     clinical_study_designation: s.clinical_study_designation,
     clinical_study_name: s.clinical_study_name,
     arm: arm.arm,
     cohort_description: co.cohort_description,
     cohort_dose: co.cohort_dose,
-    case_id: case_id,
+    case_record_id: case_record_id,
     breed: demo.breed,
     weight: demo.weight,
     sex: demo.sex,
@@ -1367,7 +1367,7 @@ type QueryType {
     size: f.file_size,
     url: f.file_location
     }
-    ORDER BY file_type, case_id
+    ORDER BY file_type, case_record_id
     """, passThrough: true)
 
     "For IndexD to replace manifest"
@@ -1436,9 +1436,9 @@ type QueryType {
     ELSE file_name END DESC
     """, passThrough: true)
 
-    unifiedViewData(case_ids: [String] = [""]): UnifiedCounts @cypher(statement: """
+    unifiedViewData(case_record_ids: [String] = [""]): UnifiedCounts @cypher(statement: """
     MATCH (c:case)
-    WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids)
+    WHERE ($case_record_ids = [""] OR $case_record_ids IS NULL OR c.case_record_id IN $case_record_ids)
     OPTIONAL MATCH (s:study)<--(c)
     OPTIONAL MATCH (f:file)-[*]->(c)
     OPTIONAL MATCH (samp:sample)-->(c)
@@ -1556,7 +1556,7 @@ type QueryType {
     OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
     RETURN {
     agent: COUNT(DISTINCT a),
-    cycle: COUNT(DISTINCT cy.case_id),
+    cycle: COUNT(DISTINCT cy.case_record_id),
     visit: COUNT(DISTINCT left(v.visit_id, 13)),
     follow_up: COUNT(DISTINCT fu),
     adverse_event: COUNT(DISTINCT endNode(aeoc)),
@@ -1565,9 +1565,9 @@ type QueryType {
     prior_therapy: COUNT(DISTINCT pt),
     prior_surgery: COUNT(DISTINCT ps),
     agent_administration: COUNT(DISTINCT aa),
-    physical_exam: COUNT(DISTINCT pe.case_id),
-    vital_signs: COUNT(DISTINCT vs.case_id),
-    disease_extent: COUNT(DISTINCT de.case_id),
+    physical_exam: COUNT(DISTINCT pe.case_record_id),
+    vital_signs: COUNT(DISTINCT vs.case_record_id),
+    disease_extent: COUNT(DISTINCT de.case_record_id),
     lab_exam: COUNT(DISTINCT le)
     }
     """, passThrough: true)
@@ -1615,12 +1615,12 @@ type QueryType {
     MATCH (c)<-[*1..2]-(v:visit)
     WITH DISTINCT v, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     visit_date: v.visit_date,
     visit_number: v.visit_number,
     visit_id: v.visit_id
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     followUpNodeData(study_code: String!): [FollowUpNodeData] @cypher(statement: """
@@ -1638,7 +1638,7 @@ type QueryType {
     MATCH (c)<-[:of_case]-(ae:adverse_event)
     WITH DISTINCT ae, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     day_in_cycle: ae.day_in_cycle,
     date_of_onset: ae.date_of_onset,
     existing_adverse_event: ae.existing_adverse_event,
@@ -1659,7 +1659,7 @@ type QueryType {
     dose_limiting_toxicity: ae.dose_limiting_toxicity,
     unexpected_adverse_event: ae.unexpected_adverse_event
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """
@@ -1695,7 +1695,7 @@ type QueryType {
     MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
     WITH DISTINCT c, ps
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     date_of_surgery: ps.date_of_surgery,
     procedure: ps.procedure,
     anatomical_site_of_surgery: ps.anatomical_site_of_surgery,
@@ -1703,7 +1703,7 @@ type QueryType {
     residual_disease: ps.residual_disease,
     therapeutic_indicator: ps.therapeutic_indicator
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] @cypher(statement: """
@@ -1723,7 +1723,7 @@ type QueryType {
     MATCH (v)<-[:on_visit]-(pe:physical_exam)
     WITH DISTINCT pe, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     date_of_examination: pe.date_of_examination,
     day_in_cycle: pe.day_in_cycle,
     body_system: pe.body_system,
@@ -1732,7 +1732,7 @@ type QueryType {
     phase_pe: pe.phase_pe,
     assessment_timepoint: pe.assessment_timepoint
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] @cypher(statement: """
@@ -1752,7 +1752,7 @@ type QueryType {
     MATCH (v)<-[:on_visit]-(de:disease_extent)
     WITH DISTINCT de, c
     RETURN {
-    case_id: c.case_id,
+    case_record_id: c.case_record_id,
     lesion_number: de.lesion_number,
     lesion_site: de.lesion_site,
     lesion_description: de.lesion_description,
@@ -1766,7 +1766,7 @@ type QueryType {
     evaluation_number: de.evaluation_number,
     evaluation_code: de.evaluation_code
     }
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     """, passThrough: true)
 
     # labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
@@ -1785,12 +1785,12 @@ type QueryType {
     MATCH (c)<-[:of_case]-(e:enrollment)
     MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
     WITH DISTINCT c, ps
-    ORDER BY c.case_id
+    ORDER BY c.case_record_id
     RETURN
     {
       case_count: COUNT(DISTINCT c),
       prior_surgeries: collect({
-        case_id: c.case_id,
+        case_record_id: c.case_record_id,
         date_of_surgery: ps.date_of_surgery,
         procedure: ps.procedure,
         anatomical_site_of_surgery: ps.anatomical_site_of_surgery,

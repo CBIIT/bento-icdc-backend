@@ -1,4 +1,5 @@
 type adverse_event {
+  adverse_event_record_id: String
   day_in_cycle: Int
   date_of_onset: String
   existing_adverse_event: String
@@ -18,116 +19,78 @@ type adverse_event {
   other_attribution_description: String
   dose_limiting_toxicity: String
   unexpected_adverse_event: String
+  crdc_id: String
   case: case 
-  agent: agent 
   cases: [case] 
   next_adverse_event: adverse_event 
   prior_adverse_event: adverse_event 
 }
 
-type agent {
-  medication: String
-  document_number: String
-  study_arms: [study_arm] 
-  agent_administrations: [agent_administration] 
-  adverse_events: [adverse_event] 
-}
-
-type agent_administration {
-  document_number: String
-  medication: String
-  route_of_administration: String
-  medication_lot_number: String
-  medication_vial_id: String
-  medication_actual_units_of_measure: String
-  medication_duration: Float
-  medication_duration_unit: String
-  medication_duration_original: Float
-  medication_duration_original_unit: String
-  medication_units_of_measure: String
-  medication_actual_dose: Float
-  medication_actual_dose_unit: String
-  medication_actual_dose_original: Float
-  medication_actual_dose_original_unit: String
-  phase: String
-  start_time: String
-  stop_time: String
-  dose_level: Float
-  dose_level_unit: String
-  dose_level_original: Float
-  dose_level_original_unit: String
-  dose_units_of_measure: String
-  date_of_missed_dose: String
-  medication_missed_dose: String
-  missed_dose_amount: Float
-  missed_dose_amount_unit: String
-  missed_dose_amount_original: Float
-  missed_dose_amount_original_unit: String
-  missed_dose_units_of_measure: String
-  medication_course_number: String
-  comment: String
-  agent: agent 
-  visit: visit 
-}
-
-type assay {
-  sample: sample 
-  files: [file] 
-  images: [image] 
-}
-
 type biospecimen_source {
   biospecimen_repository_acronym: String
   biospecimen_repository_full_name: String
+  crdc_id: String
 }
 
 type canine_individual {
   canine_individual_id: String
+  crdc_id: String
   cases: [case] 
 }
 
 type case {
-  case_id: String
+  case_record_id: String
   patient_id: String
   patient_first_name: String
+  crdc_id: String
   cohort: cohort 
   study: study 
   enrollment: enrollment 
   demographic: demographic 
-  diagnoses: [diagnosis] 
+  diagnosis: diagnosis 
   cycles: [cycle] 
-  follow_ups: [follow_up] 
   samples: [sample] 
   files: [file] 
   visits: [visit] 
   adverse_events: [adverse_event] 
   registrations: [registration] 
+  consent_group: consent_group 
   study_arm: study_arm 
   adverse_event: adverse_event 
-  off_study: off_study 
-  off_treatment: off_treatment 
   canine_individual: canine_individual 
 }
 
 type cohort {
+  cohort_record_id: String
   cohort_description: String
   cohort_dose: String
-  cohort_id: String
+  crdc_id: String
   cases: [case] 
   study_arm: study_arm 
   study: study 
 }
 
+type consent_group {
+  consent_group_record_id: String
+  consent_group_name: String
+  consent_group_number: Int
+  crdc_id: String
+  cases: [case] 
+  study: study 
+}
+
 type cycle {
+  cycle_record_id: String
   cycle_number: Int
   date_of_cycle_start: String
   date_of_cycle_end: String
+  crdc_id: String
   case: case 
   visits: [visit] 
 }
 
 type demographic {
-  demographic_id: String
+  demographic_record_id: String
   breed: String
   additional_breed_detail: String
   patient_age_at_enrollment: Float
@@ -141,11 +104,12 @@ type demographic {
   weight_original: Float
   weight_original_unit: String
   neutered_indicator: String
+  crdc_id: String
   case: case 
 }
 
 type diagnosis {
-  diagnosis_id: String
+  diagnosis_record_id: String
   disease_term: String
   primary_disease_site: String
   stage_of_disease: String
@@ -159,12 +123,14 @@ type diagnosis {
   follow_up_data: String
   concurrent_disease: String
   concurrent_disease_type: String
+  crdc_id: String
   case: case 
   files: [file] 
 }
 
 type disease_extent {
-  lesion_number: String
+  disease_extent_record_id: String
+  lesion_number: Int
   lesion_site: String
   lesion_description: String
   previously_irradiated: String
@@ -177,20 +143,22 @@ type disease_extent {
   longest_measurement_unit: String
   longest_measurement_original: Float
   longest_measurement_original_unit: String
-  evaluation_number: String
+  evaluation_number: Int
   evaluation_code: String
+  crdc_id: String
   visit: visit 
 }
 
 type enrollment {
-  enrollment_id: String
-  date_of_registration: String
-  registering_institution: String
+  enrollment_record_id: String
   initials: String
-  date_of_informed_consent: String
   site_short_name: String
   veterinary_medical_center: String
+  registering_institution: String
+  date_of_registration: String
+  date_of_informed_consent: String
   patient_subgroup: String
+  crdc_id: String
   case: case 
   prior_therapies: [prior_therapy] 
   prior_surgeries: [prior_surgery] 
@@ -202,28 +170,16 @@ type file {
   file_type: String
   file_description: String
   file_format: String
-  file_size: Float
+  file_size: Int
   md5sum: String
   file_status: String
   uuid: String
   file_location: String
+  crdc_id: String
   case: case 
   study: study 
   sample: sample 
-  assay: assay 
   diagnosis: diagnosis 
-}
-
-type follow_up {
-  document_number: String
-  date_of_last_contact: String
-  patient_status: String
-  explain_unknown_status: String
-  contact_type: String
-  treatment_since_last_contact: Boolean
-  physical_exam_performed: Boolean
-  physical_exam_changes: String
-  case: case 
 }
 
 type human_relevance {
@@ -237,80 +193,45 @@ type human_relevance {
   study: study 
 }
 
-type image {
-  assay: assay 
-}
-
-type image_collection {
-  image_collection_name: String
-  image_type_included: String
-  image_collection_url: String
-  repository_name: String
-  collection_access: String
-  study: study 
-}
-
-type lab_exam {
-  visit: visit 
-}
-
-type off_study {
-  document_number: String
-  date_off_study: String
-  reason_off_study: String
-  date_of_disease_progression: String
-  date_off_treatment: String
-  best_resp_vet_tx_tp_secondary_response: String
-  date_last_medication_administration: String
-  best_resp_vet_tx_tp_best_response: String
-  date_of_best_response: String
-  case: case 
-}
-
-type off_treatment {
-  document_number: String
-  date_off_treatment: String
-  reason_off_treatment: String
-  date_of_disease_progression: String
-  best_resp_vet_tx_tp_secondary_response: String
-  date_last_medication_administration: String
-  best_resp_vet_tx_tp_best_response: String
-  date_of_best_response: String
-  case: case 
-}
-
 type physical_exam {
+  physical_exam_record_id: String
   date_of_examination: String
   day_in_cycle: Int
   body_system: String
   pe_finding: String
   pe_comment: String
   phase_pe: String
-  assessment_timepoint: Int
+  assessment_timepoint: String
+  crdc_id: String
   enrollment: enrollment 
   visit: visit 
 }
 
 type principal_investigator {
+  person_record_id: String
   pi_first_name: String
   pi_last_name: String
   pi_middle_initial: String
+  crdc_id: String
   studies: [study] 
 }
 
 type prior_surgery {
+  prior_surgery_record_id: String
   date_of_surgery: String
   procedure: String
   anatomical_site_of_surgery: String
   surgical_finding: String
   residual_disease: String
   therapeutic_indicator: String
+  crdc_id: String
   enrollment: enrollment 
   next_prior_surgery: prior_surgery 
   prior_prior_surgery: prior_surgery 
 }
 
 type prior_therapy {
+  prior_therapy_record_id: String
   date_of_first_dose: String
   date_of_last_dose: String
   agent_name: String
@@ -340,6 +261,7 @@ type prior_therapy {
   date_of_last_dose_any_therapy: String
   treatment_performed_at_site: Boolean
   treatment_performed_in_minimal_residual: Boolean
+  crdc_id: String
   enrollment: enrollment 
   next_prior_therapy: prior_therapy 
   prior_prior_therapy: prior_therapy 
@@ -352,6 +274,7 @@ type program {
   program_full_description: String
   program_external_url: String
   program_sort_order: Int
+  crdc_id: String
   studies: [study] 
 }
 
@@ -362,12 +285,14 @@ type publication {
   journal_citation: String
   digital_object_id: String
   pubmed_id: Float
+  crdc_id: String
   study: study 
 }
 
 type registration {
   registration_origin: String
-  registration_id: String
+  registration_record_id: String
+  crdc_id: String
   cases: [case] 
 }
 
@@ -399,9 +324,9 @@ type sample {
   percentage_tumor: String
   sample_preservation: String
   comment: String
+  crdc_id: String
   case: case 
   visit: visit 
-  assays: [assay] 
   files: [file] 
   next_sample: sample 
   prior_sample: sample 
@@ -417,26 +342,26 @@ type study {
   dates_of_conduct: String
   accession_id: String
   study_disposition: String
+  crdc_id: String
   study_arms: [study_arm] 
   program: program 
   cases: [case] 
   cohorts: [cohort] 
-  human_relevance: human_relevance
+  human_relevance: human_relevance 
   study_sites: [study_site] 
   principal_investigators: [principal_investigator] 
   files: [file] 
-  image_collections: [image_collection] 
   publications: [publication] 
+  NONE: [consent_group] 
 }
 
 type study_arm {
-  arm: String
-  ctep_treatment_assignment_code: String
-  arm_description: String
   arm_id: String
+  arm: String
+  arm_description: String
+  crdc_id: String
   cohorts: [cohort] 
   study: study 
-  agents: [agent] 
   cases: [case] 
 }
 
@@ -444,19 +369,19 @@ type study_site {
   site_short_name: String
   veterinary_medical_center: String
   registering_institution: String
+  crdc_id: String
   studies: [study] 
 }
 
 type visit {
+  visit_record_id: String
   visit_date: String
-  visit_number: String
-  visit_id: String
+  visit_number: Int
+  crdc_id: String
   case: case 
   cycle: cycle 
-  agent_administrations: [agent_administration] 
   samples: [sample] 
   physical_exams: [physical_exam] 
-  lab_exams: [lab_exam] 
   disease_extents: [disease_extent] 
   vital_signs: [vital_signs] 
   next_visit: visit 
@@ -464,28 +389,30 @@ type visit {
 }
 
 type vital_signs {
+  vital_signs_record_id: String
   date_of_vital_signs: String
   body_temperature: Float
   body_temperature_unit: String
   body_temperature_original: Float
   body_temperature_original_unit: String
-  pulse: Int
-  pulse_unit: String
-  pulse_original: Int
-  pulse_original_unit: String
   respiration_rate: Int
   respiration_rate_unit: String
   respiration_rate_original: Int
   respiration_rate_original_unit: String
   respiration_pattern: String
-  systolic_bp: Int
-  systolic_bp_unit: String
-  systolic_bp_original: Int
-  systolic_bp_original_unit: String
+  pulse: Int
+  pulse_unit: String
+  pulse_original: Int
+  pulse_original_unit: String
   pulse_ox: Float
   pulse_ox_unit: String
   pulse_ox_original: Float
   pulse_ox_original_unit: String
+  systolic_bp: Int
+  systolic_bp_unit: String
+  systolic_bp_original: Int
+  systolic_bp_original_unit: String
+  ecg: String
   patient_weight: Float
   patient_weight_unit: String
   patient_weight_original: Float
@@ -495,9 +422,8 @@ type vital_signs {
   body_surface_area_original: Float
   body_surface_area_original_unit: String
   modified_ecog: String
-  ecg: String
-  assessment_timepoint: Int
-  phase: String
+  assessment_timepoint: String
+  crdc_id: String
   visit: visit 
 }
 
@@ -517,7 +443,7 @@ type CaseDetail {
     arm: String
     ctep_treatment_assignment_code: String
     cohort_description: String
-    case_id: String
+    case_record_id: String
     patient_id: String
     patient_first_name: String
     breed: String
@@ -578,7 +504,7 @@ type FileOverview2 {
 }
 
 type CaseOverview {
-    case_id: String
+    case_record_id: String
     program: String
     study_code: String
     study_type: String
@@ -600,7 +526,7 @@ type CaseOverview {
 
 
 type FilesOfCase{
-    case_id: String
+    case_record_id: String
     parent:String
     file_name: String
     file_type: String
@@ -630,7 +556,7 @@ type FileDetail {
     arm: String
     cohort_description: String
     cohort_dose: String
-    case_id: String
+    case_record_id: String
     breed: String
     weight: Float
     sex: String
@@ -692,7 +618,7 @@ type FileInList {
     file_description: String
     file_format: String
     file_size: Float
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     study_code: String
@@ -758,7 +684,7 @@ type FileOverview {
     file_description: String
     file_format: String
     file_size: Float
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     study_code: String
@@ -800,7 +726,7 @@ type FileOverview {
 
 type SampleOverview {
     sample_id: String
-    case_id: String
+    case_record_id: String
     breed: String
     diagnosis: String
     sample_site: String
@@ -838,7 +764,7 @@ type SampleOverview {
 }
 
 type CaseOverview2 {
-    case_id: String
+    case_record_id: String
     study_code: String
     study_type: String
     cohort: String
@@ -874,7 +800,7 @@ type GroupCount {
 
 type MultiStudyCases {
     individualId: String
-    caseIds: [String]
+    caseRecordIds: [String]
     sampleIds: [String]
     fileIds: [String]
     studyFileIds: [String]
@@ -912,12 +838,12 @@ type CycleNodeData {
     cycle_number: Int
     date_of_cycle_end: String
     crf_id: String
-    case_id: String
+    case_record_id: String
     date_of_cycle_start: String
 }
 
 type VisitNodeData {
-    case_id: String
+    case_record_id: String
     visit_date: String
     visit_number: Int
     visit_id: String
@@ -935,7 +861,7 @@ type FollowUpNodeData {
 }
 
 type AdverseEventNodeData {
-    case_id: String
+    case_record_id: String
     day_in_cycle: Int
     dose_limiting_toxicity: String
     unexpected_adverse_event: String
@@ -1010,7 +936,7 @@ type PriorTherapyNodeData {
 }
 
 type PriorSurgeryNodeData {
-    case_id: String
+    case_record_id: String
     date_of_surgery: String
     procedure: String
     anatomical_site_of_surgery: String
@@ -1020,7 +946,7 @@ type PriorSurgeryNodeData {
 }
 
 type PhysicalExamNodeData {
-    case_id: String
+    case_record_id: String
     date_of_examination: String
     day_in_cycle: Int
     body_system: String
@@ -1036,7 +962,7 @@ type AgentNodeData {
 }
 
 type DiseaseExtentNodeData {
-    case_id: String
+    case_record_id: String
     lesion_number: Int
     lesion_site: String
     lesion_description: String
@@ -1086,7 +1012,7 @@ type VitalSignsNodeData {
     body_surface_area_original_unit: String
     patient_weight: Float
     patient_weight_unit: String
-    case_id: String
+    case_record_id: String
     time_of_observation: String
     pulse_original_unit: String
     respiration_rate_original_unit: String
@@ -1154,7 +1080,7 @@ type QueryType {
     numberOfPrograms: Int 
     numberOfAliquots: Int 
     volumeOfData: Float 
-    volumeOfDataOfCase(case_id: String!): Float 
+    volumeOfDataOfCase(case_record_id: String!): Float 
     volumeOfDataOfProgram(program_id: String!): Float 
     volumeOfDataOfStudy(study_code: String!): Float 
 
@@ -1165,19 +1091,19 @@ type QueryType {
     fileCountOfStudyFiles(study_code: String!): Int 
     aliquotCountOfStudy(study_code: String!): Int 
     caseCountOfStudy(study_code: String!): Int 
-    fileCountOfCase(case_id: String!): Int 
-    studyFileCountOfCase(case_id: String!): Int 
-    aliquotCountOfCase(case_id: String!): Int 
+    fileCountOfCase(case_record_id: String!): Int 
+    studyFileCountOfCase(case_record_id: String!): Int 
+    aliquotCountOfCase(case_record_id: String!): Int 
     sampleCountOfProgram(program_id: String!): Int 
     fileCountOfProgram(program_id: String!): Int 
     studyFileCountOfProgram(program_id: String!): Int 
     aliquotCountOfProgram(program_id: String!): Int 
     studyCountOfProgram(program_id: String!): Int 
     caseCountOfProgram(program_id: String!): Int 
-    sampleCountOfCase(case_id: String!): Int 
+    sampleCountOfCase(case_record_id: String!): Int 
 
     programCountOfStudy(study_code: String!): Int 
-    programsCountOfCase(case_id: String!): Int 
+    programsCountOfCase(case_record_id: String!): Int 
 
     filesInList(uuids: [String], order_by: String = ""): [FileInList] 
 
@@ -1188,24 +1114,24 @@ type QueryType {
 
     studiesByProgram: [StudyOfProgram] 
 
-    filesOfCase(case_id: String!): [FilesOfCase] 
+    filesOfCase(case_record_id: String!): [FilesOfCase] 
 
-    filesOfCases(case_ids: [String!]!): [FilesOfCase] 
+    filesOfCases(case_record_ids: [String!]!): [FilesOfCase] 
 
-    multiStudyCases(case_id: String): MultiStudyCases 
+    multiStudyCases(case_record_id: String): MultiStudyCases 
 
-    caseDetail(case_id: String): CaseDetail 
+    caseDetail(case_record_id: String): CaseDetail 
 
     caseOverview(study_codes: [String] = [""], breeds: [String] = [""], diagnoses: [String] = [""], sexes: [String] = [""]): [CaseOverview] 
 
-    casesInList(case_ids: [String!]!): [CaseOverview] 
+    casesInList(case_record_ids: [String!]!): [CaseOverview] 
 
     studyDetail(study_code: String!): [StudyDetail] 
 
     "Find nodes with parameters"
     casesByStudyId(study_id: String!): [case] 
 
-    samplesByCaseId(case_id: String!): [sample] 
+    samplesByCaseRecordId(case_record_id: String!): [sample] 
 
     filesBySampleId(sample_id: String!): [file] 
 
@@ -1225,7 +1151,7 @@ type QueryType {
 
     fileIdsFromFileNameDesc(file_name: [String] = [""], order_by: String ="file_name"): [FileOverview] 
 
-    unifiedViewData(case_ids: [String] = [""]): UnifiedCounts 
+    unifiedViewData(case_record_ids: [String] = [""]): UnifiedCounts 
 
     studySampleSiteCount(study_codes: [String]): [GroupCount] 
 
