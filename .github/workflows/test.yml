@@ -2,8 +2,11 @@ name: Coverage (Maven + Coveralls)
 
 on:
   push:
-    branches: [ unit-test-setup ]
+    branches: [ main, develop ]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   test-and-coveralls:
