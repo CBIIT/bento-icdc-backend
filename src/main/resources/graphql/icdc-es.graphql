@@ -170,7 +170,7 @@ type SearchResult {
   numberOfStudyFiles: Int
   numberOfAliquots: Int
   volumeOfData: Float
-  caseIds: [String]
+  caseRecordIds: [String]
   sampleIds: [String]
   fileIds: [String]
   studyFileIds: [String]
