@@ -342,7 +342,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         data.put("volumeOfData", getVolumeOfData(formattedParams, "file_size", FILES_END_POINT));
 
         data.put("programsAndStudies", programsAndStudies(formattedParams));
-        data.put("caseIds", caseIds);
+        data.put("caseRecordIds", caseIds);
         data.put("sampleIds", sampleIds);
         data.put("fileIds", fileIds);
         data.put("studyFileIds", studyFileIds);
