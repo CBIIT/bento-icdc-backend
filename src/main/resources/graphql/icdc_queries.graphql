@@ -619,6 +619,7 @@ type CartChartData {
     fileType: [CartChartItem]
     fileFormat: [CartChartItem]
     fileAssociation: [CartChartItem]
+    id: ID
 }
 
 type CartOverviewData {
@@ -626,17 +627,6 @@ type CartOverviewData {
     studiesInCart: [String]
     totalNumberOfCases: Int
     charts: CartChartData
-}
-
-input CartChartItemInput {
-    label: String
-    value: Int
-}
-
-input CartChartDataInput {
-    fileType: [CartChartItemInput]
-    fileFormat: [CartChartItemInput]
-    fileAssociation: [CartChartItemInput]
 }
 
 type HumanRelevanceNodeData {
