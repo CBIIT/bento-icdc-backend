@@ -1057,6 +1057,17 @@ type CartOverviewData {
     charts: CartChartData
 }
 
+input CartChartItemInput {
+    label: String
+    value: Int
+}
+
+input CartChartDataInput {
+    fileType: [CartChartItemInput]
+    fileFormat: [CartChartItemInput]
+    fileAssociation: [CartChartItemInput]
+}
+
 type HumanRelevanceNodeData {
     human_relevance_record_id: String
     human_relevance_statement: String
