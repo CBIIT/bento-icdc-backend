@@ -2241,7 +2241,8 @@ type QueryType {
     WITH
       COLLECT(f) AS files,
       COUNT(DISTINCT f) AS totalFiles,
-      COLLECT(DISTINCT studiesFromCases.clinical_study_designation) + COLLECT(DISTINCT studiesFromFiles.clinical_study_designation) AS studies,
+      [x IN COLLECT(DISTINCT studiesFromCases.clinical_study_designation) WHERE x IS NOT null] + 
+      [x IN COLLECT(DISTINCT studiesFromFiles.clinical_study_designation) WHERE x IS NOT null] AS studies,
       COUNT(DISTINCT c) AS totalCases,
       COLLECT(head(labels(parent))) AS parents
     CALL {
