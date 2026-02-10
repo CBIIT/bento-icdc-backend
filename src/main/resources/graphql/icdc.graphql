@@ -1,4 +1,5 @@
 type adverse_event {
+  adverse_event_record_id: String
   day_in_cycle: Int
   date_of_onset: String
   existing_adverse_event: String
@@ -18,117 +19,78 @@ type adverse_event {
   other_attribution_description: String
   dose_limiting_toxicity: String
   unexpected_adverse_event: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
-  agent: agent @relation(name:"of_agent", direction:OUT)
   cases: [case] @relation(name:"had_adverse_event", direction:IN)
   next_adverse_event: adverse_event @relation(name:"next", direction:OUT)
   prior_adverse_event: adverse_event @relation(name:"next", direction:IN)
 }
 
-type agent {
-  medication: String
-  document_number: String
-  study_arms: [study_arm] @relation(name:"of_study_arm", direction:OUT)
-  agent_administrations: [agent_administration] @relation(name:"of_agent", direction:IN)
-  adverse_events: [adverse_event] @relation(name:"of_agent", direction:IN)
-}
-
-type agent_administration {
-  document_number: String
-  medication: String
-  route_of_administration: String
-  medication_lot_number: String
-  medication_vial_id: String
-  medication_actual_units_of_measure: String
-  medication_duration: Float
-  medication_duration_unit: String
-  medication_duration_original: Float
-  medication_duration_original_unit: String
-  medication_units_of_measure: String
-  medication_actual_dose: Float
-  medication_actual_dose_unit: String
-  medication_actual_dose_original: Float
-  medication_actual_dose_original_unit: String
-  phase: String
-  start_time: String
-  stop_time: String
-  dose_level: Float
-  dose_level_unit: String
-  dose_level_original: Float
-  dose_level_original_unit: String
-  dose_units_of_measure: String
-  date_of_missed_dose: String
-  medication_missed_dose: String
-  missed_dose_amount: Float
-  missed_dose_amount_unit: String
-  missed_dose_amount_original: Float
-  missed_dose_amount_original_unit: String
-  missed_dose_units_of_measure: String
-  medication_course_number: String
-  comment: String
-  agent: agent @relation(name:"of_agent", direction:OUT)
-  visit: visit @relation(name:"on_visit", direction:OUT)
-}
-
-type assay {
-  sample: sample @relation(name:"of_sample", direction:OUT)
-  files: [file] @relation(name:"of_assay", direction:IN)
-  images: [image] @relation(name:"of_assay", direction:IN)
-  schema_validation_placeholder: String
-}
-
 type biospecimen_source {
   biospecimen_repository_acronym: String
   biospecimen_repository_full_name: String
+  crdc_id: String
 }
 
 type canine_individual {
   canine_individual_id: String
+  crdc_id: String
   cases: [case] @relation(name:"represents", direction:IN)
 }
 
 type case {
-  case_id: String
+  case_record_id: String
   patient_id: String
   patient_first_name: String
+  crdc_id: String
   cohort: cohort @relation(name:"member_of", direction:OUT)
   study: study @relation(name:"member_of", direction:OUT)
   enrollment: enrollment @relation(name:"of_case", direction:IN)
   demographic: demographic @relation(name:"of_case", direction:IN)
-  diagnoses: [diagnosis] @relation(name:"of_case", direction:IN)
+  diagnosis: diagnosis @relation(name:"of_case", direction:IN)
   cycles: [cycle] @relation(name:"of_case", direction:IN)
-  follow_ups: [follow_up] @relation(name:"of_case", direction:IN)
   samples: [sample] @relation(name:"of_case", direction:IN)
   files: [file] @relation(name:"of_case", direction:IN)
   visits: [visit] @relation(name:"of_case", direction:IN)
   adverse_events: [adverse_event] @relation(name:"of_case", direction:IN)
   registrations: [registration] @relation(name:"of_case", direction:IN)
+  consent_group: consent_group @relation(name:"of_case", direction:OUT)
   study_arm: study_arm @relation(name:"of_study_arm", direction:OUT)
   adverse_event: adverse_event @relation(name:"had_adverse_event", direction:OUT)
-  off_study: off_study @relation(name:"went_off_study", direction:OUT)
-  off_treatment: off_treatment @relation(name:"went_off_treatment", direction:OUT)
   canine_individual: canine_individual @relation(name:"represents", direction:OUT)
 }
 
 type cohort {
+  cohort_record_id: String
   cohort_description: String
   cohort_dose: String
-  cohort_id: String
+  crdc_id: String
   cases: [case] @relation(name:"member_of", direction:IN)
   study_arm: study_arm @relation(name:"member_of", direction:OUT)
   study: study @relation(name:"member_of", direction:OUT)
 }
 
+type consent_group {
+  consent_group_record_id: String
+  consent_group_name: String
+  consent_group_number: Int
+  crdc_id: String
+  cases: [case] @relation(name:"of_case", direction:IN)
+  study: study @relation(name:"of_consent_group", direction:OUT)
+}
+
 type cycle {
+  cycle_record_id: String
   cycle_number: Int
   date_of_cycle_start: String
   date_of_cycle_end: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   visits: [visit] @relation(name:"of_cycle", direction:IN)
 }
 
 type demographic {
-  demographic_id: String
+  demographic_record_id: String
   breed: String
   additional_breed_detail: String
   patient_age_at_enrollment: Float
@@ -142,11 +104,12 @@ type demographic {
   weight_original: Float
   weight_original_unit: String
   neutered_indicator: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
 }
 
 type diagnosis {
-  diagnosis_id: String
+  diagnosis_record_id: String
   disease_term: String
   primary_disease_site: String
   stage_of_disease: String
@@ -160,12 +123,14 @@ type diagnosis {
   follow_up_data: String
   concurrent_disease: String
   concurrent_disease_type: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   files: [file] @relation(name:"from_diagnosis", direction:IN)
 }
 
 type disease_extent {
-  lesion_number: String
+  disease_extent_record_id: String
+  lesion_number: Int
   lesion_site: String
   lesion_description: String
   previously_irradiated: String
@@ -178,20 +143,22 @@ type disease_extent {
   longest_measurement_unit: String
   longest_measurement_original: Float
   longest_measurement_original_unit: String
-  evaluation_number: String
+  evaluation_number: Int
   evaluation_code: String
+  crdc_id: String
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
 type enrollment {
-  enrollment_id: String
-  date_of_registration: String
-  registering_institution: String
+  enrollment_record_id: String
   initials: String
-  date_of_informed_consent: String
   site_short_name: String
   veterinary_medical_center: String
+  registering_institution: String
+  date_of_registration: String
+  date_of_informed_consent: String
   patient_subgroup: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   prior_therapies: [prior_therapy] @relation(name:"at_enrollment", direction:IN)
   prior_surgeries: [prior_surgery] @relation(name:"at_enrollment", direction:IN)
@@ -203,28 +170,16 @@ type file {
   file_type: String
   file_description: String
   file_format: String
-  file_size: Float
+  file_size: Int
   md5sum: String
   file_status: String
   uuid: String
   file_location: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   study: study @relation(name:"of_study", direction:OUT)
   sample: sample @relation(name:"of_sample", direction:OUT)
-  assay: assay @relation(name:"of_assay", direction:OUT)
   diagnosis: diagnosis @relation(name:"from_diagnosis", direction:OUT)
-}
-
-type follow_up {
-  document_number: String
-  date_of_last_contact: String
-  patient_status: String
-  explain_unknown_status: String
-  contact_type: String
-  treatment_since_last_contact: Boolean
-  physical_exam_performed: Boolean
-  physical_exam_changes: String
-  case: case @relation(name:"of_case", direction:OUT)
 }
 
 type human_relevance {
@@ -238,82 +193,45 @@ type human_relevance {
   study: study @relation(name:"of_study", direction:OUT)
 }
 
-type image {
-  assay: assay @relation(name:"of_assay", direction:OUT)
-  schema_validation_placeholder: String
-}
-
-type image_collection {
-  image_collection_name: String
-  image_type_included: String
-  image_collection_url: String
-  repository_name: String
-  collection_access: String
-  study: study @relation(name:"of_study", direction:OUT)
-}
-
-type lab_exam {
-  visit: visit @relation(name:"on_visit", direction:OUT)
-  schema_validation_placeholder: String
-}
-
-type off_study {
-  document_number: String
-  date_off_study: String
-  reason_off_study: String
-  date_of_disease_progression: String
-  date_off_treatment: String
-  best_resp_vet_tx_tp_secondary_response: String
-  date_last_medication_administration: String
-  best_resp_vet_tx_tp_best_response: String
-  date_of_best_response: String
-  case: case @relation(name:"went_off_study", direction:IN)
-}
-
-type off_treatment {
-  document_number: String
-  date_off_treatment: String
-  reason_off_treatment: String
-  date_of_disease_progression: String
-  best_resp_vet_tx_tp_secondary_response: String
-  date_last_medication_administration: String
-  best_resp_vet_tx_tp_best_response: String
-  date_of_best_response: String
-  case: case @relation(name:"went_off_treatment", direction:IN)
-}
-
 type physical_exam {
+  physical_exam_record_id: String
   date_of_examination: String
   day_in_cycle: Int
   body_system: String
   pe_finding: String
   pe_comment: String
   phase_pe: String
-  assessment_timepoint: Int
+  assessment_timepoint: String
+  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
 type principal_investigator {
+  person_record_id: String
   pi_first_name: String
   pi_last_name: String
   pi_middle_initial: String
+  crdc_id: String
   studies: [study] @relation(name:"of_study", direction:OUT)
 }
 
 type prior_surgery {
+  prior_surgery_record_id: String
   date_of_surgery: String
   procedure: String
   anatomical_site_of_surgery: String
   surgical_finding: String
   residual_disease: String
   therapeutic_indicator: String
+  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   next_prior_surgery: prior_surgery @relation(name:"next", direction:OUT)
   prior_prior_surgery: prior_surgery @relation(name:"next", direction:IN)
 }
 
 type prior_therapy {
+  prior_therapy_record_id: String
   date_of_first_dose: String
   date_of_last_dose: String
   agent_name: String
@@ -343,6 +261,7 @@ type prior_therapy {
   date_of_last_dose_any_therapy: String
   treatment_performed_at_site: Boolean
   treatment_performed_in_minimal_residual: Boolean
+  crdc_id: String
   enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
   next_prior_therapy: prior_therapy @relation(name:"next", direction:OUT)
   prior_prior_therapy: prior_therapy @relation(name:"next", direction:IN)
@@ -355,6 +274,7 @@ type program {
   program_full_description: String
   program_external_url: String
   program_sort_order: Int
+  crdc_id: String
   studies: [study] @relation(name:"member_of", direction:IN)
 }
 
@@ -365,12 +285,14 @@ type publication {
   journal_citation: String
   digital_object_id: String
   pubmed_id: Float
+  crdc_id: String
   study: study @relation(name:"of_study", direction:OUT)
 }
 
 type registration {
   registration_origin: String
-  registration_id: String
+  registration_record_id: String
+  crdc_id: String
   cases: [case] @relation(name:"of_case", direction:OUT)
 }
 
@@ -402,9 +324,9 @@ type sample {
   percentage_tumor: String
   sample_preservation: String
   comment: String
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   visit: visit @relation(name:"on_visit", direction:OUT)
-  assays: [assay] @relation(name:"of_sample", direction:IN)
   files: [file] @relation(name:"of_sample", direction:IN)
   next_sample: sample @relation(name:"next", direction:OUT)
   prior_sample: sample @relation(name:"next", direction:IN)
@@ -420,6 +342,7 @@ type study {
   dates_of_conduct: String
   accession_id: String
   study_disposition: String
+  crdc_id: String
   study_arms: [study_arm] @relation(name:"member_of", direction:IN)
   program: program @relation(name:"member_of", direction:OUT)
   cases: [case] @relation(name:"member_of", direction:IN)
@@ -428,18 +351,17 @@ type study {
   study_sites: [study_site] @relation(name:"of_study", direction:IN)
   principal_investigators: [principal_investigator] @relation(name:"of_study", direction:IN)
   files: [file] @relation(name:"of_study", direction:IN)
-  image_collections: [image_collection] @relation(name:"of_study", direction:IN)
   publications: [publication] @relation(name:"of_study", direction:IN)
+  NONE: [consent_group] @relation(name:"of_consent_group", direction:IN)
 }
 
 type study_arm {
-  arm: String
-  ctep_treatment_assignment_code: String
-  arm_description: String
   arm_id: String
+  arm: String
+  arm_description: String
+  crdc_id: String
   cohorts: [cohort] @relation(name:"member_of", direction:IN)
   study: study @relation(name:"member_of", direction:OUT)
-  agents: [agent] @relation(name:"of_study_arm", direction:IN)
   cases: [case] @relation(name:"of_study_arm", direction:IN)
 }
 
@@ -447,19 +369,19 @@ type study_site {
   site_short_name: String
   veterinary_medical_center: String
   registering_institution: String
+  crdc_id: String
   studies: [study] @relation(name:"of_study", direction:OUT)
 }
 
 type visit {
+  visit_record_id: String
   visit_date: String
-  visit_number: String
-  visit_id: String
+  visit_number: Int
+  crdc_id: String
   case: case @relation(name:"of_case", direction:OUT)
   cycle: cycle @relation(name:"of_cycle", direction:OUT)
-  agent_administrations: [agent_administration] @relation(name:"on_visit", direction:IN)
   samples: [sample] @relation(name:"on_visit", direction:IN)
   physical_exams: [physical_exam] @relation(name:"on_visit", direction:IN)
-  lab_exams: [lab_exam] @relation(name:"on_visit", direction:IN)
   disease_extents: [disease_extent] @relation(name:"on_visit", direction:IN)
   vital_signs: [vital_signs] @relation(name:"on_visit", direction:IN)
   next_visit: visit @relation(name:"next", direction:OUT)
@@ -467,28 +389,30 @@ type visit {
 }
 
 type vital_signs {
+  vital_signs_record_id: String
   date_of_vital_signs: String
   body_temperature: Float
   body_temperature_unit: String
   body_temperature_original: Float
   body_temperature_original_unit: String
-  pulse: Int
-  pulse_unit: String
-  pulse_original: Int
-  pulse_original_unit: String
   respiration_rate: Int
   respiration_rate_unit: String
   respiration_rate_original: Int
   respiration_rate_original_unit: String
   respiration_pattern: String
-  systolic_bp: Int
-  systolic_bp_unit: String
-  systolic_bp_original: Int
-  systolic_bp_original_unit: String
+  pulse: Int
+  pulse_unit: String
+  pulse_original: Int
+  pulse_original_unit: String
   pulse_ox: Float
   pulse_ox_unit: String
   pulse_ox_original: Float
   pulse_ox_original_unit: String
+  systolic_bp: Int
+  systolic_bp_unit: String
+  systolic_bp_original: Int
+  systolic_bp_original_unit: String
+  ecg: String
   patient_weight: Float
   patient_weight_unit: String
   patient_weight_original: Float
@@ -498,9 +422,8 @@ type vital_signs {
   body_surface_area_original: Float
   body_surface_area_original_unit: String
   modified_ecog: String
-  ecg: String
-  assessment_timepoint: Int
-  phase: String
+  assessment_timepoint: String
+  crdc_id: String
   visit: visit @relation(name:"on_visit", direction:OUT)
 }
 
