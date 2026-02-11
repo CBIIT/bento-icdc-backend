@@ -86,7 +86,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         map.put("file_name", "name");
         map.put("drs_uri", "drs_uri");
         map.put("clinical_study_designation", "Study Code");
-        map.put("case_record_id", "Case ID");
+        map.put("case_id", "Case ID");
         STATIC_PROPS = Collections.unmodifiableMap(map);
     }
 
@@ -159,8 +159,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private Map<String, Object> searchCases(Map<String, Object> params) throws IOException {
-        // cast case_record_ids param to lowercase to standardize user input
-        Map<String, Object> formattedParams = formatParams(params, "case_record_ids", "case_record_id_lc");
+        // cast case_ids param to lowercase to standardize user input
+        Map<String, Object> formattedParams = formatParams(params, "case_ids", "case_id_lc");
         
         final String AGG_NAME = "agg_name";
         final String AGG_ENDPOINT = "agg_endpoint";
@@ -319,7 +319,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
         int numberOfCases = caseCountResult.get("count").getAsInt();
 
         // get IDs associated with corresponding counts
-        List<String> caseIds = fetchIdsFromResults(query, CASES_END_POINT, "case_record_ids", numberOfCases);
+        List<String> caseIds = fetchIdsFromResults(query, CASES_END_POINT, "case_ids", numberOfCases);
         List<String> sampleIds = fetchIdsFromResults(query, SAMPLES_END_POINT, "sample_ids", numberOfSamples);
         List<String> fileIds = fetchIdsFromResults(query, FILES_END_POINT, "file_uuids", numberOfFiles);
         List<String> studyFileIds = fetchIdsFromResults(studyFileQuery, FILES_END_POINT, "file_uuids", numberOfStudyFiles);
@@ -464,11 +464,11 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     }
 
     private List<Map<String, Object>> caseOverview(Map<String, Object> params) throws IOException {
-        Map<String, Object> formattedParams = formatParams(params, "case_record_ids", "case_record_id_lc");
+        Map<String, Object> formattedParams = formatParams(params, "case_ids", "case_id_lc");
 
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"case_record_id", "case_record_id_kw"},
-                new String[]{"case_record_id_lc", "case_record_id_lc"},
+                new String[]{"case_id", "case_id_kw"},
+                new String[]{"case_id_lc", "case_id_lc"},
                 new String[]{"study_code", "study_code"},
                 new String[]{"study_type", "study_type"},
                 new String[]{"cohort", "cohort"},
@@ -496,7 +496,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "case_record_id_lc"; // Default sort order
+        String defaultSort = "case_id_lc"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("study_code", "study_code"),
@@ -512,20 +512,20 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("weight", "weight"),
                 Map.entry("response_to_treatment", "response_to_treatment"),
                 Map.entry("other_cases", "other_cases"),
-                Map.entry("case_record_id", "case_record_id_kw"),
-                Map.entry("case_record_id_lc", "case_record_id_lc")
+                Map.entry("case_id", "case_id_kw"),
+                Map.entry("case_id_lc", "case_id_lc")
         );
 
         return overview(CASES_END_POINT, formattedParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
-        Map<String, Object> formattedParams = formatParams(params, "case_record_ids", "case_record_id_lc");
+        Map<String, Object> formattedParams = formatParams(params, "case_ids", "case_id_lc");
 
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"sample_id", "sample_ids"},
-                new String[]{"case_record_id", "case_record_ids"},
-                new String[]{"case_record_id_lc", "case_record_id_lc"},
+                new String[]{"case_id", "case_ids"},
+                new String[]{"case_id_lc", "case_id_lc"},
                 new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
                 new String[]{"sample_site", "sample_site"},
@@ -566,7 +566,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("sample_id", "sample_ids"),
-                Map.entry("case_record_id", "case_record_ids"),
+                Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("sample_site", "sample_site"),
@@ -577,14 +577,14 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("percentage_tumor", "percentage_tumor"),
                 Map.entry("necropsy_sample", "necropsy_sample"),
                 Map.entry("sample_preservation", "sample_preservation"),
-                Map.entry("case_record_id_lc", "case_record_id_lc")
+                Map.entry("case_id_lc", "case_id_lc")
         );
 
         return overview(SAMPLES_END_POINT, formattedParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
-        Map<String, Object> formattedParams = formatParams(params, "case_record_ids", "case_record_id_lc");
+        Map<String, Object> formattedParams = formatParams(params, "case_ids", "case_id_lc");
 
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
@@ -594,8 +594,8 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 new String[]{"file_description", "file_description"},
                 new String[]{"file_format", "file_format"},
                 new String[]{"file_size", "file_size"},
-                new String[]{"case_record_id", "case_record_ids"},
-                new String[]{"case_record_id_lc", "case_record_id_lc"},
+                new String[]{"case_id", "case_ids"},
+                new String[]{"case_id_lc", "case_id_lc"},
                 new String[]{"breed", "breed"},
                 new String[]{"diagnosis", "diagnosis"},
                 new String[]{"study_code", "study_code"},
@@ -644,13 +644,13 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
-                Map.entry("case_record_id", "case_record_ids"),
+                Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("study_code", "study_code"),
                 Map.entry("file_uuid", "file_uuids"),
                 Map.entry("access_file", "file_size"),
-                Map.entry("case_record_id_lc", "case_record_id_lc")
+                Map.entry("case_id_lc", "case_id_lc")
         );
 
         return overview(FILES_END_POINT, formattedParams, PROPERTIES, defaultSort, mapping);
@@ -836,13 +836,13 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
                 GS_SEARCH_FIELD, List.of("sample_ids_txt", "program_name", "clinical_study_designation",
-                    "case_record_ids_txt", "sample_site_txt", "physical_sample_type_txt", "general_sample_pathology_txt"),
+                    "case_ids_txt", "sample_site_txt", "physical_sample_type_txt", "general_sample_pathology_txt"),
                 GS_SORT_FIELD, "sample_ids",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids_txt"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation"},
-                        new String[]{"case_record_id", "case_record_ids_txt"},
+                        new String[]{"case_id", "case_ids_txt"},
                         new String[]{"sample_site", "sample_site_txt"},
                         new String[]{"physical_sample_type", "physical_sample_type_txt"},
                         new String[]{"general_sample_pathology", "general_sample_pathology_txt"}
@@ -854,11 +854,11 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_ENDPOINT, CASES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "case_count",
                 GS_RESULT_FIELD, "cases",
-                GS_SEARCH_FIELD, List.of("case_record_ids", "program_name", "clinical_study_designation",
+                GS_SEARCH_FIELD, List.of("case_ids", "program_name", "clinical_study_designation",
                     "disease_term", "breed_txt"),
-                GS_SORT_FIELD, "case_record_id_kw",
+                GS_SORT_FIELD, "case_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"case_record_id", "case_record_ids"},
+                        new String[]{"case_id", "case_ids"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation"},
                         new String[]{"disease_term", "disease_term"},
@@ -872,14 +872,14 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD, List.of( "sample_ids_txt", "file_name_txt",
-                        "file_type_txt", "case_record_ids_txt", "program_name", "clinical_study_designation_txt"),
+                        "file_type_txt", "case_ids_txt", "program_name", "clinical_study_designation_txt"),
                 GS_SORT_FIELD, "file_name",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"sample_id", "sample_ids_txt"},
                         new String[]{"file_name", "file_name_txt"},
                         new String[]{"file_type", "file_type_txt"},
                         new String[]{"file_association", "file_association"},
-                        new String[]{"case_record_id", "case_record_ids_txt"},
+                        new String[]{"case_id", "case_ids_txt"},
                         new String[]{"program_name", "program_name"},
                         new String[]{"clinical_study_designation", "clinical_study_designation_txt"}
                 },
@@ -1156,7 +1156,7 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
-                Map.entry("case_record_ids", "case_record_ids"),
+                Map.entry("case_ids", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("study_code", "study_code"),
