@@ -2236,13 +2236,19 @@ type QueryType {
     WHERE f.uuid IN $file_uuids
     OPTIONAL MATCH (f)-->(parent)
     OPTIONAL MATCH (f)-[*]->(c:case)
-    OPTIONAL MATCH (s:study)<-[:member_of]-(c)
+    OPTIONAL MATCH (studiesFromCases:study)<-[:member_of]-(c)
+    OPTIONAL MATCH (f)-->(studiesFromFiles:study)
     WITH
       COLLECT(f) AS files,
       COUNT(DISTINCT f) AS totalFiles,
-      COLLECT(DISTINCT s.clinical_study_designation) AS studies,
+      COLLECT(DISTINCT studiesFromCases.clinical_study_designation) + 
+      COLLECT(DISTINCT studiesFromFiles.clinical_study_designation) AS combinedStudies,
       COUNT(DISTINCT c) AS totalCases,
       COLLECT(head(labels(parent))) AS parents
+    UNWIND combinedStudies AS s
+    WITH files, totalFiles, totalCases, parents, s
+    WHERE s IS NOT NULL
+    WITH files, totalFiles, totalCases, parents, COLLECT(DISTINCT s) AS studies
     CALL {
       WITH files
       UNWIND files AS f
