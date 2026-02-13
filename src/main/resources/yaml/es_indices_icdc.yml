@@ -69,14 +69,14 @@ Indices:
       file_format:
         type: keyword
 
-      case_record_ids:
+      case_ids:
         type: text
-      case_record_id_kw:
+      case_id_kw:
         type: keyword
         fields:
           analyzed:
             type: keyword
-      case_record_id_lc:
+      case_id_lc:
         type: keyword
 
       program_name:
@@ -156,9 +156,9 @@ Indices:
       'case' AS type,
       p.program_acronym AS program,
       p.program_name AS program_name,
-      c.case_record_id AS case_record_ids,
-      c.case_record_id AS case_record_id_kw,
-      toLower(c.case_record_id) AS case_record_id_lc,
+      c.case_id AS case_ids,
+      c.case_id AS case_id_kw,
+      toLower(c.case_id) AS case_id_lc,
       s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
       s.clinical_study_designation AS clinical_study_designation,
       s.clinical_study_designation AS study_code,
@@ -189,7 +189,7 @@ Indices:
       COLLECT(DISTINCT head(labels(parent))) + study_file_association AS file_association,
       COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
       COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
-      COLLECT(DISTINCT o.case_record_id) AS other_cases,
+      COLLECT(DISTINCT o.case_id) AS other_cases,
       i.canine_individual_id as individual_id,
       diag.primary_disease_site as primary_disease_site,
       diag.date_of_diagnosis as date_of_diagnosis,
@@ -258,14 +258,14 @@ Indices:
       file_format:
         type: keyword
 
-      case_record_ids:
+      case_ids:
         type: keyword
         fields:
           analyzed:
             type: text
-      case_record_ids_txt:
+      case_ids_txt:
         type: text
-      case_record_id_lc:
+      case_id_lc:
         type: keyword
       sample_ids:
         type: keyword
@@ -408,9 +408,9 @@ Indices:
       COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
       COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
 
-      c.case_record_id AS case_record_ids,
-      c.case_record_id AS case_record_ids_txt,
-      toLower(c.case_record_id) AS case_record_id_lc,
+      c.case_id AS case_ids,
+      c.case_id AS case_ids_txt,
+      toLower(c.case_id) AS case_id_lc,
       samp.sample_id AS sample_ids,
       samp.sample_id AS sample_ids_txt,
 
@@ -427,7 +427,7 @@ Indices:
       samp.comment as comment,
 
       i.canine_individual_id as individual_id,
-      COLLECT(DISTINCT o.case_record_id) AS other_cases,
+      COLLECT(DISTINCT o.case_id) AS other_cases,
       demo.patient_age_at_enrollment AS patient_age_at_enrollment,
       demo.neutered_indicator AS neutered_indicator,
       demo.weight AS weight,
@@ -489,14 +489,14 @@ Indices:
       file_level:
         type: keyword
 
-      case_record_ids:
+      case_ids:
         type: keyword
         fields:
           analyzed:
             type: text
-      case_record_ids_txt:
+      case_ids_txt:
         type: text
-      case_record_id_lc:
+      case_id_lc:
         type: keyword
       sample_ids:
         type: keyword
@@ -566,7 +566,7 @@ Indices:
         type: keyword
 
       # CASE
-      case_record_id:
+      case_id:
         type: keyword
       patient_id:
         type: keyword
@@ -759,10 +759,10 @@ Indices:
       f.file_location AS file_location,
       drs_prefix + file_uuid AS drs_uri,
 
-      COLLECT(DISTINCT c.case_record_id) AS case_record_ids,
-      COLLECT(DISTINCT c.case_record_id) AS case_record_ids_txt,
-      COLLECT(DISTINCT toLower(c.case_record_id)) AS case_record_id_lc,
-      COLLECT(DISTINCT c.case_record_id) AS case_record_id,
+      COLLECT(DISTINCT c.case_id) AS case_ids,
+      COLLECT(DISTINCT c.case_id) AS case_ids_txt,
+      COLLECT(DISTINCT toLower(c.case_id)) AS case_id_lc,
+      COLLECT(DISTINCT c.case_id) AS case_id,
       COLLECT(DISTINCT c.patient_id) AS patient_id,
       COLLECT(DISTINCT c.patient_first_name) AS patient_first_name,
       null AS sample_id,
@@ -875,10 +875,10 @@ Indices:
       f.file_location AS file_location,
       drs_prefix + file_uuid AS drs_uri,
 
-      c.case_record_id AS case_record_ids,
-      c.case_record_id AS case_record_ids_txt,
-      toLower(c.case_record_id) AS case_record_id_lc,
-      c.case_record_id AS case_record_id,
+      c.case_id AS case_ids,
+      c.case_id AS case_ids_txt,
+      toLower(c.case_id) AS case_id_lc,
+      c.case_id AS case_id,
       c.patient_id AS patient_id,
       c.patient_first_name AS patient_first_name,
       samp.sample_id AS sample_id,
@@ -926,7 +926,7 @@ Indices:
       diag.concurrent_disease_type as concurrent_disease_type,
       co.cohort_description AS cohort_description,
       a.arm as arm,
-      COLLECT(DISTINCT o.case_record_id) AS other_cases
+      COLLECT(DISTINCT o.case_id) AS other_cases
       "
 
   - index_name: programs
