@@ -1175,15 +1175,19 @@ public class IcdcEsFilter extends AbstractPrivateESDataFetcher {
     private List<Map<String, Object>> externalDataOverview(Map<String, Object> params) throws IOException {
 
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"entity_id", "entity_id"},
+                new String[]{"clinical_study_designation", "clinical_study_designation"},
                 new String[]{"CRDCLinks", "CRDCLinks"},
+                new String[]{"numberOfCRDCNodes", "numberOfCRDCNodes"},
+                new String[]{"numberOfImageCollections", "numberOfImageCollections"}
         };
 
-        String defaultSort = "entity_id"; // Default sort order
+        String defaultSort = "clinical_study_designation"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("entity_id", "entity_id"),
-                Map.entry("CRDCLinks", "CRDCLinks")
+                Map.entry("clinical_study_designation", "clinical_study_designation"),
+                Map.entry("CRDCLinks", "CRDCLinks"),
+                Map.entry("numberOfCRDCNodes", "numberOfCRDCNodes"),
+                Map.entry("numberOfImageCollections", "numberOfImageCollections")
         );
 
         return overview(EXTERNAL_DATA_END_POINT, params, PROPERTIES, defaultSort, mapping);

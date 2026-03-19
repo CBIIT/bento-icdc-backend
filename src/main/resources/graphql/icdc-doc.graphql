@@ -1122,6 +1122,7 @@ type CartChartData {
     fileType: [CartChartItem]
     fileFormat: [CartChartItem]
     fileAssociation: [CartChartItem]
+    id: ID
 }
 
 type CartOverviewData {
