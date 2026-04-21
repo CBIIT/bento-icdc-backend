@@ -1020,6 +1020,7 @@ type QueryType {
     COUNT(DISTINCT(c)) AS numberOfCases,
     COLLECT(DISTINCT ic{text: ic.image_collection_name + ' - ' + ic.repository_name,
     url: ic.image_collection_url}) AS CRDCLinks
+    ORDER BY s.clinical_study_designation
     RETURN{
     program_id: p.program_acronym,
     clinical_study_id: s.clinical_study_id,
@@ -1039,7 +1040,6 @@ type QueryType {
     numberOfCRDCNodes: numberOfCRDCNodes,
     CRDCLinks: CRDCLinks
     }
-    ORDER BY s.clinical_study_designation
     """, passThrough: true)
 
     studiesByProgram: [StudyOfProgram] @cypher(statement:"""
@@ -1059,6 +1059,7 @@ type QueryType {
     COUNT(DISTINCT(c)) AS numberOfCases,
     COLLECT(DISTINCT ic{text: ic.image_collection_name + ' - ' + ic.repository_name,
     url: ic.image_collection_url}) AS CRDCLinks
+    ORDER BY s.clinical_study_designation
     RETURN{
     program_id: p.program_acronym,
     clinical_study_id: s.clinical_study_id,
@@ -1078,7 +1079,6 @@ type QueryType {
     numberOfCRDCNodes: numberOfCRDCNodes,
     CRDCLinks: CRDCLinks
     }
-    ORDER BY s.clinical_study_designation
     """, passThrough: true)
 
     filesOfCase(case_id: String!): [FilesOfCase] @cypher(statement: """
