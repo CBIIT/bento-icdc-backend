@@ -756,6 +756,23 @@ type QueryType {
     co.cohort_dose AS cohort_dose,
     co.cohort_id AS cohort_id,
     diag.diagnosis_id AS diagnosis_id
+    ORDER BY CASE $order_by
+    WHEN 'file_name' THEN file_name
+    WHEN 'file_type' THEN file_type
+    WHEN 'association' THEN association
+    WHEN 'file_description' THEN file_description
+    WHEN 'file_format' THEN file_format
+    WHEN 'file_size' THEN file_size
+    WHEN 'case_id' THEN case_id
+    WHEN 'breed' THEN breed
+    WHEN 'diagnosis' THEN diagnosis
+    WHEN 'study_code' THEN study_code
+    WHEN 'file_uuid' THEN file_uuid
+    WHEN 'md5sum' THEN md5sum
+    WHEN 'individual_id' THEN individual_id
+    WHEN 'access_file' THEN (CASE file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END)
+    WHEN 'sample_id' THEN sample_id
+    ELSE file_name END
     RETURN {
     file_name: file_name,
     file_type: file_type,
@@ -821,23 +838,6 @@ type QueryType {
     tumor_width: width_of_tumor,
     tumor_volume: volume_of_tumor
     }
-    ORDER BY CASE $order_by
-    WHEN 'file_name' THEN file_name
-    WHEN 'file_type' THEN file_type
-    WHEN 'association' THEN association
-    WHEN 'file_description' THEN file_description
-    WHEN 'file_format' THEN file_format
-    WHEN 'file_size' THEN file_size
-    WHEN 'case_id' THEN case_id
-    WHEN 'breed' THEN breed
-    WHEN 'diagnosis' THEN diagnosis
-    WHEN 'study_code' THEN study_code
-    WHEN 'file_uuid' THEN file_uuid
-    WHEN 'md5sum' THEN md5sum
-    WHEN 'individual_id' THEN individual_id
-    WHEN 'access_file' THEN (CASE file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END)
-    WHEN 'sample_id' THEN sample_id
-    ELSE file_name END
     """, passThrough: true)
 
     filesInListDesc(uuids: [String], order_by: String = ""): [FileInList] @cypher(statement: """
@@ -919,6 +919,23 @@ type QueryType {
     co.cohort_dose AS cohort_dose,
     co.cohort_id AS cohort_id,
     diag.diagnosis_id AS diagnosis_id
+    ORDER BY CASE $order_by
+    WHEN 'file_name' THEN file_name
+    WHEN 'file_type' THEN file_type
+    WHEN 'association' THEN association
+    WHEN 'file_description' THEN file_description
+    WHEN 'file_format' THEN file_format
+    WHEN 'file_size' THEN file_size
+    WHEN 'case_id' THEN case_id
+    WHEN 'breed' THEN breed
+    WHEN 'diagnosis' THEN diagnosis
+    WHEN 'study_code' THEN study_code
+    WHEN 'file_uuid' THEN file_uuid
+    WHEN 'md5sum' THEN md5sum
+    WHEN 'individual_id' THEN individual_id
+    WHEN 'access_file' THEN (CASE file_size > 12000000 WHEN TRUE THEN 1 ELSE 0 END)
+    WHEN 'sample_id' THEN sample_id
+    ELSE file_name END DESC
     RETURN {
     file_name: file_name,
     file_type: file_type,
@@ -984,23 +1001,6 @@ type QueryType {
     tumor_width: width_of_tumor,
     tumor_volume: volume_of_tumor
     }
-    ORDER BY CASE $order_by
-    WHEN 'file_name' THEN file_name
-    WHEN 'file_type' THEN file_type
-    WHEN 'association' THEN association
-    WHEN 'file_description' THEN file_description
-    WHEN 'file_format' THEN file_format
-    WHEN 'file_size' THEN file_size
-    WHEN 'case_id' THEN case_id
-    WHEN 'breed' THEN breed
-    WHEN 'diagnosis' THEN diagnosis
-    WHEN 'study_code' THEN study_code
-    WHEN 'file_uuid' THEN file_uuid
-    WHEN 'md5sum' THEN md5sum
-    WHEN 'individual_id' THEN individual_id
-    WHEN 'access_file' THEN (CASE file_size > 12000000 WHEN TRUE THEN 1 ELSE 0 END)
-    WHEN 'sample_id' THEN sample_id
-    ELSE file_name END DESC
     """, passThrough: true)
 
     "Combined info"
@@ -1324,6 +1324,7 @@ type QueryType {
     WITH DISTINCT (f) AS f, s, c, co, arm, demo, diag, v, samp,
     f.file_type as file_type,
     c.case_id as case_id
+    ORDER BY file_type, case_id
     RETURN{
     clinical_study_designation: s.clinical_study_designation,
     clinical_study_name: s.clinical_study_name,
@@ -1368,7 +1369,6 @@ type QueryType {
     size: f.file_size,
     url: f.file_location
     }
-    ORDER BY file_type, case_id
     """, passThrough: true)
 
     "For IndexD to replace manifest"
@@ -1378,6 +1378,7 @@ type QueryType {
     MATCH (f:file)
     WHERE f.uuid IN CASE $file_ids WHEN [] THEN all_files ELSE $file_ids END
     WITH f, f.file_location as url
+    ORDER BY url
     RETURN{
     GUID: 'dg.4DFC/' + f.uuid,
     md5: f.md5sum,
@@ -1385,7 +1386,6 @@ type QueryType {
     acl: f.acl,
     url: f.file_location
     }
-    ORDER BY url
     """, passThrough: true)
 
     studyStats: [StudyStat] @cypher(statement: """
@@ -1411,14 +1411,14 @@ type QueryType {
     WITH
     f.file_name AS file_name,
     f.uuid AS file_uuid
-    RETURN{
-    file_name: file_name,
-    file_uuid: file_uuid
-    }
     ORDER BY CASE $order_by
     WHEN 'file_name' THEN file_name
     WHEN 'file_uuid' THEN file_uuid
     ELSE file_name END
+    RETURN{
+    file_name: file_name,
+    file_uuid: file_uuid
+    }
     """, passThrough: true)
 
     fileIdsFromFileNameDesc(file_name: [String] = [""], order_by: String ="file_name"): [FileOverview] @cypher(statement: """
@@ -1427,14 +1427,14 @@ type QueryType {
     WITH
     f.file_name AS file_name,
     f.uuid AS file_uuid
-    RETURN{
-    file_name: file_name,
-    file_uuid: file_uuid
-    }
     ORDER BY CASE $order_by
     WHEN 'file_name' THEN file_name
     WHEN 'file_uuid' THEN file_uuid
     ELSE file_name END DESC
+    RETURN{
+    file_name: file_name,
+    file_uuid: file_uuid
+    }
     """, passThrough: true)
 
     unifiedViewData(case_ids: [String] = [""]): UnifiedCounts @cypher(statement: """
@@ -1466,11 +1466,11 @@ type QueryType {
     OPTIONAL MATCH (c:case) --> (s)
     OPTIONAL MATCH (c) <-- (samp: sample)
     WITH DISTINCT(samp.sample_site) AS group, COUNT(DISTINCT samp) AS counts where counts > 0
+    ORDER BY group
     RETURN {
     group: group,
     count: counts
     }
-    ORDER BY group
     """, passThrough: true)
 
     studySampleTypeCount(study_codes: [String]): [GroupCount] @cypher(statement: """
@@ -1479,11 +1479,11 @@ type QueryType {
     OPTIONAL MATCH (c:case) --> (s)
     OPTIONAL MATCH (c) <-- (samp: sample)
     WITH DISTINCT(samp.summarized_sample_type) AS group, COUNT(DISTINCT samp) AS counts where counts > 0
+    ORDER BY group
     RETURN {
     group: group,
     count: counts
     }
-    ORDER BY group
     """, passThrough: true)
 
     studySamplePathologyCount(study_codes: [String]): [GroupCount] @cypher(statement: """
@@ -1492,11 +1492,11 @@ type QueryType {
     OPTIONAL MATCH (c:case) --> (s)
     OPTIONAL MATCH (c) <-- (samp: sample)
     WITH DISTINCT(samp.specific_sample_pathology) AS group, COUNT(DISTINCT samp) AS counts where counts > 0
+    ORDER BY group
     RETURN {
     group: group,
     count: counts
     }
-    ORDER BY group
     """, passThrough: true)
 
     clinicalDataNodeCounts(study_code: String!): ClinicalDataNodeCounts @cypher(statement: """
@@ -1615,13 +1615,13 @@ type QueryType {
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[*1..2]-(v:visit)
     WITH DISTINCT v, c
+    ORDER BY c.case_id
     RETURN {
     case_id: c.case_id,
     visit_date: v.visit_date,
     visit_number: v.visit_number,
     visit_id: v.visit_id
     }
-    ORDER BY c.case_id
     """, passThrough: true)
 
     followUpNodeData(study_code: String!): [FollowUpNodeData] @cypher(statement: """
@@ -1638,6 +1638,7 @@ type QueryType {
     MATCH (s)<-[*1..2]-(c:case)
     MATCH (c)<-[:of_case]-(ae:adverse_event)
     WITH DISTINCT ae, c
+    ORDER BY c.case_id
     RETURN {
     case_id: c.case_id,
     day_in_cycle: ae.day_in_cycle,
@@ -1660,7 +1661,6 @@ type QueryType {
     dose_limiting_toxicity: ae.dose_limiting_toxicity,
     unexpected_adverse_event: ae.unexpected_adverse_event
     }
-    ORDER BY c.case_id
     """, passThrough: true)
 
     offTreatmentNodeData(study_code: String!): [OffTreatmentNodeData] @cypher(statement: """
@@ -1695,6 +1695,7 @@ type QueryType {
     MATCH (c)<-[:of_case]-(e:enrollment)
     MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
     WITH DISTINCT c, ps
+    ORDER BY c.case_id
     RETURN {
     case_id: c.case_id,
     date_of_surgery: ps.date_of_surgery,
@@ -1704,7 +1705,6 @@ type QueryType {
     residual_disease: ps.residual_disease,
     therapeutic_indicator: ps.therapeutic_indicator
     }
-    ORDER BY c.case_id
     """, passThrough: true)
 
     agentAdministrationNodeData(study_code: String!): [AgentAdministrationNodeData] @cypher(statement: """
@@ -1723,6 +1723,7 @@ type QueryType {
     MATCH (c)<-[*1..2]-(v:visit)
     MATCH (v)<-[:on_visit]-(pe:physical_exam)
     WITH DISTINCT pe, c
+    ORDER BY c.case_id
     RETURN {
     case_id: c.case_id,
     date_of_examination: pe.date_of_examination,
@@ -1733,7 +1734,6 @@ type QueryType {
     phase_pe: pe.phase_pe,
     assessment_timepoint: pe.assessment_timepoint
     }
-    ORDER BY c.case_id
     """, passThrough: true)
 
     vitalSignsNodeData(study_code: String!): [VitalSignsNodeData] @cypher(statement: """
@@ -1752,6 +1752,7 @@ type QueryType {
     MATCH (c)<-[*1..2]-(v:visit)
     MATCH (v)<-[:on_visit]-(de:disease_extent)
     WITH DISTINCT de, c
+    ORDER BY c.case_id
     RETURN {
     case_id: c.case_id,
     lesion_number: de.lesion_number,
@@ -1767,7 +1768,6 @@ type QueryType {
     evaluation_number: de.evaluation_number,
     evaluation_code: de.evaluation_code
     }
-    ORDER BY c.case_id
     """, passThrough: true)
 
     # labExamNodeData(study_code: String!): [LabExamNodeData] @cypher(statement: """
