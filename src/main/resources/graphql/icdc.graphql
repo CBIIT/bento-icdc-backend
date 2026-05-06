@@ -1261,8 +1261,9 @@ type QueryType {
     diag.date_of_histology_confirmation AS date_of_histology_confirmation,
     co.cohort_dose AS cohort_dose,
     co.cohort_id AS cohort_id,
-    diag.diagnosis_id AS diagnosis_id
-    ORDER BY CASE $order_by
+    diag.diagnosis_id AS diagnosis_id,
+    order_by AS order_by
+    ORDER BY CASE order_by
     WHEN 'file_name' THEN file_name
     WHEN 'file_type' THEN file_type
     WHEN 'association' THEN association
@@ -1424,8 +1425,9 @@ type QueryType {
     diag.date_of_histology_confirmation AS date_of_histology_confirmation,
     co.cohort_dose AS cohort_dose,
     co.cohort_id AS cohort_id,
-    diag.diagnosis_id AS diagnosis_id
-    ORDER BY CASE $order_by
+    diag.diagnosis_id AS diagnosis_id,
+    order_by AS order_by
+    ORDER BY CASE order_by
     WHEN 'file_name' THEN file_name
     WHEN 'file_type' THEN file_type
     WHEN 'association' THEN association
