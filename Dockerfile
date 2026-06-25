@@ -12,4 +12,4 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT \
     && rm -rf /usr/local/tomcat/webapps.dist
-COPY --from=build /usr/src/app/target/ICDC-14.16.2.war /usr/local/tomcat/webapps/ROOT.war
+COPY --from=build /usr/src/app/target/ICDC-*.war /usr/local/tomcat/webapps/ROOT.war
