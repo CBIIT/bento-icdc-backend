@@ -8,7 +8,7 @@ RUN mvn package -DskipTests
 FROM tomcat:11.0.23-jdk17-temurin-noble AS fnl_base_image
 
 ENV JAVA_OPTS="-Xmx4096m"
-RUN apt-get update && apt-get upgrade -y && apt-get install -y unzip
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT \
     && rm -rf /usr/local/tomcat/webapps.dist
