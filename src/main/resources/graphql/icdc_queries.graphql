@@ -1810,7 +1810,7 @@ type QueryType {
     MATCH (f:file)
     WHERE f.uuid IN $file_uuids
     OPTIONAL MATCH (f)-->(parent)
-    OPTIONAL MATCH (f)-[*]->(c:case)
+    OPTIONAL MATCH (f)-[*1..2]->(c:case)
     OPTIONAL MATCH (studiesFromCases:study)<-[:member_of]-(c)
     OPTIONAL MATCH (f)-->(studiesFromFiles:study)
     WITH
