@@ -286,7 +286,7 @@ type physical_exam {
   pe_finding: String
   pe_comment: String
   phase_pe: String
-  assessment_timepoint: Int
+  assessment_timepoint: String
   enrollment: enrollment 
   visit: visit 
 }
@@ -1026,8 +1026,8 @@ type PhysicalExamNodeData {
     body_system: String
     pe_finding: String
     pe_comment: String
-    phase_pe: Int
-    assessment_timepoint: Int
+    phase_pe: String
+    assessment_timepoint: String
 }
 
 type AgentNodeData {
