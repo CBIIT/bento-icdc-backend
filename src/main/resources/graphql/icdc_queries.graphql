@@ -1810,11 +1810,11 @@ type QueryType {
     MATCH (f:file)
     WHERE f.uuid IN $file_uuids
     OPTIONAL MATCH (f)-->(parent)
-    OPTIONAL MATCH (f)-[*]->(c:case)
+    OPTIONAL MATCH (f)-[*1..2]->(c:case)
     OPTIONAL MATCH (studiesFromCases:study)<-[:member_of]-(c)
     OPTIONAL MATCH (f)-->(studiesFromFiles:study)
     WITH
-      COLLECT(f) AS files,
+      COLLECT(DISTINCT f) AS files,
       COUNT(DISTINCT f) AS totalFiles,
       COLLECT(DISTINCT studiesFromCases.clinical_study_designation) + 
       COLLECT(DISTINCT studiesFromFiles.clinical_study_designation) AS combinedStudies,
